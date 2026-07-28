@@ -22,3 +22,7 @@ It turned out that this is a very nice python exercise. As I am not experienced 
 
 * see the [architecture](docs/architecture.md) and the [style-guide](docs/style-guide.md) documents to understand **how** we wanto develop
 * see the [roadmap](docs/roadmap.md) to see **when** we want to develop **what**.
+
+## Current status
+
+This project is under active development. The API is not considered stable.
