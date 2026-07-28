@@ -9,12 +9,31 @@ See also the [Style Guide](./style-guide.md)
 
 ## Internal geometric representation
 
-### Geometry: Transformation and Bounding Box
+The representation is split in two parts: 
 
-* A point is the same as a vector
+* The **geometry** part of the model represents the mathematical geometry. Its objects have a geometric extent and can participate in geometric computations.
+* The **scene** part of the model represents the hierarchical composition. Its objects organize, reference or group geometry.
+
+Note that packages (i.e. directories) group types by responsibility, not by inheritance.
+
+### Geometry
+
+* Examples for Geometry objects
+   * Point, Circle, Rect
+   * Size, Matrix3, BoundingBox
+* A point is the same as a vector.
 * Use [3x3 matrices](https://en.wikipedia.org/wiki/Homogeneous_coordinates) to describe transformations like *scale* or *rotate* so that applying multiple transformations is equivalent to (non-commutative) matrix multiplication.
 * The transformations we need are currently *translate* and *scale* only. Rotation could be added seamlessly later.
 * Currently, the ultimate goal is to rearrange an existing `.svg` picture so that the *bounding box* of the object is horizontally and vertically *centered* and the *minimal distance* from the bounding box to the edges of the canvas can be parametrized. Therefore, every geometric object needs to have `.bounding_box`.
+
+### Scene
+
+Scene objects do **not** introduce new geometry by themselves; instead, they describe how geometry is organized. Examples are
+
+* Document, Element
+* Group, Defs, Use
+
+Scene objects do **not** introduce new geometry by themselves; instead, they describe how geometry is organized.
 
 ## SVG parsing and rendering
 
