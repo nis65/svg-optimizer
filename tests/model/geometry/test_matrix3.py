@@ -40,3 +40,10 @@ def test_matrix3_is_immutable():
     )
     with pytest.raises(FrozenInstanceError):
         m.m11 = 42
+
+def test_identity_matrix():
+    assert Matrix3.identity() == Matrix3(
+        1, 0, 0,
+        0, 1, 0,
+        0, 0, 1,
+    )
