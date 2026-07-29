@@ -34,5 +34,5 @@
 * overload operators so that e.g. `p1+p2` (vector addition of two points) or `s*p` (scalar multiplication of a vector) works
 * Minimal dependencies
 * Use inheritance only for true "is-a" relationships. Prefer composition for reusable behavior and properties.
-* Make invalid states unrepresentable (i.e. don't allow a circle with a negative radius). Fail early!
+* Make invalid states unrepresentable (i.e. don't allow a circle with a negative radius). All value objects check their invariants `__post_init__()`.
 
