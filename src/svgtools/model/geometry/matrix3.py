@@ -13,3 +13,11 @@ class Matrix3:
     m31: float
     m32: float
     m33: float
+
+    @classmethod
+    def identity(cls) -> "Matrix3":
+        return cls(
+            1, 0, 0,
+            0, 1, 0,
+            0, 0, 1,
+        )
