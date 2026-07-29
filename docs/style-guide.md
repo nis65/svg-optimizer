@@ -16,7 +16,7 @@
 * `pyright --strict`
 
 ## Git principles
-* conventional commits: `feat:`, `fix:`, `refactor:`, `test:`, `docs:`, `build:`, `ci:`, `style:`, `perf:`
+* conventional commits: `feat:`, `fix:`, `refactor:`, `test:`, `chore`, `docs:`, `build:`, `ci:`, `style:`, `perf:`
 * small commits
 * no squash merges
 * all changes via pull request
