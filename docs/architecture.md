@@ -27,6 +27,7 @@ Note that packages (i.e. directories) group types by responsibility, not by inhe
 * The transformations we need are currently *translate* and *scale* only. Rotation could be added seamlessly later.
 * The 3x3 matrix is interpreted to be row-major, point is therefore a column vector.
 * The library uses column vectors and **left matrix multiplication**. Therefore, the product A * B represents the composition *first apply B, then apply A*, **(A * B) * p == A * (B * p)**. This follows the standard convention from linear algebra.
+* As a circle becomes an ellipse if it is scaled differently in the x and y directions, there is no generic `Circle.transform()` method.
 * Currently, the ultimate goal is to rearrange an existing `.svg` picture so that the *bounding box* of the object is horizontally and vertically *centered* and the *minimal distance* from the bounding box to the edges of the canvas can be parametrized. Therefore, every geometric object needs to have `.bounding_box`.
 
 ### Scene
