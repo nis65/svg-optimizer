@@ -23,6 +23,22 @@ class Matrix3:
             0, 0, 1,
         )
 
+    @classmethod
+    def translation(cls, dx: float, dy: float) -> "Matrix3":
+        return cls(
+            1, 0, dx,
+            0, 1, dy,
+            0, 0, 1,
+        )
+
+    @classmethod
+    def scaling(cls, sx: float, sy: float) -> "Matrix3":
+        return cls(
+            sx, 0, 0,
+            0, sy, 0,
+            0, 0, 1,
+        )
+
     def _mul_column(self, x: float, y: float, w: float) -> tuple[float, float, float]:
         return (
             self.m11 * x + self.m12 * y + self.m13 * w,
