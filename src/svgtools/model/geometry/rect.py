@@ -1,0 +1,18 @@
+from dataclasses import dataclass
+from .point import Point
+
+@dataclass(frozen=True, slots=True)
+class Rect:
+    top_left: Point
+    width: float
+    height: float
+
+    def __post_init__(self) -> None:
+        if self.width < 0:
+            raise ValueError(
+                f"width ({self.width}) must not be negative"
+            )
+        if self.height < 0:
+            raise ValueError(
+                f"height ({self.height}) must not be negative"
+            )
