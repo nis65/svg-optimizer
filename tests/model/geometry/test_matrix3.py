@@ -49,6 +49,22 @@ def test_identity_matrix():
         0, 0, 1,
     )
 
+def test_translation_matrix():
+    translation = Matrix3.translation(11, 13)
+    assert translation == Matrix3(
+        1, 0, 11,
+        0, 1, 13,
+        0, 0, 1
+    )
+
+def test_scaling_matrix():
+    scaling = Matrix3.scaling(7, 5)
+    assert scaling == Matrix3(
+        7, 0, 0,
+        0, 5, 0,
+        0, 0, 1
+    )
+
 def test_matrix_multiplication_not_implemented():
     m = Matrix3(
         1, 2, 3,
