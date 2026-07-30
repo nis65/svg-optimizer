@@ -42,10 +42,13 @@ Scene objects do **not** introduce new geometry by themselves; instead, they des
 ## SVG parsing and rendering
 
 To start with, we only support the svg tags that are needed for our example. This implicitly defines what objects geometric objects we need to define in the geometry.
-* the generic xml header
-* `svg`: the SVG header defining the width and height of the canvas and the viewBox to apply when rendering
-* `defs`: used to define objects that can be referred to later
-* `g`: grouping multiple objects into one named object
-* `use`: referall to an object that is defined
-* `circle`: A circle with a center and a radius
-* `rect`: A rectangle with a width and a height
+
+* Supported SVG elements
+   * the generic xml header
+   * `svg`: the SVG header defining the width and height of the canvas and the viewBox to apply when rendering
+   * `defs`: used to define objects that can be referred to later
+   * `g`: grouping multiple objects into one named object
+   * `use`: referall to an object that is defined
+   * `circle`: A circle with a center and a radius
+   * `rect`: A rectangle with a width and a height
+* The parser/renderer preserve document structure. Structural changes are performed only by explicit optimizers.
