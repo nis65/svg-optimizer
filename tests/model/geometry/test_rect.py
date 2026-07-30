@@ -1,0 +1,27 @@
+import pytest
+from dataclasses import FrozenInstanceError
+from svgtools.model.geometry.point import Point
+from svgtools.model.geometry.rect import Rect
+
+def test_rect_construction():
+    r = Rect(Point(1.5, -2.0), 2, 3)
+
+    assert r.top_left.x == 1.5
+    assert r.top_left.y == -2.0
+    assert r.width == 2
+    assert r.height == 3
+
+def test_rects_are_equal():
+    assert Rect(Point(1, 2), 3, 4) == Rect(Point(1, 2), 3, 4)
+
+def test_rect_is_immutable():
+    r = Rect(Point(1, 2), 3, 4)
+
+    with pytest.raises(FrozenInstanceError):
+        r.width = 5 
+
+def test_rect_width_and_height_not_negative ():
+    with pytest.raises(ValueError):
+        Rect(Point(1.5, -2.0), -0.1, 2)
+    with pytest.raises(ValueError):
+        Rect(Point(1.5, -2.0), 2, -0.1)
