@@ -3,6 +3,7 @@ from xml.etree import ElementTree as ET
 from svgtools.model.scene.document import Document
 from svgtools.model.scene.svg import Svg
 from svgtools.model.scene.defs import Defs
+from svgtools.model.scene.group import Group
 
 def parse_string(svg_text: str) -> Document:
 
@@ -19,9 +20,12 @@ def parse_string(svg_text: str) -> Document:
 
 def _parse_xml_element(xml_element: ET.Element):
 
-    if xml_element.tag == "defs":
-         return Defs(children=_parse_xml_children(xml_element))
-    raise NotImplementedError("can parse only defs yet")
+    match xml_element.tag:
+        case "defs":
+            return Defs(children=_parse_xml_children(xml_element))
+        case "g":
+            return Group(children=_parse_xml_children(xml_element))
+    raise NotImplementedError("can parse only defs and group yet")
 
 def _parse_xml_children(xml_element: ET.Element) -> tuple:
 
