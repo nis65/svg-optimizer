@@ -5,9 +5,9 @@ from svgtools.model.scene.svg import Svg
 
 
 def test_parse_empty_svg():
-    svg = "<svg/>"
+    svg_text = "<svg/>"
 
-    assert parse_string(svg) == Document(
+    assert parse_string(svg_text) == Document(
         svg=Svg(
             children=(),
         )
