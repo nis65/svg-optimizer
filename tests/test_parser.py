@@ -5,6 +5,7 @@ from svgtools.model.scene.document import Document
 from svgtools.model.scene.svg import Svg
 from svgtools.model.scene.defs import Defs
 from svgtools.model.scene.group import Group
+from svgtools.model.scene.use import Use
 
 def test_parse_empty_svg():
     svg_text = "<svg/>"
@@ -75,3 +76,29 @@ def test_parse_defs_with_empty_group():
 
     assert parse_string(svg_text_one_tag) == d
     assert parse_string(svg_text_two_tags) == d
+
+def test_parse_use():
+    svg_text = """
+    <svg>
+        <use href="#arrow"/>
+    </svg>
+    """
+    d = Document(
+        svg=Svg(
+            children=(
+                Use(
+                    href="#arrow",
+                ),
+            ),
+        ),
+    )
+    assert parse_string(svg_text) == d
+
+def test_parse_use_without_href():
+    svg_text = """
+    <svg>
+        <use/>
+    </svg>
+    """
+    with pytest.raises(ValueError, match="<use> requires a href attribute"):
+        parse_string(svg_text)
