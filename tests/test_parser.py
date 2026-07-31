@@ -7,7 +7,9 @@ from svgtools.model.scene.defs import Defs
 from svgtools.model.scene.group import Group
 from svgtools.model.scene.use import Use
 from svgtools.model.scene.rect import Rect
+from svgtools.model.scene.circle import Circle
 from svgtools.model.geometry.rect import Rect as GeometryRect
+from svgtools.model.geometry.circle import Circle as GeometryCircle
 from svgtools.model.geometry.point import Point as GeometryPoint
 
 def test_parse_empty_svg():
@@ -123,6 +125,29 @@ def test_rect():
                         ),
                         width=3.5,
                         height=4,
+                    ),
+                ),
+            ),
+        ),
+    )
+
+def test_circle():
+
+    svg_text = """
+    <svg>
+        <circle cx="1" cy="2" r="3.5"/>
+    </svg>
+    """
+    assert parse_string(svg_text) == Document(
+        svg=Svg(
+            children=(
+                Circle(
+                    geometry=GeometryCircle(
+                        center=GeometryPoint(
+                            x=1,
+                            y=2,
+                        ),
+                        radius=3.5,
                     ),
                 ),
             ),
