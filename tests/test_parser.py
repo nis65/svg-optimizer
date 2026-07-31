@@ -4,7 +4,7 @@ from svgtools.parser import parse_string
 from svgtools.model.scene.document import Document
 from svgtools.model.scene.svg import Svg
 from svgtools.model.scene.defs import Defs
-
+from svgtools.model.scene.group import Group
 
 def test_parse_empty_svg():
     svg_text = "<svg/>"
@@ -19,7 +19,7 @@ def test_root_element_must_be_svg():
     with pytest.raises(ValueError, match="Root element must be <svg>, not"):
         parse_string("<circle/>")
 
-def test_parse_empty_defs_one_tag():
+def test_parse_empty_defs():
     svg_text_one_tag = """
     <svg>
         <defs/>
@@ -40,5 +40,38 @@ def test_parse_empty_defs_one_tag():
             ),
         ),
     )
+    assert parse_string(svg_text_one_tag) == d
+    assert parse_string(svg_text_two_tags) == d
+
+def test_parse_defs_with_empty_group():
+    svg_text_one_tag = """
+    <svg>
+        <defs>
+            <g/>
+        </defs>
+    </svg>
+    """
+    svg_text_two_tags = """
+    <svg>
+        <defs>
+            <g>
+            </g>
+        </defs>
+    </svg>
+    """
+    d = Document(
+        svg=Svg(
+            children=(
+                Defs(
+                    children=(
+                        Group(
+                            children=(),
+                        ),
+                    ),
+                ),
+            ),
+        ),
+    )
+
     assert parse_string(svg_text_one_tag) == d
     assert parse_string(svg_text_two_tags) == d
