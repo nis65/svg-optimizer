@@ -6,7 +6,9 @@ from svgtools.model.scene.defs import Defs
 from svgtools.model.scene.group import Group
 from svgtools.model.scene.use import Use
 from svgtools.model.scene.rect import Rect
+from svgtools.model.scene.circle import Circle
 from svgtools.model.geometry.rect import Rect as GeometryRect
+from svgtools.model.geometry.circle import Circle as GeometryCircle
 from svgtools.model.geometry.point import Point as GeometryPoint
 
 def parse_string(svg_text: str) -> Document:
@@ -49,7 +51,20 @@ def _parse_xml_element(xml_element: ET.Element):
                     height=float(xml_height),
                 )
             )
-    raise NotImplementedError("can parse only defs, g, use and rect yet")
+        case "circle":
+            xml_cx=xml_element.get("cx")
+            xml_cy=xml_element.get("cy")
+            xml_r=xml_element.get("r")
+            return Circle(
+                geometry=GeometryCircle(
+                    center=GeometryPoint(
+                        x=float(xml_cx),
+                        y=float(xml_cy),
+                    ),
+                    radius=float(xml_r),
+                )
+            )
+    raise NotImplementedError("can parse only defs, g, use, rect and circle yet")
 
 def _parse_xml_children(xml_element: ET.Element) -> tuple:
 
