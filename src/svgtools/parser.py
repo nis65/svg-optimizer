@@ -4,6 +4,7 @@ from svgtools.model.scene.document import Document
 from svgtools.model.scene.svg import Svg
 from svgtools.model.scene.defs import Defs
 from svgtools.model.scene.group import Group
+from svgtools.model.scene.use import Use
 
 def parse_string(svg_text: str) -> Document:
 
@@ -25,7 +26,12 @@ def _parse_xml_element(xml_element: ET.Element):
             return Defs(children=_parse_xml_children(xml_element))
         case "g":
             return Group(children=_parse_xml_children(xml_element))
-    raise NotImplementedError("can parse only defs and group yet")
+        case "use":
+            xml_href=xml_element.get("href")
+            if xml_href is None:
+                raise ValueError("<use> requires a href attribute")
+            return Use(href=xml_href)
+    raise NotImplementedError("can parse only defs, g, and use yet")
 
 def _parse_xml_children(xml_element: ET.Element) -> tuple:
 
