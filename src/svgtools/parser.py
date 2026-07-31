@@ -41,7 +41,7 @@ def _parse_xml_element(xml_element: ET.Element):
             xml_height=xml_element.get("height")
             return Rect(
                 geometry=GeometryRect(
-                    GeometryPoint(
+                    top_left=GeometryPoint(
                         x=float(xml_x),
                         y=float(xml_y),
                     ),

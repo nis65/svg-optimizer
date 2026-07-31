@@ -4,7 +4,7 @@ from svgtools.model.geometry.point import Point
 from svgtools.model.geometry.rect import Rect
 
 def test_rect_construction():
-    r = Rect(Point(1.5, -2.0), 2, 3)
+    r = Rect(top_left=Point(1.5, -2.0), width=2, height=3)
 
     assert r.top_left.x == 1.5
     assert r.top_left.y == -2.0
@@ -12,16 +12,18 @@ def test_rect_construction():
     assert r.height == 3
 
 def test_rects_are_equal():
-    assert Rect(Point(1, 2), 3, 4) == Rect(Point(1, 2), 3, 4)
+    assert ( Rect(top_left=Point(1, 2), width=3, height=4) ==
+             Rect(top_left=Point(1, 2), width=3, height=4)
+    )
 
 def test_rect_is_immutable():
-    r = Rect(Point(1, 2), 3, 4)
+    r = Rect(top_left=Point(1, 2), width=3, height=4)
 
     with pytest.raises(FrozenInstanceError):
-        r.width = 5 
+        r.width = 5
 
 def test_rect_width_and_height_not_negative ():
     with pytest.raises(ValueError):
-        Rect(Point(1.5, -2.0), -0.1, 2)
+        Rect(top_left=Point(1.5, -2.0), width=-0.1, height=2)
     with pytest.raises(ValueError):
-        Rect(Point(1.5, -2.0), 2, -0.1)
+        Rect(top_left=Point(1.5, -2.0), width=2, height=-0.1)
