@@ -5,6 +5,9 @@ from svgtools.model.scene.svg import Svg
 from svgtools.model.scene.defs import Defs
 from svgtools.model.scene.group import Group
 from svgtools.model.scene.use import Use
+from svgtools.model.scene.rect import Rect
+from svgtools.model.geometry.rect import Rect as GeometryRect
+from svgtools.model.geometry.point import Point as GeometryPoint
 
 def parse_string(svg_text: str) -> Document:
 
@@ -31,7 +34,22 @@ def _parse_xml_element(xml_element: ET.Element):
             if xml_href is None:
                 raise ValueError("<use> requires a href attribute")
             return Use(href=xml_href)
-    raise NotImplementedError("can parse only defs, g, and use yet")
+        case "rect":
+            xml_x=xml_element.get("x")
+            xml_y=xml_element.get("y")
+            xml_width=xml_element.get("width")
+            xml_height=xml_element.get("height")
+            return Rect(
+                geometry=GeometryRect(
+                    GeometryPoint(
+                        x=float(xml_x),
+                        y=float(xml_y),
+                    ),
+                    width=float(xml_width),
+                    height=float(xml_height),
+                )
+            )
+    raise NotImplementedError("can parse only defs, g, use and rect yet")
 
 def _parse_xml_children(xml_element: ET.Element) -> tuple:
 
