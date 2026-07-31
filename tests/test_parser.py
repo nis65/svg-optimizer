@@ -82,6 +82,49 @@ def test_parse_defs_with_empty_group():
     assert parse_string(svg_text_one_tag) == d
     assert parse_string(svg_text_two_tags) == d
 
+def test_parse_group_with_elements():
+    svg_text = """
+    <svg>
+        <g>
+            <circle cx="1" cy="2" r="3.5"/>
+            <use href="#arrow"/>
+            <rect x="1" y="2" width="3.5" height="4"/>
+        </g>
+    </svg>
+    """
+    assert parse_string(svg_text) == Document(
+        svg=Svg(
+            children=(
+                Group(
+                    children=(
+                        Circle(
+                            geometry=GeometryCircle(
+                                center=GeometryPoint(
+                                    x=1,
+                                    y=2,
+                                ),
+                                radius=3.5,
+                            ),
+                        ),
+                        Use(
+                            href="#arrow",
+                        ),
+                        Rect(
+                            geometry=GeometryRect(
+                                top_left=GeometryPoint(
+                                    x=1,
+                                    y=2,
+                                ),
+                                width=3.5,
+                                height=4,
+                            ),
+                        ),
+                    ),
+                ),
+            ),
+        ),
+    )
+
 def test_parse_use():
     svg_text = """
     <svg>
