@@ -117,7 +117,7 @@ def test_rect():
             children=(
                 Rect(
                     geometry=GeometryRect(
-                        GeometryPoint(
+                        top_left=GeometryPoint(
                             x=1,
                             y=2,
                         ),
