@@ -19,14 +19,19 @@ def test_root_element_must_be_svg():
     with pytest.raises(ValueError, match="Root element must be <svg>, not"):
         parse_string("<circle/>")
 
-def test_parse_empty_defs():
-    svg_text = """
+def test_parse_empty_defs_one_tag():
+    svg_text_one_tag = """
     <svg>
         <defs/>
     </svg>
     """
-
-    assert parse_string(svg_text) == Document(
+    svg_text_two_tags = """
+    <svg>
+        <defs>
+        </defs>
+    </svg>
+    """
+    d = Document(
         svg=Svg(
             children=(
                 Defs(
@@ -35,3 +40,5 @@ def test_parse_empty_defs():
             ),
         ),
     )
+    assert parse_string(svg_text_one_tag) == d
+    assert parse_string(svg_text_two_tags) == d
