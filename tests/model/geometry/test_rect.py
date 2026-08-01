@@ -2,6 +2,7 @@ import pytest
 from dataclasses import FrozenInstanceError
 from svgtools.model.geometry.point import Point
 from svgtools.model.geometry.rect import Rect
+from svgtools.model.geometry.bounding_box import BoundingBox
 
 def test_rect_construction():
     r = Rect(top_left=Point(1.5, -2.0), width=2, height=3)
@@ -27,3 +28,11 @@ def test_rect_width_and_height_not_negative ():
         Rect(top_left=Point(1.5, -2.0), width=-0.1, height=2)
     with pytest.raises(ValueError):
         Rect(top_left=Point(1.5, -2.0), width=2, height=-0.1)
+
+def test_rect_bounding_box():
+    r = Rect(top_left=Point(1, 1), width=2, height=3)
+    assert r.bounding_box() == BoundingBox (
+        min=Point(1, 1),
+        max=Point(3, 4)
+    )
+    
