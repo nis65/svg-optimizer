@@ -16,3 +16,18 @@ class BoundingBox:
             raise ValueError(
                 f"min.y ({self.min.y}) must not be greater than max.y ({self.max.y})"
             )
+
+    def include(self, point: Point) -> "BoundingBox":
+        return BoundingBox(
+            min=Point(min(self.min.x, point.x), min(self.min.y, point.y)),
+            max=Point(max(self.max.x, point.x), max(self.max.y, point.y))
+        )
+
+    def union(self, other) -> "BoundingBox":
+        return BoundingBox(
+            min=Point(min(self.min.x, other.min.x), min(self.min.y, other.min.y)),
+            max=Point(max(self.max.x, other.max.x), max(self.max.y, other.max.y))
+        )
+
+    def __add__(self, other) -> "BoundingBox":
+        return self.union(other)
