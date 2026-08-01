@@ -4,16 +4,17 @@ from dataclasses import FrozenInstanceError
 from svgtools.model.scene.group import Group
 
 def test_group_construction():
-    g = Group(("x", 2))
+    g = Group(id="gid", children=("x", 2))
+    assert g.id == "gid"
     assert g.children == ( "x", 2 )
     assert g.children[0] == "x"
     assert g.children[1] == 2
 
 def test_groups_are_equal():
-    assert Group(("y", 1)) == Group(("y", 1))
+    assert Group(id="gid", children=("y", 1)) == Group(id="gid", children=("y", 1))
 
 def test_group_is_immutable():
-    g = Group(("x", 2))
+    g = Group(id="gid", children=("x", 2))
     with pytest.raises(FrozenInstanceError):
         g.children = ("x", 3)
 
