@@ -1,10 +1,12 @@
 from svgtools.model.geometry.point import Point as GeometryPoint
 from svgtools.model.geometry.rect import Rect as GeometryRect
+from svgtools.model.geometry.circle import Circle as GeometryCircle
 
 from svgtools.model.scene.defs import Defs
 from svgtools.model.scene.document import Document
 from svgtools.model.scene.group import Group
 from svgtools.model.scene.rect import Rect
+from svgtools.model.scene.circle import Circle
 from svgtools.model.scene.svg import Svg
 from svgtools.model.scene.use import Use
 
@@ -37,3 +39,45 @@ def test_use_is_followed_twice():
     visitor.visit(document)
 
     assert visitor.rectangles_visited == 2
+
+def test_use_with_all_known_types():
+
+    document = Document(
+        svg=Svg(
+            children=(
+                Defs(
+                    children=(
+                        Rect(
+                            id="square",
+                            geometry=GeometryRect(
+                                top_left=GeometryPoint(0, 0),
+                                width=10,
+                                height=5,
+                            ),
+                        ),
+                        Group(
+                            id="groupid",
+                            children=(
+                                Circle(
+                                    id="circle",
+                                    geometry=GeometryCircle(
+                                        center=GeometryPoint(0, 0),
+                                        radius=10,
+                                    ),
+                                ),
+                            ),
+                        ),
+                    ),
+                ),
+                Use(href="#square"),
+                Use(href="#square"),
+                Use(href="#groupid"),
+            ),
+        ),
+    )
+
+    visitor = BoundingBoxVisitor()
+    visitor.visit(document)
+
+    assert visitor.rectangles_visited == 2
+    assert visitor.circles_visited == 1
