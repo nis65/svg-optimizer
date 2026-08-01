@@ -21,6 +21,18 @@ def test_parse_empty_svg():
         )
     )
 
+def test_parse_empty_svg_with_id():
+    svg_text = """
+    <svg id="svgid">
+    </svg>
+    """
+    assert parse_string(svg_text) == Document(
+        svg=Svg(
+            id="svgid",
+            children=(),
+        )
+    )
+
 def test_root_element_must_be_svg():
     with pytest.raises(ValueError, match="Root element must be <svg>, not"):
         parse_string("<circle/>")
@@ -33,11 +45,11 @@ def test_parse_empty_defs():
     """
     svg_text_two_tags = """
     <svg>
-        <defs>
+        <defs id="defsid">
         </defs>
     </svg>
     """
-    d = Document(
+    d_one = Document(
         svg=Svg(
             children=(
                 Defs(
@@ -46,8 +58,18 @@ def test_parse_empty_defs():
             ),
         ),
     )
-    assert parse_string(svg_text_one_tag) == d
-    assert parse_string(svg_text_two_tags) == d
+    d_two = Document(
+        svg=Svg(
+            children=(
+                Defs(
+                    id="defsid",
+                    children=(),
+                ),
+            ),
+        ),
+    )
+    assert parse_string(svg_text_one_tag) == d_one
+    assert parse_string(svg_text_two_tags) == d_two
 
 def test_parse_defs_with_empty_group():
     svg_text_one_tag = """
@@ -60,12 +82,12 @@ def test_parse_defs_with_empty_group():
     svg_text_two_tags = """
     <svg>
         <defs>
-            <g>
+            <g id="gid">
             </g>
         </defs>
     </svg>
     """
-    d = Document(
+    d_one = Document(
         svg=Svg(
             children=(
                 Defs(
@@ -79,8 +101,23 @@ def test_parse_defs_with_empty_group():
         ),
     )
 
-    assert parse_string(svg_text_one_tag) == d
-    assert parse_string(svg_text_two_tags) == d
+    d_two = Document(
+        svg=Svg(
+            children=(
+                Defs(
+                    children=(
+                        Group(
+                            id="gid",
+                            children=(),
+                        ),
+                    ),
+                ),
+            ),
+        ),
+    )
+
+    assert parse_string(svg_text_one_tag) == d_one
+    assert parse_string(svg_text_two_tags) == d_two
 
 def test_parse_group_with_elements():
     svg_text = """
@@ -128,13 +165,14 @@ def test_parse_group_with_elements():
 def test_parse_use():
     svg_text = """
     <svg>
-        <use href="#arrow"/>
+        <use id="useid" href="#arrow"/>
     </svg>
     """
     d = Document(
         svg=Svg(
             children=(
                 Use(
+                    id="useid",
                     href="#arrow",
                 ),
             ),
@@ -154,13 +192,14 @@ def test_parse_use_without_href():
 def test_rect():
     svg_text = """
     <svg>
-        <rect x="1" y="2" width="3.5" height="4"/>
+        <rect id="rectid" x="1" y="2" width="3.5" height="4"/>
     </svg>
     """
     assert parse_string(svg_text) == Document(
         svg=Svg(
             children=(
                 Rect(
+                    id="rectid",
                     geometry=GeometryRect(
                         top_left=GeometryPoint(
                             x=1,
@@ -178,13 +217,14 @@ def test_circle():
 
     svg_text = """
     <svg>
-        <circle cx="1" cy="2" r="3.5"/>
+        <circle id="circleid" cx="1" cy="2" r="3.5"/>
     </svg>
     """
     assert parse_string(svg_text) == Document(
         svg=Svg(
             children=(
                 Circle(
+                    id="circleid",
                     geometry=GeometryCircle(
                         center=GeometryPoint(
                             x=1,
