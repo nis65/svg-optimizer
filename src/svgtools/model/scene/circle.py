@@ -4,3 +4,4 @@ from svgtools.model.geometry.circle import Circle as GeometryCircle
 @dataclass(frozen=True, slots=True)
 class Circle:
     geometry: GeometryCircle
+    id: str | None = None
