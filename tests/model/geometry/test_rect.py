@@ -35,4 +35,3 @@ def test_rect_bounding_box():
         min=Point(1, 1),
         max=Point(3, 4)
     )
-    
