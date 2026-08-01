@@ -1,5 +1,6 @@
 from enum import Enum
 
+from svgtools.model.geometry.bounding_box import BoundingBox
 from svgtools.model.scene.document import Document
 from svgtools.model.scene.svg import Svg
 from svgtools.model.scene.defs import Defs
@@ -16,6 +17,7 @@ class BoundingBoxVisitor:
 
     def __init__(self):
 
+        self.bounding_box = None
         self.definition_table = {}  # Maps object ids to reusable scene elements.
         self.rectangles_visited = 0
         self.circles_visited = 0
@@ -24,6 +26,12 @@ class BoundingBoxVisitor:
 
         self._walk_svg(document.svg, _Phase.BUILD_DEFINITION_TABLE)
         self._walk_svg(document.svg, _Phase.VISIT)
+
+    def _accumulate_bbox(self, bbox: BoundingBox) -> None:
+        if self.bounding_box is None:
+            self.bounding_box = bbox
+        else:
+            self.bounding_box += bbox
 
     def _walk_svg(self, svg: Svg, phase: _Phase):
 
@@ -86,6 +94,7 @@ class BoundingBoxVisitor:
                     self.definition_table[rect.id] = rect
             case _Phase.VISIT:
                 self.rectangles_visited += 1
+                self._accumulate_bbox(rect.geometry.bounding_box())
 
     def _walk_circle(self, circle: Circle, phase: _Phase):
 
@@ -95,3 +104,4 @@ class BoundingBoxVisitor:
                     self.definition_table[circle.id] = circle
             case _Phase.VISIT:
                 self.circles_visited += 1
+                self._accumulate_bbox(circle.geometry.bounding_box())
