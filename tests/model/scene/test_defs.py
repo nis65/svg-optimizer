@@ -4,16 +4,17 @@ from dataclasses import FrozenInstanceError
 from svgtools.model.scene.defs import Defs
 
 def test_defs_construction():
-    d = Defs(("x", 2))
+    d = Defs(id="defid", children=("x", 2))
+    assert d.id == "defid"
     assert d.children == ( "x", 2 )
     assert d.children[0] == "x"
     assert d.children[1] == 2
 
 def test_defs_are_equal():
-    assert Defs(("y", 1)) == Defs(("y", 1))
+    assert Defs(id="defid", children=("y", 1)) == Defs(id="defid", children=("y", 1))
 
 def test_defs_is_immutable():
-    d = Defs(("x", 2))
+    d = Defs(id="defid", children=("x", 2))
     with pytest.raises(FrozenInstanceError):
         d.children = ("x", 3)
 
