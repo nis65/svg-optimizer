@@ -16,8 +16,9 @@ class BoundingBoxVisitor:
 
     def __init__(self):
 
-        self.definition_table = {}
+        self.definition_table = {}  # Maps object ids to reusable scene elements.
         self.rectangles_visited = 0
+        self.circles_visited = 0
 
     def visit(self, document: Document):
 
@@ -45,16 +46,26 @@ class BoundingBoxVisitor:
             case _:
                 raise NotImplementedError(type(element))
 
+    def _walk_group(self, group: Group, phase: _Phase):
+        match phase:
+            case _Phase.BUILD_DEFINITION_TABLE:
+                if group.id:
+                    self.definition_table[group.id] = group
+            case _Phase.VISIT:
+                pass
+        for child in group.children:
+            self._walk_element(child, phase)
+
     def _walk_defs(self, defs: Defs, phase: _Phase):
 
-        for child in defs.children:
-            if child.id is None:
-                raise ValueError("Definitions must have an id.")
-            match phase:
-                case _Phase.BUILD_DEFINITION_TABLE:
-                    self.definition_table[child.id] = child
-                case _Phase.VISIT:
-                    pass
+        match phase:
+            case _Phase.BUILD_DEFINITION_TABLE:
+                for child in defs.children:
+                    if child.id is None:
+                        raise ValueError("Definitions must have an id.")
+                    self._walk_element(child, phase)
+            case _Phase.VISIT:
+                pass
 
     def _walk_use(self, use: Use, phase: _Phase):
 
@@ -67,9 +78,20 @@ class BoundingBoxVisitor:
                     raise ValueError(f"Use references unknown label {label}")
                 self._walk_element(self.definition_table[label], phase)
 
-    def _walk_rect(self, use: Use, phase: _Phase):
+    def _walk_rect(self, rect: Rect, phase: _Phase):
+
         match phase:
             case _Phase.BUILD_DEFINITION_TABLE:
-                pass
+                if rect.id:
+                    self.definition_table[rect.id] = rect
             case _Phase.VISIT:
                 self.rectangles_visited += 1
+
+    def _walk_circle(self, circle: Circle, phase: _Phase):
+
+        match phase:
+            case _Phase.BUILD_DEFINITION_TABLE:
+                if circle.id:
+                    self.definition_table[circle.id] = circle
+            case _Phase.VISIT:
+                self.circles_visited += 1
