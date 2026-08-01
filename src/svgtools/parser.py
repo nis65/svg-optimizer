@@ -17,9 +17,10 @@ def parse_string(svg_text: str) -> Document:
 
     if xml_root.tag != "svg":
         raise ValueError(f"Root element must be <svg>, not '{xml_root.tag}'")
-
+    svg_id = xml_root.get("id")
     return Document(
         svg=Svg(
+            id=svg_id,
             children=_parse_xml_children(xml_root),
         )
     )
@@ -28,20 +29,25 @@ def _parse_xml_element(xml_element: ET.Element):
 
     match xml_element.tag:
         case "defs":
-            return Defs(children=_parse_xml_children(xml_element))
+            defs_id = xml_element.get("id")
+            return Defs(id=defs_id, children=_parse_xml_children(xml_element))
         case "g":
-            return Group(children=_parse_xml_children(xml_element))
+            g_id = xml_element.get("id")
+            return Group(id=g_id, children=_parse_xml_children(xml_element))
         case "use":
+            use_id = xml_element.get("id")
             xml_href=xml_element.get("href")
             if xml_href is None:
                 raise ValueError("<use> requires a href attribute")
-            return Use(href=xml_href)
+            return Use(id=use_id, href=xml_href)
         case "rect":
+            rect_id = xml_element.get("id")
             xml_x=xml_element.get("x")
             xml_y=xml_element.get("y")
             xml_width=xml_element.get("width")
             xml_height=xml_element.get("height")
             return Rect(
+                id = rect_id,
                 geometry=GeometryRect(
                     top_left=GeometryPoint(
                         x=float(xml_x),
@@ -52,10 +58,12 @@ def _parse_xml_element(xml_element: ET.Element):
                 )
             )
         case "circle":
+            circle_id = xml_element.get("id")
             xml_cx=xml_element.get("cx")
             xml_cy=xml_element.get("cy")
             xml_r=xml_element.get("r")
             return Circle(
+                id = circle_id,
                 geometry=GeometryCircle(
                     center=GeometryPoint(
                         x=float(xml_cx),
