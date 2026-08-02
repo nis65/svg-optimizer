@@ -8,6 +8,7 @@ from svgtools.model.scene.group import Group
 from svgtools.model.scene.use import Use
 from svgtools.model.scene.rect import Rect
 from svgtools.model.scene.circle import Circle
+from svgtools.model.scene.transform import Translate, Scale
 from svgtools.model.geometry.rect import Rect as GeometryRect
 from svgtools.model.geometry.circle import Circle as GeometryCircle
 from svgtools.model.geometry.point import Point as GeometryPoint
@@ -30,6 +31,18 @@ def test_parse_empty_svg_with_id():
         svg=Svg(
             id="svgid",
             children=(),
+        )
+    )
+
+def test_parse_empty_svg_with_transform():
+    svg_text = """
+    <svg transform="translate(4 5)">
+    </svg>
+    """
+    assert parse_svg_string(svg_text) == Document(
+        svg=Svg(
+            children=(),
+            transformations=( Translate(dx=4, dy=5),)
         )
     )
 
@@ -119,10 +132,10 @@ def test_parse_defs_with_empty_group():
     assert parse_svg_string(svg_text_one_tag) == d_one
     assert parse_svg_string(svg_text_two_tags) == d_two
 
-def test_parse_group_with_elements():
+def test_parse_group_with_elements_and_transform():
     svg_text = """
     <svg>
-        <g>
+        <g transform="scale(3)">
             <circle cx="1" cy="2" r="3.5"/>
             <use href="#arrow"/>
             <rect x="1" y="2" width="3.5" height="4"/>
@@ -157,6 +170,7 @@ def test_parse_group_with_elements():
                             ),
                         ),
                     ),
+                    transformations=(Scale (sx=3, sy=3),),
                 ),
             ),
         ),
@@ -165,7 +179,7 @@ def test_parse_group_with_elements():
 def test_parse_use():
     svg_text = """
     <svg>
-        <use id="useid" href="#arrow"/>
+        <use id="useid" href="#arrow" transform="scale(3)"/>
     </svg>
     """
     d = Document(
@@ -174,6 +188,7 @@ def test_parse_use():
                 Use(
                     id="useid",
                     href="#arrow",
+                    transformations=(Scale (sx=3, sy=3),)
                 ),
             ),
         ),
@@ -192,7 +207,7 @@ def test_parse_use_without_href():
 def test_rect():
     svg_text = """
     <svg>
-        <rect id="rectid" x="1" y="2" width="3.5" height="4"/>
+        <rect id="rectid" x="1" y="2" width="3.5" height="4" transform="scale(2)"/>
     </svg>
     """
     assert parse_svg_string(svg_text) == Document(
@@ -208,6 +223,7 @@ def test_rect():
                         width=3.5,
                         height=4,
                     ),
+                    transformations=(Scale(sx=2,sy=2),)
                 ),
             ),
         ),
@@ -217,7 +233,7 @@ def test_circle():
 
     svg_text = """
     <svg>
-        <circle id="circleid" cx="1" cy="2" r="3.5"/>
+        <circle id="circleid" cx="1" cy="2" r="3.5" transform="scale(13)"/>
     </svg>
     """
     assert parse_svg_string(svg_text) == Document(
@@ -232,6 +248,7 @@ def test_circle():
                         ),
                         radius=3.5,
                     ),
+                    transformations=(Scale(sx=13, sy=13),)
                 ),
             ),
         ),
