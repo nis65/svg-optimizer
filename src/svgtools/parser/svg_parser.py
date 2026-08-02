@@ -11,7 +11,7 @@ from svgtools.model.geometry.rect import Rect as GeometryRect
 from svgtools.model.geometry.circle import Circle as GeometryCircle
 from svgtools.model.geometry.point import Point as GeometryPoint
 
-def parse_string(svg_text: str) -> Document:
+def parse_svg_string(svg_text: str) -> Document:
 
     xml_root = ET.fromstring(svg_text)
 
