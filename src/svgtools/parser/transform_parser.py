@@ -27,14 +27,28 @@ def parse_transform_string(tstring: str) -> tuple:
         if rest.startswith("scale"):
             rest = rest.removeprefix("scale")
             rest, transformation = _parse_scale(rest)
+        elif rest.startswith("translate"):
+            rest = rest.removeprefix("translate")
+            rest, transformation = _parse_translate(rest)
         else:
-            raise ValueError("only scale implemented")
+            raise ValueError("only scale and translate supported")
         transformation_list.append(transformation)
         rest = _skip_spaces(rest)
     return tuple(transformation_list)
         
 def _skip_spaces(text: str) -> str:
     return text.lstrip()
+
+def _parse_translate(text: str):
+    numbers, rest = _parse_parentheses(text)
+    if len(numbers) == 2:
+        t = Translate(
+                dx=numbers[0],
+                dy=numbers[1]
+            )
+    else:
+        raise ValueError(f"translate needs exactly 2 parameters, not {len(numbers)}")
+    return rest, t
 
 def _parse_scale(text: str):
     numbers, rest = _parse_parentheses(text)
