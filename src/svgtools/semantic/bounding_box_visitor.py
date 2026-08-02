@@ -1,6 +1,7 @@
 from enum import Enum
 
 from svgtools.model.geometry.bounding_box import BoundingBox
+from svgtools.model.geometry.matrix3 import Matrix3
 from svgtools.model.scene.document import Document
 from svgtools.model.scene.svg import Svg
 from svgtools.model.scene.defs import Defs
@@ -35,26 +36,27 @@ class BoundingBoxVisitor:
 
     def _walk_svg(self, svg: Svg, phase: _Phase):
 
+        current_matrix = Matrix3.identity()
         for child in svg.children:
-            self._walk_element(child, phase)
+            self._walk_element(child, phase, current_matrix)
 
-    def _walk_element(self, element, phase: _Phase):
+    def _walk_element(self, element, phase: _Phase, current_matrix: Matrix3):
 
         match element:
             case Defs():
                 self._walk_defs(element,phase)
             case Group():
-                self._walk_group(element,phase)
+                self._walk_group(element,phase, current_matrix)
             case Use():
-                self._walk_use(element,phase)
+                self._walk_use(element,phase, current_matrix)
             case Rect():
-                self._walk_rect(element,phase)
+                self._walk_rect(element,phase, current_matrix)
             case Circle():
-                self._walk_circle(element,phase)
+                self._walk_circle(element,phase, current_matrix)
             case _:
                 raise NotImplementedError(type(element))
 
-    def _walk_group(self, group: Group, phase: _Phase):
+    def _walk_group(self, group: Group, phase: _Phase, current_matrix: Matrix3):
         match phase:
             case _Phase.BUILD_DEFINITION_TABLE:
                 if group.id:
@@ -62,7 +64,7 @@ class BoundingBoxVisitor:
             case _Phase.VISIT:
                 pass
         for child in group.children:
-            self._walk_element(child, phase)
+            self._walk_element(child, phase, current_matrix)
 
     def _walk_defs(self, defs: Defs, phase: _Phase):
 
@@ -71,11 +73,13 @@ class BoundingBoxVisitor:
                 for child in defs.children:
                     if child.id is None:
                         raise ValueError("Definitions must have an id.")
-                    self._walk_element(child, phase)
+                    # we NEVER use a Matrix in the BUILD_DEFINITION_TABLE
+                    # this is here to keep procedure calling syntax simple.
+                    self._walk_element(child, phase, Matrix3.identity())
             case _Phase.VISIT:
                 pass
 
-    def _walk_use(self, use: Use, phase: _Phase):
+    def _walk_use(self, use: Use, phase: _Phase, current_matrix: Matrix3):
 
         match phase:
             case _Phase.BUILD_DEFINITION_TABLE:
@@ -84,9 +88,9 @@ class BoundingBoxVisitor:
                 label = use.href.removeprefix("#")
                 if label not in self.definition_table:
                     raise ValueError(f"Use references unknown label {label}")
-                self._walk_element(self.definition_table[label], phase)
+                self._walk_element(self.definition_table[label], phase, current_matrix)
 
-    def _walk_rect(self, rect: Rect, phase: _Phase):
+    def _walk_rect(self, rect: Rect, phase: _Phase, current_matrix: Matrix3):
 
         match phase:
             case _Phase.BUILD_DEFINITION_TABLE:
@@ -96,7 +100,7 @@ class BoundingBoxVisitor:
                 self.rectangles_visited += 1
                 self._accumulate_bbox(rect.geometry.bounding_box())
 
-    def _walk_circle(self, circle: Circle, phase: _Phase):
+    def _walk_circle(self, circle: Circle, phase: _Phase, current_matrix: Matrix3):
 
         match phase:
             case _Phase.BUILD_DEFINITION_TABLE:
