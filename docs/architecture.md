@@ -51,4 +51,8 @@ To start with, we only support the svg tags that are needed for our example. Thi
    * `use`: referall to an object that is defined
    * `circle`: A circle with a center and a radius
    * `rect`: A rectangle with a width and a height
+* SVG transformations on the elements `svg`, `g`, `use`, `circle`, `rect`:
+   * supported: `translate` and `scale`
+   * not yet supported: `rotate`, `skewX`, `skewY`, `matrix`
+
 * The parser/renderer preserve document structure. Structural changes are performed only by explicit optimizers.
