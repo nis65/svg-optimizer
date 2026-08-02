@@ -1,5 +1,6 @@
 from xml.etree import ElementTree as ET
 
+from .transform_parser import parse_transform_string
 from svgtools.model.scene.document import Document
 from svgtools.model.scene.svg import Svg
 from svgtools.model.scene.defs import Defs
@@ -20,8 +21,9 @@ def parse_svg_string(svg_text: str) -> Document:
     svg_id = xml_root.get("id")
     return Document(
         svg=Svg(
-            id=svg_id,
-            children=_parse_xml_children(xml_root),
+            id = svg_id,
+            children = _parse_xml_children(xml_root),
+            transformations = parse_transform_string(xml_root.get("transform")),
         )
     )
 
@@ -33,13 +35,20 @@ def _parse_xml_element(xml_element: ET.Element):
             return Defs(id=defs_id, children=_parse_xml_children(xml_element))
         case "g":
             g_id = xml_element.get("id")
-            return Group(id=g_id, children=_parse_xml_children(xml_element))
+            return Group(
+                    id=g_id, 
+                    children=_parse_xml_children(xml_element),
+                    transformations=parse_transform_string(xml_element.get("transform")),
+                )
         case "use":
             use_id = xml_element.get("id")
             xml_href=xml_element.get("href")
             if xml_href is None:
                 raise ValueError("<use> requires a href attribute")
-            return Use(id=use_id, href=xml_href)
+            return Use(id=use_id, 
+                       href=xml_href,
+                       transformations=parse_transform_string(xml_element.get("transform")),
+                      )
         case "rect":
             rect_id = xml_element.get("id")
             xml_x=xml_element.get("x")
@@ -55,7 +64,8 @@ def _parse_xml_element(xml_element: ET.Element):
                     ),
                     width=float(xml_width),
                     height=float(xml_height),
-                )
+                ),
+                transformations=parse_transform_string(xml_element.get("transform")),
             )
         case "circle":
             circle_id = xml_element.get("id")
@@ -70,7 +80,8 @@ def _parse_xml_element(xml_element: ET.Element):
                         y=float(xml_cy),
                     ),
                     radius=float(xml_r),
-                )
+                ),
+                transformations=parse_transform_string(xml_element.get("transform")),
             )
     raise NotImplementedError("can parse only defs, g, use, rect and circle yet")
 
