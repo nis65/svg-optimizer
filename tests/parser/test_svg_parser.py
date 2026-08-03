@@ -46,8 +46,24 @@ def test_parse_empty_svg_with_transform():
         )
     )
 
+def test_parse_empty_svg_with_all_other_attrs():
+    svg_text = """
+    <svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
+    </svg>
+    """
+    assert parse_svg_string(svg_text) == Document(
+        svg=Svg(
+            children=(),
+            transformations=(),
+            xmlnamespace="http://www.w3.org/2000/svg",
+            width="1024",
+            height="1024",
+            viewBox=(0, 0, 1024, 1024,),
+        )
+    )
+
 def test_root_element_must_be_svg():
-    with pytest.raises(ValueError, match="Root element must be <svg>, not"):
+    with pytest.raises(ValueError, match="Root element must end with"):
         parse_svg_string("<circle/>")
 
 def test_parse_empty_defs():
