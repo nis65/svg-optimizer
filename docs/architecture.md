@@ -5,7 +5,7 @@ See also the [Style Guide](./style-guide.md)
 ## Separation of concern
 
 * simple internal representation of a vector image consisting of multiple potentially reused and transformed objects. Basic geometric forms supported are currently rectangles and circles only.
-* the task of the svg parsing and rendering functions is to convert between the internal geometric representation and the svg format.
+* the task of the svg parsing and writer functions is to convert between the internal geometric representation and the svg format.
 
 ## Internal geometric representation
 
@@ -39,13 +39,13 @@ Scene objects do **not** introduce new geometry by themselves; instead, they des
 
 Scene objects do **not** introduce new geometry by themselves; instead, they describe how geometry is organized.
 
-## SVG parsing and rendering
+## SVG parsing and writing
 
 To start with, we only support the svg tags that are needed for our example. This implicitly defines what objects geometric objects we need to define in the geometry.
 
 * Supported SVG elements
    * the generic xml header
-   * `svg`: the SVG header defining the width and height of the canvas and the viewBox to apply when rendering
+   * `svg`: the SVG header defining the width and height of the canvas and the viewBox to apply when writing
    * `defs`: used to define objects that can be referred to later
    * `g`: grouping multiple objects into one named object
    * `use`: referall to an object that is defined
@@ -55,4 +55,13 @@ To start with, we only support the svg tags that are needed for our example. Thi
    * supported: `translate` and `scale`
    * not yet supported: `rotate`, `skewX`, `skewY`, `matrix`
 
-* The parser/renderer preserve document structure. Structural changes are performed only by explicit optimizers.
+* The parser/writer preserve document structure. Structural changes are performed only by explicit optimizers. The following changes are applied:
+   * the indendetation is "fixed" to reflect the structural depth
+   * number lists are always written space separated (and not comma separated)
+   * the attributes (not the children) of an xml tag are ordered as follows:
+      * `xmlns` (only on `svg` element)
+      * `id` 
+      * geometry, e.g. `x`, `y`, `width`, `heigth`
+      * coordinate system, e.g. `viewBox` (only on `svg` element)
+      * transformations, e.g.  `scale` and `translate`
+      * style, e.g. `fill`, `stroke`
