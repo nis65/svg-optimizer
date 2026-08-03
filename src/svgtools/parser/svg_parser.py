@@ -1,6 +1,8 @@
 from xml.etree import ElementTree as ET
+import re
 
 from .transform_parser import parse_transform_string
+from .float_list_parser import parse_float_list
 from svgtools.model.scene.document import Document
 from svgtools.model.scene.svg import Svg
 from svgtools.model.scene.defs import Defs
@@ -16,12 +18,22 @@ def parse_svg_string(svg_text: str) -> Document:
 
     xml_root = ET.fromstring(svg_text)
 
-    if xml_root.tag != "svg":
-        raise ValueError(f"Root element must be <svg>, not '{xml_root.tag}'")
-    svg_id = xml_root.get("id")
+    namespace = None
+    if xml_root.tag == 'svg':
+        pass
+    else:
+        match = re.match(r"^\{([^}]+)\}svg", xml_root.tag)
+        if match:
+            namespace = match.group(1)
+        else:
+            raise ValueError(f"Root element must end with 'svg', not '{xml_root.tag}'")
     return Document(
         svg=Svg(
-            id = svg_id,
+            id = xml_root.get("id"),
+            xmlnamespace = namespace,
+            width = xml_root.get("width"),
+            height = xml_root.get("height"),
+            viewBox = parse_float_list(xml_root.get("viewBox")),
             children = _parse_xml_children(xml_root),
             transformations = parse_transform_string(xml_root.get("transform")),
         )
@@ -36,7 +48,7 @@ def _parse_xml_element(xml_element: ET.Element):
         case "g":
             g_id = xml_element.get("id")
             return Group(
-                    id=g_id, 
+                    id=g_id,
                     children=_parse_xml_children(xml_element),
                     transformations=parse_transform_string(xml_element.get("transform")),
                 )
@@ -45,7 +57,7 @@ def _parse_xml_element(xml_element: ET.Element):
             xml_href=xml_element.get("href")
             if xml_href is None:
                 raise ValueError("<use> requires a href attribute")
-            return Use(id=use_id, 
+            return Use(id=use_id,
                        href=xml_href,
                        transformations=parse_transform_string(xml_element.get("transform")),
                       )
