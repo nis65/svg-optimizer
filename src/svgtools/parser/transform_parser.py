@@ -13,6 +13,7 @@ all parser funcions
 """
 
 from svgtools.model.scene.transform import Translate, Scale
+from .float_list_parser import parse_float_list
 
 def parse_transform_string(tstring: str) -> tuple:
 
@@ -78,16 +79,4 @@ def _parse_parentheses(text: str) -> tuple[tuple[float, ...], str]:
         raise ValueError(f"expected ')' - found {rest}")
     inside = rest[:end_pos]
     rest = rest[end_pos+1:]
-    # inside contains now everything within parentheses (without the parentheses themselves)
-    # rest contains now everything after the closing parenthese
-    inside = inside.replace(",", " ")
-    tokens = inside.split()
-    numbers = []
-    for token in tokens:
-        try:
-            numbers.append(float(token))
-        except ValueError:
-            raise ValueError(
-                f"Expected number, found {token}" 
-            )
-    return tuple(numbers), rest
+    return parse_float_list(inside), rest
