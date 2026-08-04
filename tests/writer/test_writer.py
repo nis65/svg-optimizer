@@ -5,7 +5,7 @@ from svgtools.writer.svg_writer import SvgWriter
 
 from svgtools.model.scene.document import Document
 from svgtools.model.scene.svg import Svg
-#from svgtools.model.scene.defs import Defs
+from svgtools.model.scene.defs import Defs
 #from svgtools.model.scene.group import Group
 #from svgtools.model.scene.use import Use
 #from svgtools.model.scene.rect import Rect
@@ -47,3 +47,21 @@ def test_write_empty_svg_with_attributes():
     <svg xmlns="http://www.w3.org/2000/svg" id="svgid" width="1024" height="1024" viewBox="0 0 1024 1024" transform="translate(4 5)" />
     """)
 
+def test_write_empty_defs_with_id():
+    d = Document(
+            svg=Svg(
+                children=(
+                    Defs(
+                        children=(),
+                        id="defid",
+                    ),
+                )
+            )
+        )
+    writer = SvgWriter()
+    assert writer.write_svg_string(d) == dedent("""\
+    <?xml version='1.0' encoding='UTF-8'?>
+    <svg>
+    <defs id="defid" />
+    </svg>
+    """)
