@@ -1,6 +1,6 @@
 from svgtools.model.scene.document import Document
 from svgtools.model.scene.svg import Svg
-#from svgtools.model.scene.defs import Defs
+from svgtools.model.scene.defs import Defs
 #from svgtools.model.scene.group import Group
 #from svgtools.model.scene.use import Use
 #from svgtools.model.scene.rect import Rect
@@ -26,16 +26,18 @@ class SvgWriter:
         self._walk_svg(document.svg)
 
     def _walk_svg(self, svg: Svg):
+        self._parts.append("<svg")
+        self._append_attributes(svg)
         if svg.children == ():
-            self._parts.append("<svg")
-            self._append_attributes(svg)
             self._parts.append(" />\n")
         else:
-            # indent
-            raise NotImplemented("can only write empty svg")
+            self._parts.append(">\n")
+            for child in svg.children:
+                self._walk_element(child, "")
+            self._parts.append("</svg>\n")
 
     def _walk_element(self, element, indent: str):
-        indent = INDENT + indent
+        indent = self.INDENT + indent
         match element:
             case Defs():
                 self._walk_defs(element,indent)
@@ -50,21 +52,27 @@ class SvgWriter:
             case _:
                 raise NotImplementedError(type(element))
 
-    #def _walk_defs(defs: Defs, indent: str)
+    def _walk_defs(self, defs: Defs, indent: str):
+        self._parts.append("<defs")
+        self._append_attributes(defs)
+        if defs.children == ():
+            self._parts.append(" />\n")
+        else:
+            raise NotImplementedError("Can parse empty defs only")
 
     def _append_attributes(self, element) -> None:
-        if element.xmlnamespace:
-            self._parts.append(f' xmlns="{element.xmlnamespace}"')
-        if element.id:
-            self._parts.append(f' id="{element.id}"')
-        if element.width:
-            self._parts.append(f' width="{element.width}"')
-        if element.height:
-            self._parts.append(f' height="{element.height}"')
-        if element.viewBox:
-            self._parts.append(f' viewBox="{self._numberlist_to_string(element.viewBox)}"')
-        if element.transformations:
-            self._parts.append(f' transform="{self._transforms_to_string(element.transformations)}"')
+        if xmlnamespace := getattr(element, "xmlnamespace", None):
+            self._parts.append(f' xmlns="{xmlnamespace}"')
+        if element_id := getattr(element, "id", None):
+            self._parts.append(f' id="{element_id}"')
+        if width := getattr(element, "width", None):
+            self._parts.append(f' width="{width}"')
+        if height := getattr(element, "height", None):
+            self._parts.append(f' height="{height}"')
+        if viewBox := getattr(element, "viewBox", None):
+            self._parts.append(f' viewBox="{self._numberlist_to_string(viewBox)}"')
+        if transformations := getattr(element, "transformations", None):
+            self._parts.append(f' transform="{self._transforms_to_string(transformations)}"')
 
     @staticmethod
     def _numberlist_to_string(numbers) -> str:
