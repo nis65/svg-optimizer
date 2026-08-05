@@ -14,6 +14,7 @@ class SvgWriter:
 
     XML_HEADER = "<?xml version='1.0' encoding='UTF-8'?>\n"
     INDENT = "  "
+    PRECISION = 3
 
     def __init__(self):
         self._parts: list[str] = []
@@ -52,7 +53,7 @@ class SvgWriter:
                 raise NotImplementedError(type(element))
 
     def _walk_group(self, group: Group, indent: str):
-        self._parts.append("<g")
+        self._parts.append(indent + "<g")
         self._append_attributes(group)
         if group.children == ():
             self._parts.append(" />\n")
@@ -60,10 +61,10 @@ class SvgWriter:
             self._parts.append(">\n")
             for child in group.children:
                 self._walk_element(child, self.INDENT + indent)
-            self._parts.append("</g>\n")
+            self._parts.append(indent + "</g>\n")
 
     def _walk_defs(self, defs: Defs, indent: str):
-        self._parts.append("<defs")
+        self._parts.append(indent + "<defs")
         self._append_attributes(defs)
         if defs.children == ():
             self._parts.append(" />\n")
@@ -71,7 +72,7 @@ class SvgWriter:
             self._parts.append(">\n")
             for child in defs.children:
                 self._walk_element(child, self.INDENT + indent)
-            self._parts.append("</defs>\n")
+            self._parts.append(indent + "</defs>\n")
 
     def _walk_use(self, use: Use, indent: str):
         self._parts.append(indent + "<use")
@@ -98,27 +99,43 @@ class SvgWriter:
         if geometry := getattr(element, "geometry", None):
             match geometry:
                 case GeometryRect():
-                    self._parts.append(f' x="{geometry.top_left.x}" y="{geometry.top_left.y}"')
-                    self._parts.append(f' width="{geometry.width}" height="{geometry.height}"')
+                    self._parts.append(f' x="{self._number_to_string(geometry.top_left.x)}"'
+                                       f' y="{self._number_to_string(geometry.top_left.y)}"'
+                                      )
+                    self._parts.append(f' width="{self._number_to_string(geometry.width)}"'
+                                       f' height="{self._number_to_string(geometry.height)}"'
+                                      )
                 case GeometryCircle():
-                    self._parts.append(f' cx="{geometry.center.x}" cy="{geometry.center.y}"')
-                    self._parts.append(f' radius="{geometry.radius}"')
+                    self._parts.append(f' cx="{self._number_to_string(geometry.center.x)}"'
+                                       f' cy="{self._number_to_string(geometry.center.y)}"'
+                                      )
+                    self._parts.append(f' radius="{self._number_to_string(geometry.radius)}"')
                 case _:
                     raise NotImplementedError("I know nothing but Rects and Circles")
         if width := getattr(element, "width", None):
-            self._parts.append(f' width="{width}"')
+            self._parts.append(f' width="{self._number_to_string(width)}"')
         if height := getattr(element, "height", None):
-            self._parts.append(f' height="{height}"')
+            self._parts.append(f' height="{self._number_to_string(height)}"')
         if viewBox := getattr(element, "viewBox", None):
             self._parts.append(f' viewBox="{self._numberlist_to_string(viewBox)}"')
         if transformations := getattr(element, "transformations", None):
             self._parts.append(f' transform="{self._transforms_to_string(transformations)}"')
 
     @staticmethod
+    def _number_to_string(number: float | str) -> str:
+        if isinstance(number, str):
+            return number
+        number = round(number, SvgWriter.PRECISION)
+        if number.is_integer():
+            return str(int(number))
+        return f"{number:.3f}"
+        #return f"{number:.3f}".rstrip("0").rstrip(".")
+
+    @staticmethod
     def _numberlist_to_string(numbers) -> str:
         str_numbers = []
         for number in numbers:
-            str_numbers.append(f'{number}')
+            str_numbers.append(SvgWriter._number_to_string(number))
         return " ".join(str_numbers)
 
     @staticmethod
