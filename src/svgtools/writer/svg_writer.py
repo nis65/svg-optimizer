@@ -2,7 +2,7 @@ from svgtools.model.scene.document import Document
 from svgtools.model.scene.svg import Svg
 from svgtools.model.scene.defs import Defs
 from svgtools.model.scene.group import Group
-#from svgtools.model.scene.use import Use
+from svgtools.model.scene.use import Use
 from svgtools.model.scene.rect import Rect
 from svgtools.model.scene.circle import Circle
 from svgtools.model.scene.transform import Translate, Scale
@@ -42,8 +42,8 @@ class SvgWriter:
                 self._walk_defs(element, indent)
             case Group():
                 self._walk_group(element, indent)
-            #case Use():
-            #    self._walk_use(element, indent)
+            case Use():
+                self._walk_use(element, indent)
             case Rect():
                 self._walk_rect(element, indent)
             case Circle():
@@ -73,6 +73,11 @@ class SvgWriter:
                 self._walk_element(child, self.INDENT + indent)
             self._parts.append("</defs>\n")
 
+    def _walk_use(self, use: Use, indent: str):
+        self._parts.append(indent + "<use")
+        self._append_attributes(use)
+        self._parts.append(" />\n")
+
     def _walk_rect(self, rect: Rect, indent:str):
         self._parts.append(indent + "<rect")
         self._append_attributes(rect)
@@ -88,6 +93,8 @@ class SvgWriter:
             self._parts.append(f' xmlns="{xmlnamespace}"')
         if element_id := getattr(element, "id", None):
             self._parts.append(f' id="{element_id}"')
+        if href := getattr(element, "href", None):
+            self._parts.append(f' href="{href}"')
         if geometry := getattr(element, "geometry", None):
             match geometry:
                 case GeometryRect():
