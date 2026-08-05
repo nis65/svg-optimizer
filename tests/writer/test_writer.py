@@ -9,10 +9,10 @@ from svgtools.model.scene.defs import Defs
 from svgtools.model.scene.group import Group
 #from svgtools.model.scene.use import Use
 from svgtools.model.scene.rect import Rect
-#from svgtools.model.scene.circle import Circle
+from svgtools.model.scene.circle import Circle
 from svgtools.model.scene.transform import Translate, Scale
 from svgtools.model.geometry.rect import Rect as GeometryRect
-#from svgtools.model.geometry.circle import Circle as GeometryCircle
+from svgtools.model.geometry.circle import Circle as GeometryCircle
 from svgtools.model.geometry.point import Point as GeometryPoint
 
 def test_write_empty_svg():
@@ -115,5 +115,34 @@ def test_write_rect_with_attributes():
     <?xml version='1.0' encoding='UTF-8'?>
     <svg>
     <rect id="rectid" x="4" y="5" width="2" height="1" transform="scale(4 5) translate(1 2)" />
+    </svg>
+    """)
+
+def test_write_circle_with_attributes():
+    d = Document(
+            svg=Svg(
+                children=(
+                    Circle(
+                        id="circleid",
+                        transformations=(
+                             Translate(dx=-1, dy=-3),
+                             Scale(sx=2, sy=1),
+                        ),
+                        geometry=GeometryCircle(
+                            center=GeometryPoint(
+                                x=3,
+                                y=2,
+                            ),
+                            radius=7,
+                        ),
+                    ),
+                )
+            )
+        )
+    writer = SvgWriter()
+    assert writer.write_svg_string(d) == dedent("""\
+    <?xml version='1.0' encoding='UTF-8'?>
+    <svg>
+    <circle id="circleid" cx="3" cy="2" radius="7" transform="translate(-1 -3) scale(2 1)" />
     </svg>
     """)
