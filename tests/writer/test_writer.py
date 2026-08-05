@@ -6,7 +6,7 @@ from svgtools.writer.svg_writer import SvgWriter
 from svgtools.model.scene.document import Document
 from svgtools.model.scene.svg import Svg
 from svgtools.model.scene.defs import Defs
-#from svgtools.model.scene.group import Group
+from svgtools.model.scene.group import Group
 #from svgtools.model.scene.use import Use
 #from svgtools.model.scene.rect import Rect
 #from svgtools.model.scene.circle import Circle
@@ -63,5 +63,27 @@ def test_write_empty_defs_with_id():
     <?xml version='1.0' encoding='UTF-8'?>
     <svg>
     <defs id="defid" />
+    </svg>
+    """)
+
+def test_write_empty_group_with_attributes():
+    d = Document(
+            svg=Svg(
+                children=(
+                    Group(
+                        children=(),
+                        id="grpid",
+                        transformations=(
+                             Scale(sx=4, sy=5),
+                        ),
+                    ),
+                )
+            )
+        )
+    writer = SvgWriter()
+    assert writer.write_svg_string(d) == dedent("""\
+    <?xml version='1.0' encoding='UTF-8'?>
+    <svg>
+    <g id="grpid" transform="scale(4 5)" />
     </svg>
     """)
