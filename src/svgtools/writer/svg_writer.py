@@ -57,7 +57,10 @@ class SvgWriter:
         if group.children == ():
             self._parts.append(" />\n")
         else:
-            raise NotImplementedError("Can parse empty group only")
+            self._parts.append(">\n")
+            for child in group.children:
+                self._walk_element(child, self.INDENT + indent)
+            self._parts.append("</g>\n")
 
     def _walk_defs(self, defs: Defs, indent: str):
         self._parts.append("<defs")
@@ -65,7 +68,10 @@ class SvgWriter:
         if defs.children == ():
             self._parts.append(" />\n")
         else:
-            raise NotImplementedError("Can parse empty defs only")
+            self._parts.append(">\n")
+            for child in defs.children:
+                self._walk_element(child, self.INDENT + indent)
+            self._parts.append("</defs>\n")
 
     def _walk_rect(self, rect: Rect, indent:str):
         self._parts.append(indent + "<rect")
