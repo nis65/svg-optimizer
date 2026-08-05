@@ -109,7 +109,7 @@ class SvgWriter:
                     self._parts.append(f' cx="{self._number_to_string(geometry.center.x)}"'
                                        f' cy="{self._number_to_string(geometry.center.y)}"'
                                       )
-                    self._parts.append(f' radius="{self._number_to_string(geometry.radius)}"')
+                    self._parts.append(f' r="{self._number_to_string(geometry.radius)}"')
                 case _:
                     raise NotImplementedError("I know nothing but Rects and Circles")
         if width := getattr(element, "width", None):
@@ -120,6 +120,8 @@ class SvgWriter:
             self._parts.append(f' viewBox="{self._numberlist_to_string(viewBox)}"')
         if transformations := getattr(element, "transformations", None):
             self._parts.append(f' transform="{self._transforms_to_string(transformations)}"')
+        for key, value in sorted(element.unknown_attributes.items()):
+            self._parts.append(f' {key}="{value}"')
 
     @staticmethod
     def _number_to_string(number: float | str) -> str:
