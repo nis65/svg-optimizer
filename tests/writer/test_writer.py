@@ -66,6 +66,38 @@ def test_write_empty_defs_with_id():
     </svg>
     """)
 
+def test_write_defs_with_children():
+    d = Document(
+            svg=Svg(
+                children=(
+                    Defs(
+                        children=(
+                            Rect(
+                                id="rectid",
+                                geometry=GeometryRect(
+                                    top_left=GeometryPoint(
+                                        x=0,
+                                        y=0,
+                                    ),
+                                    width=2,
+                                    height=1,
+                                ),
+                            ),
+                        ),
+                    ),
+                )
+            )
+        )
+    writer = SvgWriter()
+    assert writer.write_svg_string(d) == dedent("""\
+    <?xml version='1.0' encoding='UTF-8'?>
+    <svg>
+    <defs>
+      <rect id="rectid" x="0" y="0" width="2" height="1" />
+    </defs>
+    </svg>
+    """)
+
 def test_write_empty_group_with_attributes():
     d = Document(
             svg=Svg(
@@ -85,6 +117,37 @@ def test_write_empty_group_with_attributes():
     <?xml version='1.0' encoding='UTF-8'?>
     <svg>
     <g id="grpid" transform="scale(4 5)" />
+    </svg>
+    """)
+
+def test_write_group_with_children():
+    d = Document(
+            svg=Svg(
+                children=(
+                    Group(
+                        children=(
+                            Circle(
+                                id="circleid",
+                                geometry=GeometryCircle(
+                                    center=GeometryPoint(
+                                        x=0,
+                                        y=0,
+                                    ),
+                                    radius=2,
+                                ),
+                            ),
+                        ),
+                    ),
+                )
+            )
+        )
+    writer = SvgWriter()
+    assert writer.write_svg_string(d) == dedent("""\
+    <?xml version='1.0' encoding='UTF-8'?>
+    <svg>
+    <g>
+      <circle id="circleid" cx="0" cy="0" radius="2" />
+    </g>
     </svg>
     """)
 
