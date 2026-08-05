@@ -27,6 +27,10 @@ def parse_svg_string(svg_text: str) -> Document:
             namespace = match.group(1)
         else:
             raise ValueError(f"Root element must end with 'svg', not '{xml_root.tag}'")
+    if namespace:
+        namespace_str = f"{{{namespace}}}"
+    else:
+        namespace_str = ""
     return Document(
         svg=Svg(
             id = xml_root.get("id"),
@@ -34,22 +38,24 @@ def parse_svg_string(svg_text: str) -> Document:
             width = xml_root.get("width"),
             height = xml_root.get("height"),
             viewBox = parse_float_list(xml_root.get("viewBox")),
-            children = _parse_xml_children(xml_root),
+            children = _parse_xml_children(xml_root, namespace_str),
             transformations = parse_transform_string(xml_root.get("transform")),
         )
     )
 
-def _parse_xml_element(xml_element: ET.Element):
+def _parse_xml_element(xml_element: ET.Element, namespace_str: str):
 
-    match xml_element.tag:
+    tag = xml_element.tag.removeprefix(namespace_str)
+
+    match tag:
         case "defs":
             defs_id = xml_element.get("id")
-            return Defs(id=defs_id, children=_parse_xml_children(xml_element))
+            return Defs(id=defs_id, children=_parse_xml_children(xml_element, namespace_str))
         case "g":
             g_id = xml_element.get("id")
             return Group(
                     id=g_id,
-                    children=_parse_xml_children(xml_element),
+                    children=_parse_xml_children(xml_element, namespace_str),
                     transformations=parse_transform_string(xml_element.get("transform")),
                 )
         case "use":
@@ -95,13 +101,13 @@ def _parse_xml_element(xml_element: ET.Element):
                 ),
                 transformations=parse_transform_string(xml_element.get("transform")),
             )
-    raise NotImplementedError("can parse only defs, g, use, rect and circle yet")
+    raise NotImplementedError(f"can parse only defs, g, use, rect and circle yet, not {xml_element.tag}. ns: '{namespace_str}'")
 
-def _parse_xml_children(xml_element: ET.Element) -> tuple:
+def _parse_xml_children(xml_element: ET.Element, namespace_str: str) -> tuple:
 
     scene_children = []
 
     for xml_child in xml_element:
-        scene_children.append(_parse_xml_element(xml_child))
+        scene_children.append(_parse_xml_element(xml_child, namespace_str))
 
     return tuple(scene_children)
