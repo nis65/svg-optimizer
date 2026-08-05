@@ -245,6 +245,31 @@ def test_rect():
         ),
     )
 
+def test_rect_with_defaults():
+    svg_text = """
+    <svg>
+        <rect id="rectid" width="3.5" height="4" transform="scale(2)"/>
+    </svg>
+    """
+    assert parse_svg_string(svg_text) == Document(
+        svg=Svg(
+            children=(
+                Rect(
+                    id="rectid",
+                    geometry=GeometryRect(
+                        top_left=GeometryPoint(
+                            x=0,
+                            y=0,
+                        ),
+                        width=3.5,
+                        height=4,
+                    ),
+                    transformations=(Scale(sx=2,sy=2),)
+                ),
+            ),
+        ),
+    )
+
 def test_circle():
 
     svg_text = """
@@ -261,6 +286,31 @@ def test_circle():
                         center=GeometryPoint(
                             x=1,
                             y=2,
+                        ),
+                        radius=3.5,
+                    ),
+                    transformations=(Scale(sx=13, sy=13),)
+                ),
+            ),
+        ),
+    )
+
+def test_circle_with_default():
+
+    svg_text = """
+    <svg>
+        <circle id="circleid" r="3.5" transform="scale(13)"/>
+    </svg>
+    """
+    assert parse_svg_string(svg_text) == Document(
+        svg=Svg(
+            children=(
+                Circle(
+                    id="circleid",
+                    geometry=GeometryCircle(
+                        center=GeometryPoint(
+                            x=0,
+                            y=0,
                         ),
                         radius=3.5,
                     ),
