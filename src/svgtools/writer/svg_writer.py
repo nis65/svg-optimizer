@@ -1,7 +1,7 @@
 from svgtools.model.scene.document import Document
 from svgtools.model.scene.svg import Svg
 from svgtools.model.scene.defs import Defs
-#from svgtools.model.scene.group import Group
+from svgtools.model.scene.group import Group
 #from svgtools.model.scene.use import Use
 #from svgtools.model.scene.rect import Rect
 #from svgtools.model.scene.circle import Circle
@@ -41,8 +41,8 @@ class SvgWriter:
         match element:
             case Defs():
                 self._walk_defs(element,indent)
-            #case Group():
-            #    self._walk_group(element,indent)
+            case Group():
+                self._walk_group(element,indent)
             #case Use():
             #    self._walk_use(element,indent)
             #case Rect():
@@ -51,6 +51,14 @@ class SvgWriter:
             #    self._walk_circle(element,indent)
             case _:
                 raise NotImplementedError(type(element))
+
+    def _walk_group(self, group: Group, indent: str):
+        self._parts.append("<g")
+        self._append_attributes(group)
+        if group.children == ():
+            self._parts.append(" />\n")
+        else:
+            raise NotImplementedError("Can parse empty group only")
 
     def _walk_defs(self, defs: Defs, indent: str):
         self._parts.append("<defs")
