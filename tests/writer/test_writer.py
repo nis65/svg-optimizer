@@ -39,12 +39,15 @@ def test_write_empty_svg_with_attributes():
                 width="1024",
                 height="1024",
                 viewBox=(0, 0, 1024, 1024,),
+                unknown_attributes={
+                    "unknown": "unknown_value"
+                }
             )
         )
     writer = SvgWriter()
     assert writer.write_svg_string(d) == dedent("""\
     <?xml version='1.0' encoding='UTF-8'?>
-    <svg xmlns="http://www.w3.org/2000/svg" id="svgid" width="1024" height="1024" viewBox="0 0 1024 1024" transform="translate(4 5)" />
+    <svg xmlns="http://www.w3.org/2000/svg" id="svgid" width="1024" height="1024" viewBox="0 0 1024 1024" transform="translate(4 5)" unknown="unknown_value" />
     """)
 
 def test_write_empty_defs_with_id():
@@ -54,6 +57,9 @@ def test_write_empty_defs_with_id():
                     Defs(
                         children=(),
                         id="defid",
+                        unknown_attributes={
+                            "unknown": "unknown_value",
+                        }
                     ),
                 )
             )
@@ -62,7 +68,7 @@ def test_write_empty_defs_with_id():
     assert writer.write_svg_string(d) == dedent("""\
     <?xml version='1.0' encoding='UTF-8'?>
     <svg>
-    <defs id="defid" />
+    <defs id="defid" unknown="unknown_value" />
     </svg>
     """)
 
@@ -108,6 +114,9 @@ def test_write_empty_group_with_attributes():
                         transformations=(
                              Scale(sx=4, sy=5),
                         ),
+                        unknown_attributes={
+                            "unknown": "unknown_value"
+                        },
                     ),
                 )
             )
@@ -116,7 +125,7 @@ def test_write_empty_group_with_attributes():
     assert writer.write_svg_string(d) == dedent("""\
     <?xml version='1.0' encoding='UTF-8'?>
     <svg>
-    <g id="grpid" transform="scale(4 5)" />
+    <g id="grpid" transform="scale(4 5)" unknown="unknown_value" />
     </svg>
     """)
 
@@ -146,7 +155,7 @@ def test_write_group_with_children():
     <?xml version='1.0' encoding='UTF-8'?>
     <svg>
     <g>
-      <circle id="circleid" cx="0" cy="0" radius="2" />
+      <circle id="circleid" cx="0" cy="0" r="2" />
     </g>
     </svg>
     """)
@@ -169,6 +178,9 @@ def test_write_rect_with_attributes():
                             width=2,
                             height=1,
                         ),
+                        unknown_attributes={
+                            "unknown": "unknown_value",
+                        }
                     ),
                 )
             )
@@ -177,7 +189,7 @@ def test_write_rect_with_attributes():
     assert writer.write_svg_string(d) == dedent("""\
     <?xml version='1.0' encoding='UTF-8'?>
     <svg>
-    <rect id="rectid" x="4" y="5" width="2" height="1" transform="scale(4 5) translate(1 2)" />
+    <rect id="rectid" x="4" y="5" width="2" height="1" transform="scale(4 5) translate(1 2)" unknown="unknown_value" />
     </svg>
     """)
 
@@ -198,6 +210,9 @@ def test_write_circle_with_attributes():
                             ),
                             radius=7,
                         ),
+                        unknown_attributes={
+                            "unknown": "unknown_value",
+                        }
                     ),
                 )
             )
@@ -206,7 +221,7 @@ def test_write_circle_with_attributes():
     assert writer.write_svg_string(d) == dedent("""\
     <?xml version='1.0' encoding='UTF-8'?>
     <svg>
-    <circle id="circleid" cx="3" cy="2" radius="7" transform="translate(-1 -3) scale(2 1)" />
+    <circle id="circleid" cx="3" cy="2" r="7" transform="translate(-1 -3) scale(2 1)" unknown="unknown_value" />
     </svg>
     """)
 
@@ -237,6 +252,9 @@ def test_write_use():
                                 dy=1,
                             ),
                         ),
+                        unknown_attributes={
+                            "unknown": "unknown_value",
+                        }
                     ),
                 )
             )
@@ -248,6 +266,6 @@ def test_write_use():
     <defs>
       <rect id="rectid" x="0" y="0" width="2" height="1" />
     </defs>
-    <use href="#rectid" transform="translate(1 1)" />
+    <use href="#rectid" transform="translate(1 1)" unknown="unknown_value" />
     </svg>
     """)
