@@ -63,8 +63,8 @@ def _parse_xml_element(xml_element: ET.Element):
                       )
         case "rect":
             rect_id = xml_element.get("id")
-            xml_x=xml_element.get("x")
-            xml_y=xml_element.get("y")
+            xml_x=xml_element.get("x", "0")
+            xml_y=xml_element.get("y", "0")
             xml_width=xml_element.get("width")
             xml_height=xml_element.get("height")
             return Rect(
@@ -81,8 +81,8 @@ def _parse_xml_element(xml_element: ET.Element):
             )
         case "circle":
             circle_id = xml_element.get("id")
-            xml_cx=xml_element.get("cx")
-            xml_cy=xml_element.get("cy")
+            xml_cx=xml_element.get("cx", "0")
+            xml_cy=xml_element.get("cy", "0")
             xml_r=xml_element.get("r")
             return Circle(
                 id = circle_id,
