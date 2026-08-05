@@ -3,12 +3,12 @@ from svgtools.model.scene.svg import Svg
 from svgtools.model.scene.defs import Defs
 from svgtools.model.scene.group import Group
 #from svgtools.model.scene.use import Use
-#from svgtools.model.scene.rect import Rect
+from svgtools.model.scene.rect import Rect
 #from svgtools.model.scene.circle import Circle
 from svgtools.model.scene.transform import Translate, Scale
-#from svgtools.model.geometry.rect import Rect as GeometryRect
+from svgtools.model.geometry.rect import Rect as GeometryRect
 #from svgtools.model.geometry.circle import Circle as GeometryCircle
-#from svgtools.model.geometry.point import Point as GeometryPoint
+from svgtools.model.geometry.point import Point as GeometryPoint
 
 class SvgWriter:
 
@@ -45,8 +45,8 @@ class SvgWriter:
                 self._walk_group(element,indent)
             #case Use():
             #    self._walk_use(element,indent)
-            #case Rect():
-            #    self._walk_rect(element,indent)
+            case Rect():
+                self._walk_rect(element,indent)
             #case Circle():
             #    self._walk_circle(element,indent)
             case _:
@@ -68,11 +68,23 @@ class SvgWriter:
         else:
             raise NotImplementedError("Can parse empty defs only")
 
+    def _walk_rect(self, rect: Rect, indent:str):
+        self._parts.append("<rect")
+        self._append_attributes(rect)
+        self._parts.append(" />\n")
+
     def _append_attributes(self, element) -> None:
         if xmlnamespace := getattr(element, "xmlnamespace", None):
             self._parts.append(f' xmlns="{xmlnamespace}"')
         if element_id := getattr(element, "id", None):
             self._parts.append(f' id="{element_id}"')
+        if geometry := getattr(element, "geometry", None):
+            match geometry:
+                case GeometryRect(): 
+                    self._parts.append(f' x="{geometry.top_left.x}" y="{geometry.top_left.y}"')
+                    self._parts.append(f' width="{geometry.width}" height="{geometry.height}"')
+                case _:
+                    raise NotImplementedError("I know nothing but Rects")
         if width := getattr(element, "width", None):
             self._parts.append(f' width="{width}"')
         if height := getattr(element, "height", None):
