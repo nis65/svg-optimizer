@@ -1,4 +1,5 @@
 from xml.etree import ElementTree as ET
+from collections.abc import Collection
 import re
 
 from .transform_parser import parse_transform_string
@@ -18,6 +19,7 @@ def parse_svg_string(svg_text: str) -> Document:
 
     xml_root = ET.fromstring(svg_text)
 
+    # namespace needs special handling
     namespace = None
     if xml_root.tag == 'svg':
         pass
@@ -31,6 +33,8 @@ def parse_svg_string(svg_text: str) -> Document:
         namespace_str = f"{{{namespace}}}"
     else:
         namespace_str = ""
+
+    #known_attributes = {"id", "width", "height", "viewBox", "transform"}
     return Document(
         svg=Svg(
             id = xml_root.get("id"),
@@ -40,6 +44,8 @@ def parse_svg_string(svg_text: str) -> Document:
             viewBox = parse_float_list(xml_root.get("viewBox")),
             children = _parse_xml_children(xml_root, namespace_str),
             transformations = parse_transform_string(xml_root.get("transform")),
+            unknown_attributes = _collect_unknown_attributes(
+                xml_root, {"id", "width", "height", "viewBox", "transform"})
         )
     )
 
@@ -50,13 +56,21 @@ def _parse_xml_element(xml_element: ET.Element, namespace_str: str):
     match tag:
         case "defs":
             defs_id = xml_element.get("id")
-            return Defs(id=defs_id, children=_parse_xml_children(xml_element, namespace_str))
+            return Defs(
+                    id=defs_id, 
+                    children=_parse_xml_children(xml_element, namespace_str),
+                    unknown_attributes = _collect_unknown_attributes(
+                        xml_element, {"id"})
+                )
+
         case "g":
             g_id = xml_element.get("id")
             return Group(
                     id=g_id,
                     children=_parse_xml_children(xml_element, namespace_str),
                     transformations=parse_transform_string(xml_element.get("transform")),
+                    unknown_attributes = _collect_unknown_attributes(
+                        xml_element, {"id", "transform"})
                 )
         case "use":
             use_id = xml_element.get("id")
@@ -66,6 +80,8 @@ def _parse_xml_element(xml_element: ET.Element, namespace_str: str):
             return Use(id=use_id,
                        href=xml_href,
                        transformations=parse_transform_string(xml_element.get("transform")),
+                       unknown_attributes = _collect_unknown_attributes(
+                           xml_element, {"id", "href", "transform"})
                       )
         case "rect":
             rect_id = xml_element.get("id")
@@ -84,6 +100,8 @@ def _parse_xml_element(xml_element: ET.Element, namespace_str: str):
                     height=float(xml_height),
                 ),
                 transformations=parse_transform_string(xml_element.get("transform")),
+                unknown_attributes = _collect_unknown_attributes(
+                    xml_element, {"id", "x", "y", "width", "height", "transform"})
             )
         case "circle":
             circle_id = xml_element.get("id")
@@ -100,6 +118,8 @@ def _parse_xml_element(xml_element: ET.Element, namespace_str: str):
                     radius=float(xml_r),
                 ),
                 transformations=parse_transform_string(xml_element.get("transform")),
+                unknown_attributes = _collect_unknown_attributes(
+                    xml_element, {"id", "cx", "cy", "r", "transform"})
             )
     raise NotImplementedError(f"can parse only defs, g, use, rect and circle yet, not {xml_element.tag}. ns: '{namespace_str}'")
 
@@ -111,3 +131,10 @@ def _parse_xml_children(xml_element: ET.Element, namespace_str: str) -> tuple:
         scene_children.append(_parse_xml_element(xml_child, namespace_str))
 
     return tuple(scene_children)
+
+def _collect_unknown_attributes(xml_element: ET.Element, known_list: Collection[str]) -> dict[str, str]:
+    return {
+        key: value
+        for key, value in xml_element.attrib.items()
+        if key not in known_list
+    }
