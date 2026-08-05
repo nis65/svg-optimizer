@@ -7,7 +7,7 @@ from svgtools.model.scene.document import Document
 from svgtools.model.scene.svg import Svg
 from svgtools.model.scene.defs import Defs
 from svgtools.model.scene.group import Group
-#from svgtools.model.scene.use import Use
+from svgtools.model.scene.use import Use
 from svgtools.model.scene.rect import Rect
 from svgtools.model.scene.circle import Circle
 from svgtools.model.scene.transform import Translate, Scale
@@ -207,5 +207,47 @@ def test_write_circle_with_attributes():
     <?xml version='1.0' encoding='UTF-8'?>
     <svg>
     <circle id="circleid" cx="3" cy="2" radius="7" transform="translate(-1 -3) scale(2 1)" />
+    </svg>
+    """)
+
+def test_write_use():
+    d = Document(
+            svg=Svg(
+                children=(
+                    Defs(
+                        children=(
+                            Rect(
+                                id="rectid",
+                                geometry=GeometryRect(
+                                    top_left=GeometryPoint(
+                                        x=0,
+                                        y=0,
+                                    ),
+                                    width=2,
+                                    height=1,
+                                ),
+                            ),
+                        ),
+                    ),
+                    Use(
+                        href="#rectid",
+                        transformations=(
+                            Translate(
+                                dx=1,
+                                dy=1,
+                            ),
+                        ),
+                    ),
+                )
+            )
+        )
+    writer = SvgWriter()
+    assert writer.write_svg_string(d) == dedent("""\
+    <?xml version='1.0' encoding='UTF-8'?>
+    <svg>
+    <defs>
+      <rect id="rectid" x="0" y="0" width="2" height="1" />
+    </defs>
+    <use href="#rectid" transform="translate(1 1)" />
     </svg>
     """)
