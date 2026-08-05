@@ -88,9 +88,25 @@ def test_parse_svg_with_namespace_and_rect():
         )
     )
 
+
 def test_root_element_must_be_svg():
     with pytest.raises(ValueError, match="Root element must end with"):
         parse_svg_string("<circle/>")
+
+def test_parse_empty_svg_with_unknowns():
+    svg_text = """
+    <svg unknown="unknown_value" other="another_one">
+    </svg>
+    """
+    assert parse_svg_string(svg_text) == Document(
+        svg=Svg(
+            children=(),
+            unknown_attributes={
+                'unknown': 'unknown_value',
+                'other': 'another_one',
+            }
+        )
+    )
 
 def test_parse_empty_defs():
     svg_text_one_tag = """
@@ -125,6 +141,26 @@ def test_parse_empty_defs():
     )
     assert parse_svg_string(svg_text_one_tag) == d_one
     assert parse_svg_string(svg_text_two_tags) == d_two
+
+def test_parse_empty_defs_with_unknowns():
+    svg_text = """
+    <svg>
+        <defs unknown="unknown_value"/>
+    </svg>
+    """
+    d = Document(
+        svg=Svg(
+            children=(
+                Defs(
+                    children=(),
+                    unknown_attributes = {
+                        "unknown": "unknown_value",
+                    },
+                ),
+            ),
+        ),
+    )
+    assert parse_svg_string(svg_text) == d
 
 def test_parse_defs_with_empty_group():
     svg_text_one_tag = """
@@ -173,6 +209,26 @@ def test_parse_defs_with_empty_group():
 
     assert parse_svg_string(svg_text_one_tag) == d_one
     assert parse_svg_string(svg_text_two_tags) == d_two
+
+def test_parse_empty_group_with_unknowns():
+    svg_text = """
+    <svg>
+        <g unknown="unknown_value" />
+    </svg>
+    """
+    d = Document(
+        svg=Svg(
+            children=(
+                Group(
+                    children=(),
+                    unknown_attributes={
+                        'unknown': 'unknown_value',
+                    },
+                ),
+            ),
+        )
+    )
+    assert parse_svg_string(svg_text) == d
 
 def test_parse_group_with_elements_and_transform():
     svg_text = """
@@ -237,6 +293,27 @@ def test_parse_use():
     )
     assert parse_svg_string(svg_text) == d
 
+def test_parse_use_with_unkonwns():
+    svg_text = """
+    <svg>
+        <use id="useid" href="#arrow" unknown="unknown_value"/>
+    </svg>
+    """
+    d = Document(
+        svg=Svg(
+            children=(
+                Use(
+                    id="useid",
+                    href="#arrow",
+                    unknown_attributes = {
+                        "unknown": "unknown_value",
+                    }
+                ),
+            ),
+        ),
+    )
+    assert parse_svg_string(svg_text) == d
+
 def test_parse_use_without_href():
     svg_text = """
     <svg>
@@ -271,10 +348,10 @@ def test_rect():
         ),
     )
 
-def test_rect_with_defaults():
+def test_rect_with_defaults_and_unknowns():
     svg_text = """
     <svg>
-        <rect id="rectid" width="3.5" height="4" transform="scale(2)"/>
+        <rect id="rectid" width="3.5" height="4" transform="scale(2)" unknown="unknown_value"/>
     </svg>
     """
     assert parse_svg_string(svg_text) == Document(
@@ -290,7 +367,10 @@ def test_rect_with_defaults():
                         width=3.5,
                         height=4,
                     ),
-                    transformations=(Scale(sx=2,sy=2),)
+                    transformations=(Scale(sx=2,sy=2),),
+                    unknown_attributes = {
+                        "unknown": "unknown_value",
+                    }
                 ),
             ),
         ),
@@ -321,11 +401,11 @@ def test_circle():
         ),
     )
 
-def test_circle_with_default():
+def test_circle_with_default_and_unknowns():
 
     svg_text = """
     <svg>
-        <circle id="circleid" r="3.5" transform="scale(13)"/>
+        <circle id="circleid" r="3.5" transform="scale(13)" unknown="unknown_value"/>
     </svg>
     """
     assert parse_svg_string(svg_text) == Document(
@@ -340,7 +420,10 @@ def test_circle_with_default():
                         ),
                         radius=3.5,
                     ),
-                    transformations=(Scale(sx=13, sy=13),)
+                    transformations=(Scale(sx=13, sy=13),),
+                    unknown_attributes = {
+                        "unknown": "unknown_value",
+                    }
                 ),
             ),
         ),
