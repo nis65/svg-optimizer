@@ -4,7 +4,8 @@ from svgtools.io import write_svg_file, parse_svg_file
 from svgtools.model.scene.document import Document
 from svgtools.model.scene.svg import Svg
 
-def test_svg_doc_roundtrip_via_file(tmp_path):
+def test_io_document_roundtrip(tmp_path):
+
     filename = tmp_path / "test.svg"
     d_before = Document(
             svg=Svg(
