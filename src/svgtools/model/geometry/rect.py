@@ -24,3 +24,22 @@ class Rect:
             max = Point(self.top_left.x + self.width,
                         self.top_left.y + self.height)
         )
+
+    def points_for_bounding_box(self, count: int) -> set[Point]:
+        # count is ignored, as 4 points fully define the bounding box
+        return {
+            self.top_left,
+            Point(
+                self.top_left.x, 
+                self.top_left.y + self.height
+            ),
+            Point(
+                self.top_left.x + self.width,
+                self.top_left.y + self.height
+            ),
+            Point(
+                self.top_left.x + self.width,
+                self.top_left.y
+            ),
+        } 
+
