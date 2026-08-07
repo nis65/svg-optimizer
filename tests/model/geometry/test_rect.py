@@ -35,3 +35,12 @@ def test_rect_bounding_box():
         min=Point(1, 1),
         max=Point(3, 4)
     )
+
+def test_rect_transformed_bounding_box():
+    r = Rect(top_left=Point(1, 1), width=2, height=3)
+    assert r.points_for_bounding_box(100) == {
+        Point(1,1),
+        Point(1,4),
+        Point(3,4),
+        Point(3,1),
+        }
