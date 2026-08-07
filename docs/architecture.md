@@ -9,7 +9,7 @@ See also the [Style Guide](./style-guide.md)
 
 ## Internal geometric representation
 
-The representation is split in two parts: 
+The representation is split in two parts:
 
 * The **geometry** part of the model represents the mathematical geometry. Its objects have a geometric extent and can participate in geometric computations.
 * The **scene** part of the model represents the hierarchical composition. Its objects organize, reference or group geometry.
@@ -60,8 +60,10 @@ To start with, we only support the svg tags that are needed for our example. Thi
    * number lists are always written space separated (and not comma separated)
    * the attributes (not the children) of an xml tag are ordered as follows:
       * `xmlns` (only on `svg` element)
-      * `id` 
+      * `id`
       * geometry, e.g. `x`, `y`, `width`, `heigth`
       * coordinate system, e.g. `viewBox` (only on `svg` element)
       * transformations, e.g.  `scale` and `translate`
       * style, e.g. `fill`, `stroke`
+
+* In order to support arbitrary geometric transformation, each geometry object that can be rendered has an exposed function `points_for_boundingbox` with a number as input telling how many points should be returned. The more points, the more precise will the bounding box be, but the more computational effort will be needed. An object were an optimal number of points exists will simply ignore that parameter (e.g. the bounding box of a rect can always be computed from its four corner points, independent of any affine transformation applied to it).
