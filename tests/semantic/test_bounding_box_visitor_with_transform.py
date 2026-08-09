@@ -182,10 +182,13 @@ def test_circle_svg_scale():
     visitor = BoundingBoxVisitor()
     visitor.visit(document)
 
-    assert visitor.bounding_box == GeometryBoundingBox(
-                                       min=GeometryPoint(0,0),
-                                       max=GeometryPoint(4,4)
-                                   )
+    assert visitor.bounding_box.isclose(
+        GeometryBoundingBox(
+            min=GeometryPoint(0,0),
+            max=GeometryPoint(4,4)
+        ),
+        1e-9
+    )
 
 def test_circle_circle_scale():
     document = Document(

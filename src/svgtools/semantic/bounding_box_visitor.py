@@ -103,7 +103,8 @@ class BoundingBoxVisitor:
             case _Phase.VISIT:
                 self.rectangles_visited += 1
                 current_matrix *= self._transforms_to_matrix(rect.transformations)
-                self._accumulate_bbox(self._transform_bounding_box(rect.geometry.bounding_box(), current_matrix))
+                points = rect.geometry.points_for_bounding_box(0)
+                self._accumulate_bbox(self._transformed_points_bounding_box(points, current_matrix))
 
     def _walk_circle(self, circle: Circle, phase: _Phase, current_matrix: Matrix3):
 
@@ -114,7 +115,8 @@ class BoundingBoxVisitor:
             case _Phase.VISIT:
                 self.circles_visited += 1
                 current_matrix *= self._transforms_to_matrix(circle.transformations)
-                self._accumulate_bbox(self._transform_bounding_box(circle.geometry.bounding_box(), current_matrix))
+                points = circle.geometry.points_for_bounding_box(128)
+                self._accumulate_bbox(self._transformed_points_bounding_box(points, current_matrix))
 
     @staticmethod
     def _transforms_to_matrix(transforms: tuple[Translate | Scale, ...],) -> Matrix3:
@@ -128,14 +130,22 @@ class BoundingBoxVisitor:
         return matrix
 
     @staticmethod
-    def _transform_bounding_box(bbox: BoundingBox, matrix: Matrix3) -> BoundingBox:
-        """
-        This simple algorithm works reliably only as long as the matrix is composed of
-        translate and scale transformations only. As soon as we have rotate, we will need
-        to delegate the computation of the bounding box to the geometric elements themselves
-        and only accumulate here.
-        """
-        return BoundingBox(
-                min = matrix * bbox.min,
-                max = matrix * bbox.max,
-               )
+    def _transformed_points_bounding_box(points: set[Point], matrix: Matrix3) -> BoundingBox:
+        if len(points) < 2:
+            raise ValueError(f"need at least two points to create a BoundingBox")
+        points_iterator = iter(points)
+        first = matrix * next(points_iterator)
+        second = matrix * next(points_iterator)
+        bb = BoundingBox(
+            Point(
+                min(first.x, second.x),
+                min(first.y, second.y)
+            ),
+            Point(
+                max(first.x, second.x),
+                max(first.y, second.y)
+            )
+        )
+        for p in points_iterator:
+            bb = bb.include(matrix * p)
+        return bb

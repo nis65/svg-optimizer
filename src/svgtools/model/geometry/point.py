@@ -25,7 +25,6 @@ class Point:
                 if point1.isclose(point2, scene_tol):
                     remaining.pop(i)
                     break
-            else:   
+            else:
                 return False
         return True
-
