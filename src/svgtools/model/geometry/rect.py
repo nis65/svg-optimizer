@@ -30,7 +30,7 @@ class Rect:
         return {
             self.top_left,
             Point(
-                self.top_left.x, 
+                self.top_left.x,
                 self.top_left.y + self.height
             ),
             Point(
@@ -41,5 +41,4 @@ class Rect:
                 self.top_left.x + self.width,
                 self.top_left.y
             ),
-        } 
-
+        }

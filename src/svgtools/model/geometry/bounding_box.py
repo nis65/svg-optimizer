@@ -31,3 +31,9 @@ class BoundingBox:
 
     def __add__(self, other) -> "BoundingBox":
         return self.union(other)
+
+    def isclose(self, other, scene_tol) -> bool:
+        return (
+            self.min.isclose(other.min, scene_tol) and
+            self.max.isclose(other.max, scene_tol)
+        )
