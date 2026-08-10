@@ -1,9 +1,10 @@
 from dataclasses import dataclass
+from .geometry_abc import Geometry
 from .point import Point
 from .bounding_box import BoundingBox
 
 @dataclass(frozen=True, slots=True)
-class Rect:
+class Rect(Geometry):
     top_left: Point
     width: float
     height: float
