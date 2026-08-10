@@ -10,7 +10,7 @@ from svgtools.model.scene.group import Group
 from svgtools.model.scene.use import Use
 from svgtools.model.scene.rect import Rect
 from svgtools.model.scene.circle import Circle
-from svgtools.model.scene.transform import Translate, Scale
+from svgtools.model.scene.transform import Translate, Scale, Rotate
 
 class _Phase(Enum):
     BUILD_DEFINITION_TABLE = 0
@@ -119,7 +119,7 @@ class BoundingBoxVisitor:
                 self._accumulate_bbox(self._transformed_points_bounding_box(points, current_matrix))
 
     @staticmethod
-    def _transforms_to_matrix(transforms: tuple[Translate | Scale, ...],) -> Matrix3:
+    def _transforms_to_matrix(transforms: tuple[Translate | Scale | Rotate, ...],) -> Matrix3:
         matrix = Matrix3.identity()
         for transform in transforms:
             match transform:
@@ -127,6 +127,8 @@ class BoundingBoxVisitor:
                     matrix = matrix * Matrix3.translation(transform.dx, transform.dy)
                 case Scale():
                     matrix = matrix * Matrix3.scaling(transform.sx, transform.sy)
+                case Rotate():
+                    matrix = matrix * Matrix3.rotation(transform.theta, transform.cx, transform.cy)
         return matrix
 
     @staticmethod
