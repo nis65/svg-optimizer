@@ -2,7 +2,7 @@ from re import escape
 import pytest
 
 from svgtools.parser.transform_parser import parse_transform_string
-from svgtools.model.scene.transform import Translate, Scale
+from svgtools.model.scene.transform import Translate, Scale, Rotate
 
 def test_parse_empty_transform():
     ttext0=""
@@ -20,13 +20,13 @@ def test_parse_scale_transform():
 def test_parse_invalid_syntax_transform():
     text_no_closing="scale("
     text_no_opening="scaleX"
-    text_not_implemented="rotate"
+    text_not_implemented="unsupported"
     text_invalid_number="scale(4.5 xz)"
     with pytest.raises(ValueError, match=escape("expected ')'")):
         parse_transform_string(text_no_closing)
     with pytest.raises(ValueError, match=escape("expected '('")):
         parse_transform_string(text_no_opening)
-    with pytest.raises(ValueError, match="only scale and translate supported"):
+    with pytest.raises(ValueError, match="not supported transformation"):
         parse_transform_string(text_not_implemented)
     with pytest.raises(ValueError, match="Expected number, found xz"):
         parse_transform_string(text_invalid_number)
@@ -65,3 +65,14 @@ def test_parse_3_transforms():
         Translate (dx = 3, dy = 7 ),
         Scale (sx = 1, sy = 2 ),
     )
+
+def test_parse_rotate_transform():
+    ttext0="rotate(60)"
+    ttext1="rotate(20 3 4)"
+    assert parse_transform_string(ttext0) == ( Rotate(theta=60, cx=0, cy=0), )
+    assert parse_transform_string(ttext1) == ( Rotate(theta=20, cx=3, cy=4), )
+
+def test_parse_invalid_rotate_semantics():
+    ttext0="rotate(60 2)"
+    with pytest.raises(ValueError, match="rotate needs 1 or 3 parameters, not 2"):
+        parse_transform_string(ttext0)

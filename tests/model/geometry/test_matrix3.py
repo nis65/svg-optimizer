@@ -1,3 +1,4 @@
+import math
 import pytest
 from dataclasses import FrozenInstanceError
 
@@ -64,6 +65,21 @@ def test_scaling_matrix():
         0, 5, 0,
         0, 0, 1
     )
+
+def test_rotation_matrix():
+    half_sqrt2 = math.sqrt(2)/2
+    assert Matrix3(
+        half_sqrt2, -half_sqrt2, 0,
+        half_sqrt2,  half_sqrt2, 0,
+        0, 0, 1
+    ).isclose(Matrix3.rotation(45, 0, 0))
+    sqrt_1quarter=0.5
+    sqrt_3quarter=math.sqrt(3)/2
+    assert Matrix3(
+        sqrt_1quarter, -sqrt_3quarter, 0,
+        sqrt_3quarter,  sqrt_1quarter, 0,
+        0, 0, 1
+    ).isclose(Matrix3.rotation(60,0,0))
 
 def test_matrix_multiplication_not_implemented():
     m = Matrix3(

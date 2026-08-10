@@ -1,3 +1,5 @@
+import math
+
 from svgtools.model.geometry.point import Point as GeometryPoint
 from svgtools.model.geometry.rect import Rect as GeometryRect
 from svgtools.model.geometry.circle import Circle as GeometryCircle
@@ -11,7 +13,7 @@ from svgtools.model.scene.circle import Circle
 from svgtools.model.scene.svg import Svg
 from svgtools.model.scene.use import Use
 
-from svgtools.model.scene.transform import Translate, Scale
+from svgtools.model.scene.transform import Translate, Scale, Rotate
 
 from svgtools.semantic.bounding_box_visitor import BoundingBoxVisitor
 
@@ -212,3 +214,74 @@ def test_circle_circle_scale():
                                        min=GeometryPoint(0,0),
                                        max=GeometryPoint(4,4)
                                    )
+
+def test_circle_circle_rotate():
+    document = Document(
+        svg=Svg(
+            children=(
+                Circle(
+                    id="circle",
+                    geometry=GeometryCircle(
+                        center=GeometryPoint(1, 1),
+                        radius=1,
+                    ),
+                    transformations=(Rotate(theta=60, cx=1, cy=1),),
+                ),
+            ),
+        ),
+    )
+    visitor = BoundingBoxVisitor()
+    visitor.visit(document)
+
+    assert visitor.bounding_box.isclose(GeometryBoundingBox(
+                                       min=GeometryPoint(0,0),
+                                       max=GeometryPoint(2,2)
+                                   ), 1e-3)
+
+def test_rect_rect_rotate_1():
+    document = Document(
+        svg=Svg(
+            children=(
+                Rect(
+                    id="rect",
+                    geometry=GeometryRect(
+                        top_left=GeometryPoint(0, 0),
+                        width=2,
+                        height=2,
+                    ),
+                    transformations=(Rotate(theta=45, cx=1, cy=1),),
+                ),
+            ),
+        ),
+    )
+    visitor = BoundingBoxVisitor()
+    visitor.visit(document)
+    sqrt2=math.sqrt(2)
+    assert visitor.bounding_box.isclose(GeometryBoundingBox(
+                                       min=GeometryPoint(1-sqrt2,1-sqrt2),
+                                       max=GeometryPoint(1+sqrt2,1+sqrt2),
+                                   ), 1e-3)
+
+def test_rect_rect_rotate_2():
+    document = Document(
+        svg=Svg(
+            children=(
+                Rect(
+                    id="rect",
+                    geometry=GeometryRect(
+                        top_left=GeometryPoint(0, 0),
+                        width=2,
+                        height=2,
+                    ),
+                    transformations=(Rotate(theta=135, cx=1, cy=1),),
+                ),
+            ),
+        ),
+    )
+    visitor = BoundingBoxVisitor()
+    visitor.visit(document)
+    sqrt2=math.sqrt(2)
+    assert visitor.bounding_box.isclose(GeometryBoundingBox(
+                                       min=GeometryPoint(1-sqrt2,1-sqrt2),
+                                       max=GeometryPoint(1+sqrt2,1+sqrt2),
+                                   ), 1e-3)
