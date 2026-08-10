@@ -5,7 +5,7 @@ from svgtools.model.scene.group import Group
 from svgtools.model.scene.use import Use
 from svgtools.model.scene.rect import Rect
 from svgtools.model.scene.circle import Circle
-from svgtools.model.scene.transform import Translate, Scale
+from svgtools.model.scene.transform import Translate, Scale, Rotate
 from svgtools.model.geometry.rect import Rect as GeometryRect
 from svgtools.model.geometry.circle import Circle as GeometryCircle
 from svgtools.model.geometry.point import Point as GeometryPoint
@@ -151,4 +151,8 @@ class SvgWriter:
                 case Scale():
                     numberlist=(trans.sx, trans.sy, )
                     result += f' scale({SvgWriter._numberlist_to_string(numberlist)})'
+                case Rotate():
+                    numberlist=(trans.theta, trans.cx, trans.cy, )
+                    result += f' rotate({SvgWriter._numberlist_to_string(numberlist)})'
+
         return result.strip()

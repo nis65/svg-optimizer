@@ -1,5 +1,5 @@
 from dataclasses import dataclass, field
-from .transform import Translate, Scale
+from .transform import Translate, Scale, Rotate
 
 @dataclass(frozen=True, slots=True)
 class Svg:
@@ -9,5 +9,5 @@ class Svg:
     width: str | None = None
     height: str | None = None
     viewBox: tuple[float, ...] = ()
-    transformations: tuple[Translate | Scale, ...] = ()
+    transformations: tuple[Translate | Scale | Rotate, ...] = ()
     unknown_attributes: dict[str, str] = field(default_factory=dict)
