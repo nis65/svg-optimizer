@@ -27,13 +27,6 @@ def test_circle_radius_not_negative ():
     with pytest.raises(ValueError):
         Circle(center=Point(1.5, -2.0), radius=-0.1)
 
-def test_circle_bounding_box():
-    c = Circle(center=Point(2, 2), radius=1)
-    assert c.bounding_box() == BoundingBox (
-        min=Point(1, 1),
-        max=Point(3, 3)
-    )
-
 def test_points_are_close():
     ps={Point(0,0),Point(1,1)}
     assert Point.points_are_close(ps, ps, 1e-8)

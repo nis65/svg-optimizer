@@ -18,13 +18,6 @@ class Rect:
                 f"height ({self.height}) must not be negative"
             )
 
-    def bounding_box(self):
-        return BoundingBox(
-            min = self.top_left,
-            max = Point(self.top_left.x + self.width,
-                        self.top_left.y + self.height)
-        )
-
     def points_for_bounding_box(self, count: int) -> set[Point]:
         # count is ignored, as 4 points fully define the bounding box
         return {

@@ -15,14 +15,6 @@ class Circle:
                 f"radius ({self.radius}) must not be negative"
             )
 
-    def bounding_box(self):
-        return BoundingBox(
-            min = Point(self.center.x - self.radius,
-                        self.center.y - self.radius),
-            max = Point(self.center.x + self.radius,
-                        self.center.y + self.radius)
-        )
-
     def points_for_bounding_box(self, count: int) -> set[Point]:
         points = []
         for i in range(count):
