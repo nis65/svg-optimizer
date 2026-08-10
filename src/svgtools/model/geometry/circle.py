@@ -2,10 +2,11 @@ import math
 
 from dataclasses import dataclass
 from .point import Point
+from .geometry_abc import Geometry
 from .bounding_box import BoundingBox
 
 @dataclass(frozen=True, slots=True)
-class Circle:
+class Circle(Geometry):
     center: Point
     radius: float
 
