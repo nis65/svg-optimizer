@@ -4,7 +4,7 @@ from dataclasses import FrozenInstanceError
 from svgtools.model.geometry.point import Point as GeometryPoint
 from svgtools.model.geometry.circle import Circle as GeometryCircle
 from svgtools.model.scene.circle import Circle
-from svgtools.model.scene.transform import Translate, Scale
+from svgtools.model.scene.transform import Translate, Scale, Rotate
 
 def test_circle_construction():
     c = Circle(id="circle",
@@ -28,11 +28,11 @@ def test_minimal_circle_construction():
 def test_circles_are_equal():
     assert (Circle(id="circle",
                    geometry=GeometryCircle(center=GeometryPoint(1.5, -2.0), radius=2),
-                   transformations=Scale(3,3)
+                   transformations=(Scale(3,3), Rotate(20, 1, 1))
                   ) ==
             Circle(id="circle",
                    geometry=GeometryCircle(center=GeometryPoint(1.5, -2.0), radius=2),
-                   transformations=Scale(3,3)
+                   transformations=(Scale(3,3), Rotate(20, 1, 1))
                   )
     )
 

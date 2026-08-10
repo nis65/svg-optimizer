@@ -10,7 +10,7 @@ from svgtools.model.scene.group import Group
 from svgtools.model.scene.use import Use
 from svgtools.model.scene.rect import Rect
 from svgtools.model.scene.circle import Circle
-from svgtools.model.scene.transform import Translate, Scale
+from svgtools.model.scene.transform import Translate, Scale, Rotate
 from svgtools.model.geometry.rect import Rect as GeometryRect
 from svgtools.model.geometry.circle import Circle as GeometryCircle
 from svgtools.model.geometry.point import Point as GeometryPoint
@@ -169,6 +169,7 @@ def test_write_rect_with_attributes():
                         transformations=(
                              Scale(sx=4, sy=5),
                              Translate(dx=1, dy=2),
+                             Rotate(theta=45, cx=1, cy=3),
                         ),
                         geometry=GeometryRect(
                             top_left=GeometryPoint(
@@ -189,7 +190,7 @@ def test_write_rect_with_attributes():
     assert writer.write_svg_string(d) == dedent("""\
     <?xml version='1.0' encoding='UTF-8'?>
     <svg>
-    <rect id="rectid" x="4" y="5" width="2" height="1" transform="scale(4 5) translate(1 2)" unknown="unknown_value" />
+    <rect id="rectid" x="4" y="5" width="2" height="1" transform="scale(4 5) translate(1 2) rotate(45 1 3)" unknown="unknown_value" />
     </svg>
     """)
 
