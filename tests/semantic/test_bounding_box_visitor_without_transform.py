@@ -6,8 +6,7 @@ from svgtools.model.geometry.bounding_box import BoundingBox as GeometryBounding
 from svgtools.model.scene.defs import Defs
 from svgtools.model.scene.document import Document
 from svgtools.model.scene.group import Group
-from svgtools.model.scene.rect import Rect
-from svgtools.model.scene.circle import Circle
+from svgtools.model.scene.shape import Shape
 from svgtools.model.scene.svg import Svg
 from svgtools.model.scene.use import Use
 
@@ -20,7 +19,7 @@ def test_use_is_followed_twice():
             children=(
                 Defs(
                     children=(
-                        Rect(
+                        Shape(
                             id="square",
                             geometry=GeometryRect(
                                 top_left=GeometryPoint(0, 0),
@@ -48,7 +47,7 @@ def test_use_with_all_known_types():
             children=(
                 Defs(
                     children=(
-                        Rect(
+                        Shape(
                             id="square",
                             geometry=GeometryRect(
                                 top_left=GeometryPoint(0, 0),
@@ -59,7 +58,7 @@ def test_use_with_all_known_types():
                         Group(
                             id="groupid",
                             children=(
-                                Circle(
+                                Shape(
                                     id="circle",
                                     geometry=GeometryCircle(
                                         center=GeometryPoint(0, 0),
@@ -87,7 +86,7 @@ def test_scene_bounding_box_rect():
     document = Document(
         svg=Svg(
             children=(
-                Rect(
+                Shape(
                     id="square",
                     geometry=GeometryRect(
                         top_left=GeometryPoint(0, 0),
@@ -110,7 +109,7 @@ def test_scene_bounding_box_circle():
     document = Document(
         svg=Svg(
             children=(
-                Circle(
+                Shape(
                     id="circle",
                     geometry=GeometryCircle(
                         center=GeometryPoint(4, 5),
@@ -134,7 +133,7 @@ def test_scene_bounding_box_with_use():
             children=(
                 Defs(
                     children=(
-                        Rect(
+                        Shape(
                             id="square",
                             geometry=GeometryRect(
                                 top_left=GeometryPoint(5,5),
@@ -145,7 +144,7 @@ def test_scene_bounding_box_with_use():
                         Group(
                             id="groupid",
                             children=(
-                                Circle(
+                                Shape(
                                     id="circle",
                                     geometry=GeometryCircle(
                                         center=GeometryPoint(5,5),

@@ -6,8 +6,7 @@ from svgtools.model.scene.svg import Svg
 from svgtools.model.scene.defs import Defs
 from svgtools.model.scene.group import Group
 from svgtools.model.scene.use import Use
-from svgtools.model.scene.rect import Rect
-from svgtools.model.scene.circle import Circle
+from svgtools.model.scene.shape import Shape
 from svgtools.model.scene.transform import Translate, Scale, Rotate
 from svgtools.model.geometry.rect import Rect as GeometryRect
 from svgtools.model.geometry.circle import Circle as GeometryCircle
@@ -71,7 +70,7 @@ def test_parse_svg_with_namespace_and_rect():
     assert parse_svg_string(svg_text) == Document(
         svg=Svg(
             children=(
-                Rect(
+                Shape(
                     geometry=GeometryRect(
                         top_left=GeometryPoint(
                             x=0,
@@ -245,7 +244,7 @@ def test_parse_group_with_elements_and_transform():
             children=(
                 Group(
                     children=(
-                        Circle(
+                        Shape(
                             geometry=GeometryCircle(
                                 center=GeometryPoint(
                                     x=1,
@@ -257,7 +256,7 @@ def test_parse_group_with_elements_and_transform():
                         Use(
                             href="#arrow",
                         ),
-                        Rect(
+                        Shape(
                             geometry=GeometryRect(
                                 top_left=GeometryPoint(
                                     x=1,
@@ -332,7 +331,7 @@ def test_rect():
     assert parse_svg_string(svg_text) == Document(
         svg=Svg(
             children=(
-                Rect(
+                Shape(
                     id="rectid",
                     geometry=GeometryRect(
                         top_left=GeometryPoint(
@@ -357,7 +356,7 @@ def test_rect_with_defaults_and_unknowns():
     assert parse_svg_string(svg_text) == Document(
         svg=Svg(
             children=(
-                Rect(
+                Shape(
                     id="rectid",
                     geometry=GeometryRect(
                         top_left=GeometryPoint(
@@ -386,7 +385,7 @@ def test_circle():
     assert parse_svg_string(svg_text) == Document(
         svg=Svg(
             children=(
-                Circle(
+                Shape(
                     id="circleid",
                     geometry=GeometryCircle(
                         center=GeometryPoint(
@@ -411,7 +410,7 @@ def test_circle_with_default_and_unknowns():
     assert parse_svg_string(svg_text) == Document(
         svg=Svg(
             children=(
-                Circle(
+                Shape(
                     id="circleid",
                     geometry=GeometryCircle(
                         center=GeometryPoint(

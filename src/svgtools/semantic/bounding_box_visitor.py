@@ -3,13 +3,14 @@ from enum import Enum
 from svgtools.model.geometry.bounding_box import BoundingBox
 from svgtools.model.geometry.point import Point
 from svgtools.model.geometry.matrix3 import Matrix3
+from svgtools.model.geometry.rect import Rect as GeometryRect
+from svgtools.model.geometry.circle import Circle as GeometryCircle
 from svgtools.model.scene.document import Document
 from svgtools.model.scene.svg import Svg
 from svgtools.model.scene.defs import Defs
 from svgtools.model.scene.group import Group
 from svgtools.model.scene.use import Use
-from svgtools.model.scene.rect import Rect
-from svgtools.model.scene.circle import Circle
+from svgtools.model.scene.shape import Shape
 from svgtools.model.scene.transform import Translate, Scale, Rotate
 
 class _Phase(Enum):
@@ -53,10 +54,8 @@ class BoundingBoxVisitor:
                 self._walk_group(element,phase, current_matrix)
             case Use():
                 self._walk_use(element,phase, current_matrix)
-            case Rect():
-                self._walk_rect(element,phase, current_matrix)
-            case Circle():
-                self._walk_circle(element,phase, current_matrix)
+            case Shape():
+                 self._walk_shape(element,phase, current_matrix)
             case _:
                 raise NotImplementedError(type(element))
 
@@ -94,28 +93,20 @@ class BoundingBoxVisitor:
                 current_matrix *= self._transforms_to_matrix(use.transformations)
                 self._walk_element(self.definition_table[label], phase, current_matrix)
 
-    def _walk_rect(self, rect: Rect, phase: _Phase, current_matrix: Matrix3):
+    def _walk_shape(self, shape: Shape, phase: _Phase, current_matrix: Matrix3):
 
         match phase:
             case _Phase.BUILD_DEFINITION_TABLE:
-                if rect.id:
-                    self.definition_table[rect.id] = rect
+                if shape.id:
+                    self.definition_table[shape.id] = shape
             case _Phase.VISIT:
-                self.rectangles_visited += 1
-                current_matrix *= self._transforms_to_matrix(rect.transformations)
-                points = rect.geometry.points_for_bounding_box(0)
-                self._accumulate_bbox(self._transformed_points_bounding_box(points, current_matrix))
-
-    def _walk_circle(self, circle: Circle, phase: _Phase, current_matrix: Matrix3):
-
-        match phase:
-            case _Phase.BUILD_DEFINITION_TABLE:
-                if circle.id:
-                    self.definition_table[circle.id] = circle
-            case _Phase.VISIT:
-                self.circles_visited += 1
-                current_matrix *= self._transforms_to_matrix(circle.transformations)
-                points = circle.geometry.points_for_bounding_box(128)
+                match shape.geometry:
+                    case GeometryRect():
+                        self.rectangles_visited += 1
+                    case GeometryCircle():
+                        self.circles_visited += 1
+                current_matrix *= self._transforms_to_matrix(shape.transformations)
+                points = shape.geometry.points_for_bounding_box(128)
                 self._accumulate_bbox(self._transformed_points_bounding_box(points, current_matrix))
 
     @staticmethod
