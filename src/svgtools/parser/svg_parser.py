@@ -9,8 +9,7 @@ from svgtools.model.scene.svg import Svg
 from svgtools.model.scene.defs import Defs
 from svgtools.model.scene.group import Group
 from svgtools.model.scene.use import Use
-from svgtools.model.scene.rect import Rect
-from svgtools.model.scene.circle import Circle
+from svgtools.model.scene.shape import Shape
 from svgtools.model.geometry.rect import Rect as GeometryRect
 from svgtools.model.geometry.circle import Circle as GeometryCircle
 from svgtools.model.geometry.point import Point as GeometryPoint
@@ -89,7 +88,7 @@ def _parse_xml_element(xml_element: ET.Element, namespace_str: str):
             xml_y=xml_element.get("y", "0")
             xml_width=xml_element.get("width")
             xml_height=xml_element.get("height")
-            return Rect(
+            return Shape(
                 id = rect_id,
                 geometry=GeometryRect(
                     top_left=GeometryPoint(
@@ -108,7 +107,7 @@ def _parse_xml_element(xml_element: ET.Element, namespace_str: str):
             xml_cx=xml_element.get("cx", "0")
             xml_cy=xml_element.get("cy", "0")
             xml_r=xml_element.get("r")
-            return Circle(
+            return Shape(
                 id = circle_id,
                 geometry=GeometryCircle(
                     center=GeometryPoint(

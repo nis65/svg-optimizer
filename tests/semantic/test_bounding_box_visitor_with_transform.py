@@ -8,8 +8,7 @@ from svgtools.model.geometry.bounding_box import BoundingBox as GeometryBounding
 from svgtools.model.scene.defs import Defs
 from svgtools.model.scene.document import Document
 from svgtools.model.scene.group import Group
-from svgtools.model.scene.rect import Rect
-from svgtools.model.scene.circle import Circle
+from svgtools.model.scene.shape import Shape
 from svgtools.model.scene.svg import Svg
 from svgtools.model.scene.use import Use
 
@@ -21,7 +20,7 @@ def test_rect_svg_translate():
     document = Document(
         svg=Svg(
             children=(
-                Rect(
+                Shape(
                     id="square",
                     geometry=GeometryRect(
                         top_left=GeometryPoint(0, 0),
@@ -46,7 +45,7 @@ def test_rect_rect_translate():
     document = Document(
         svg=Svg(
             children=(
-                Rect(
+                Shape(
                     id="square",
                     geometry=GeometryRect(
                         top_left=GeometryPoint(0, 0),
@@ -72,7 +71,7 @@ def test_rect_group_translate():
             children=(
                 Group(
                     children=(
-                        Rect(
+                        Shape(
                             id="square",
                             geometry=GeometryRect(
                                 top_left=GeometryPoint(0, 0),
@@ -99,7 +98,7 @@ def test_rect_use_translate():
             children=(
                 Defs(
                     children=(
-                        Rect(
+                        Shape(
                             id="square",
                             geometry=GeometryRect(
                                 top_left=GeometryPoint(0, 0),
@@ -135,7 +134,7 @@ def test_rect_all_translate():
                             id="group",
                             transformations=(Translate(dx=2, dy=-1),),
                             children=(
-                                Rect(
+                                Shape(
                                     id="square",
                                     transformations=(Translate(dx=3, dy=-2),),
                                     geometry=GeometryRect(
@@ -169,7 +168,7 @@ def test_circle_svg_scale():
     document = Document(
         svg=Svg(
             children=(
-                Circle(
+                Shape(
                     id="circle",
                     geometry=GeometryCircle(
                         center=GeometryPoint(1, 1),
@@ -196,7 +195,7 @@ def test_circle_circle_scale():
     document = Document(
         svg=Svg(
             children=(
-                Circle(
+                Shape(
                     id="circle",
                     geometry=GeometryCircle(
                         center=GeometryPoint(1, 1),
@@ -219,7 +218,7 @@ def test_circle_circle_rotate():
     document = Document(
         svg=Svg(
             children=(
-                Circle(
+                Shape(
                     id="circle",
                     geometry=GeometryCircle(
                         center=GeometryPoint(1, 1),
@@ -242,7 +241,7 @@ def test_rect_rect_rotate_1():
     document = Document(
         svg=Svg(
             children=(
-                Rect(
+                Shape(
                     id="rect",
                     geometry=GeometryRect(
                         top_left=GeometryPoint(0, 0),
@@ -266,7 +265,7 @@ def test_rect_rect_rotate_2():
     document = Document(
         svg=Svg(
             children=(
-                Rect(
+                Shape(
                     id="rect",
                     geometry=GeometryRect(
                         top_left=GeometryPoint(0, 0),

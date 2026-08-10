@@ -3,8 +3,7 @@ from svgtools.model.scene.svg import Svg
 from svgtools.model.scene.defs import Defs
 from svgtools.model.scene.group import Group
 from svgtools.model.scene.use import Use
-from svgtools.model.scene.rect import Rect
-from svgtools.model.scene.circle import Circle
+from svgtools.model.scene.shape import Shape
 from svgtools.model.scene.transform import Translate, Scale, Rotate
 from svgtools.model.geometry.rect import Rect as GeometryRect
 from svgtools.model.geometry.circle import Circle as GeometryCircle
@@ -45,10 +44,8 @@ class SvgWriter:
                 self._walk_group(element, indent)
             case Use():
                 self._walk_use(element, indent)
-            case Rect():
-                self._walk_rect(element, indent)
-            case Circle():
-                self._walk_circle(element, indent)
+            case Shape():
+                self._walk_shape(element, indent)
             case _:
                 raise NotImplementedError(type(element))
 
@@ -79,14 +76,13 @@ class SvgWriter:
         self._append_attributes(use)
         self._parts.append(" />\n")
 
-    def _walk_rect(self, rect: Rect, indent:str):
-        self._parts.append(indent + "<rect")
-        self._append_attributes(rect)
-        self._parts.append(" />\n")
-
-    def _walk_circle(self, circle: Circle, indent:str):
-        self._parts.append(indent + "<circle")
-        self._append_attributes(circle)
+    def _walk_shape(self, shape: Shape, indent:str):
+        match shape.geometry:
+            case GeometryRect():
+                self._parts.append(indent + "<rect")
+            case GeometryCircle():
+                self._parts.append(indent + "<circle")
+        self._append_attributes(shape)
         self._parts.append(" />\n")
 
     def _append_attributes(self, element) -> None:

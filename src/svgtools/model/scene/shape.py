@@ -1,10 +1,11 @@
 from dataclasses import dataclass, field
-from svgtools.model.geometry.rect import Rect as GeometryRect
 from .transform import Translate, Scale, Rotate
 
+from svgtools.model.geometry.geometry_abc import Geometry
+
 @dataclass(frozen=True, slots=True)
-class Rect:
-    geometry: GeometryRect
+class Shape: 
+    geometry: Geometry
     id: str | None = None
     transformations: tuple[Translate | Scale | Rotate, ...] = ()
     unknown_attributes: dict[str, str] = field(default_factory=dict)

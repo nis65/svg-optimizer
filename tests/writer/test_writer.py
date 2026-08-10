@@ -8,8 +8,7 @@ from svgtools.model.scene.svg import Svg
 from svgtools.model.scene.defs import Defs
 from svgtools.model.scene.group import Group
 from svgtools.model.scene.use import Use
-from svgtools.model.scene.rect import Rect
-from svgtools.model.scene.circle import Circle
+from svgtools.model.scene.shape import Shape
 from svgtools.model.scene.transform import Translate, Scale, Rotate
 from svgtools.model.geometry.rect import Rect as GeometryRect
 from svgtools.model.geometry.circle import Circle as GeometryCircle
@@ -78,7 +77,7 @@ def test_write_defs_with_children():
                 children=(
                     Defs(
                         children=(
-                            Rect(
+                            Shape(
                                 id="rectid",
                                 geometry=GeometryRect(
                                     top_left=GeometryPoint(
@@ -135,7 +134,7 @@ def test_write_group_with_children():
                 children=(
                     Group(
                         children=(
-                            Circle(
+                            Shape(
                                 id="circleid",
                                 geometry=GeometryCircle(
                                     center=GeometryPoint(
@@ -164,7 +163,7 @@ def test_write_rect_with_attributes():
     d = Document(
             svg=Svg(
                 children=(
-                    Rect(
+                    Shape(
                         id="rectid",
                         transformations=(
                              Scale(sx=4, sy=5),
@@ -198,7 +197,7 @@ def test_write_circle_with_attributes():
     d = Document(
             svg=Svg(
                 children=(
-                    Circle(
+                    Shape(
                         id="circleid",
                         transformations=(
                              Translate(dx=-1, dy=-3),
@@ -232,7 +231,7 @@ def test_write_use():
                 children=(
                     Defs(
                         children=(
-                            Rect(
+                            Shape(
                                 id="rectid",
                                 geometry=GeometryRect(
                                     top_left=GeometryPoint(

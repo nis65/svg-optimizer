@@ -4,7 +4,7 @@ from dataclasses import replace
 
 from svgtools.parser.svg_parser import parse_svg_string
 from svgtools.model.scene.document import Document
-from svgtools.model.scene.rect import Rect
+from svgtools.model.scene.shape import Shape
 
 from svgtools.semantic.bounding_box_visitor import BoundingBoxVisitor
 
@@ -15,8 +15,8 @@ from svgtools.model.geometry.point import Point as GeometryPoint
 from svgtools.writer.svg_writer import SvgWriter
 
 # Warning: this only works when the top svg tag does NOT do any transformation
-def build_rect_from_bb(bb: GeometryBoundingBox) -> Rect:
-    return Rect(
+def build_rect_from_bb(bb: GeometryBoundingBox) -> Shape:
+    return Shape(
         id="bbrect",
         geometry=GeometryRect(
             top_left=GeometryPoint(
