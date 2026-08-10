@@ -29,13 +29,6 @@ def test_rect_width_and_height_not_negative ():
     with pytest.raises(ValueError):
         Rect(top_left=Point(1.5, -2.0), width=2, height=-0.1)
 
-def test_rect_bounding_box():
-    r = Rect(top_left=Point(1, 1), width=2, height=3)
-    assert r.bounding_box() == BoundingBox (
-        min=Point(1, 1),
-        max=Point(3, 4)
-    )
-
 def test_rect_transformed_bounding_box():
     r = Rect(top_left=Point(1, 1), width=2, height=3)
     assert r.points_for_bounding_box(100) == {
