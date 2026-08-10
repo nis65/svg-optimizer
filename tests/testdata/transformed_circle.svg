@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
+<defs>
+  <circle id="circle" cx="0" cy="0" r="100" fill="red" />
+</defs>
+<use href="#circle" transform="translate(500 500) rotate(45) scale(3 0.5)" />
+</svg>

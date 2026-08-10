@@ -8,7 +8,7 @@ from svgtools.model.scene.group import Group
 from svgtools.model.scene.use import Use
 from svgtools.model.scene.rect import Rect
 from svgtools.model.scene.circle import Circle
-from svgtools.model.scene.transform import Translate, Scale
+from svgtools.model.scene.transform import Translate, Scale, Rotate
 from svgtools.model.geometry.rect import Rect as GeometryRect
 from svgtools.model.geometry.circle import Circle as GeometryCircle
 from svgtools.model.geometry.point import Point as GeometryPoint
@@ -380,7 +380,7 @@ def test_circle():
 
     svg_text = """
     <svg>
-        <circle id="circleid" cx="1" cy="2" r="3.5" transform="scale(13)"/>
+        <circle id="circleid" cx="1" cy="2" r="3.5" transform="scale(13 10)"/>
     </svg>
     """
     assert parse_svg_string(svg_text) == Document(
@@ -395,7 +395,7 @@ def test_circle():
                         ),
                         radius=3.5,
                     ),
-                    transformations=(Scale(sx=13, sy=13),)
+                    transformations=(Scale(sx=13, sy=10),)
                 ),
             ),
         ),
@@ -405,7 +405,7 @@ def test_circle_with_default_and_unknowns():
 
     svg_text = """
     <svg>
-        <circle id="circleid" r="3.5" transform="scale(13)" unknown="unknown_value"/>
+        <circle id="circleid" r="3.5" transform="rotate(30) scale(13)" unknown="unknown_value"/>
     </svg>
     """
     assert parse_svg_string(svg_text) == Document(
@@ -420,7 +420,9 @@ def test_circle_with_default_and_unknowns():
                         ),
                         radius=3.5,
                     ),
-                    transformations=(Scale(sx=13, sy=13),),
+                    transformations=(
+                        Rotate(theta=30, cx=0, cy=0),
+                        Scale(sx=13, sy=13),),
                     unknown_attributes = {
                         "unknown": "unknown_value",
                     }
