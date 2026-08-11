@@ -81,6 +81,55 @@ def test_rotation_matrix():
         0, 0, 1
     ).isclose(Matrix3.rotation(60,0,0))
 
+def test_skew_x_matrix():
+    assert Matrix3(
+        1, 1, 0,
+        0, 1, 0,
+        0, 0, 1,
+    ).isclose(Matrix3.skew_x(45))
+    sqrt3=math.sqrt(3)
+    assert Matrix3(
+        1, sqrt3, 0,
+        0,     1, 0,
+        0,     0, 1,
+    ).isclose(Matrix3.skew_x(60))
+
+def test_skew_x_matrix_undefined():
+    with pytest.raises(ValueError):
+        m = Matrix3.skew_x(-90)
+    with pytest.raises(ValueError):
+        m = Matrix3.skew_x(90)
+    with pytest.raises(ValueError):
+        m = Matrix3.skew_x(270)
+
+def test_skew_y_matrix():
+    assert Matrix3(
+        1, 0, 0,
+        1, 1, 0,
+        0, 0, 1,
+    ).isclose(Matrix3.skew_y(45))
+    sqrt3=math.sqrt(3)
+    assert Matrix3(
+        1,     0, 0,
+        sqrt3, 1, 0,
+        0,     0, 1,
+    ).isclose(Matrix3.skew_y(60))
+
+def test_skew_y_matrix_undefined():
+    with pytest.raises(ValueError):
+        m = Matrix3.skew_y(-90)
+    with pytest.raises(ValueError):
+        m = Matrix3.skew_y(90)
+    with pytest.raises(ValueError):
+        m = Matrix3.skew_y(270)
+
+def test_affine():
+    assert Matrix3(
+        1, 2, 3,
+        4, 5, 6,
+        0, 0, 1,
+    ) == Matrix3.affine(1,2,3,4,5,6)
+
 def test_matrix_multiplication_not_implemented():
     m = Matrix3(
         1, 2, 3,
