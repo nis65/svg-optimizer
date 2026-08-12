@@ -9,7 +9,7 @@ from svgtools.model.scene.defs import Defs
 from svgtools.model.scene.group import Group
 from svgtools.model.scene.use import Use
 from svgtools.model.scene.shape import Shape
-from svgtools.model.scene.transform import Translate, Scale, Rotate
+from svgtools.model.scene.transform import Translate, Scale, Rotate, SkewX, SkewY, Affine
 from svgtools.model.geometry.rect import Rect as GeometryRect
 from svgtools.model.geometry.circle import Circle as GeometryCircle
 from svgtools.model.geometry.point import Point as GeometryPoint
@@ -190,6 +190,40 @@ def test_write_rect_with_attributes():
     <?xml version='1.0' encoding='UTF-8'?>
     <svg>
     <rect id="rectid" x="4" y="5" width="2" height="1" transform="scale(4 5) translate(1 2) rotate(45 1 3)" unknown="unknown_value" />
+    </svg>
+    """)
+
+def test_write_rect_with_more_transformations():
+    d = Document(
+            svg=Svg(
+                children=(
+                    Shape(
+                        id="rectid",
+                        transformations=(
+                             SkewX(theta=60),
+                             SkewY(theta=30),
+                             Affine(a=1, b=2, c=3, d=4, e=5, f=6),
+                        ),
+                        geometry=GeometryRect(
+                            top_left=GeometryPoint(
+                                x=4,
+                                y=5,
+                            ),
+                            width=2,
+                            height=1,
+                        ),
+                        unknown_attributes={
+                            "unknown": "unknown_value",
+                        }
+                    ),
+                )
+            )
+        )
+    writer = SvgWriter()
+    assert writer.write_svg_string(d) == dedent("""\
+    <?xml version='1.0' encoding='UTF-8'?>
+    <svg>
+    <rect id="rectid" x="4" y="5" width="2" height="1" transform="skewX(60) skewY(30) matrix(1 2 3 4 5 6)" unknown="unknown_value" />
     </svg>
     """)
 

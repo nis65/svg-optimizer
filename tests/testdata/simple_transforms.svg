@@ -1,0 +1,12 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
+<defs>
+  <circle id="circle" cx="0" cy="0" r="100" fill="blue" />
+  <rect id="rect" x="-100" y="-100" width="200" height="200" fill="red" />
+</defs>
+<use href="#rect" transform="translate(500 500) matrix(1 2 -1 2 -2 2)" />
+<use href="#circle" transform="translate(500 500) matrix(1 2 0 3 4 0)" />
+<use href="#rect" transform="translate(500 500) skewX(45) scale(3 0.5)" />
+<use href="#rect" transform="translate(200 700) skewY(45)" />
+<use href="#circle" transform="translate(500 500) scale(3 0.5)" />
+</svg>
