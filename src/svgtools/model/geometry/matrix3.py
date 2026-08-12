@@ -78,10 +78,10 @@ class Matrix3:
 
     @classmethod
     def affine(cls, a: float, b: float, c: float,
-               d: float, e: float, f: float) -> "Matrix3":
+                    d: float, e: float, f: float) -> "Matrix3":
         return Matrix3(
-            a, b, c,
-            d, e, f,
+            a, c, e,
+            b, d, f,
             0, 0, 1
         )
 

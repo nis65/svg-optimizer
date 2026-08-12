@@ -11,7 +11,7 @@ from svgtools.model.scene.defs import Defs
 from svgtools.model.scene.group import Group
 from svgtools.model.scene.use import Use
 from svgtools.model.scene.shape import Shape
-from svgtools.model.scene.transform import Translate, Scale, Rotate
+from svgtools.model.scene.transform import Translate, Scale, Rotate, SkewX, SkewY, Affine
 
 class _Phase(Enum):
     BUILD_DEFINITION_TABLE = 0
@@ -120,6 +120,13 @@ class BoundingBoxVisitor:
                     matrix = matrix * Matrix3.scaling(transform.sx, transform.sy)
                 case Rotate():
                     matrix = matrix * Matrix3.rotation(transform.theta, transform.cx, transform.cy)
+                case SkewX():
+                    matrix = matrix * Matrix3.skew_x(transform.theta)
+                case SkewY():
+                    matrix = matrix * Matrix3.skew_y(transform.theta)
+                case Affine():
+                    matrix = matrix * Matrix3.affine(transform.a, transform.b, transform.c,
+                                                     transform.d, transform.e, transform.f)
         return matrix
 
     @staticmethod
