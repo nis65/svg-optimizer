@@ -85,6 +85,31 @@ class Matrix3:
             0, 0, 1
         )
 
+    @classmethod
+    def decompose(cls, a: "Matrix3") -> tuple["Matrix3", "Matrix3", "Matrix3", "Matrix3"]:
+        # first, extract translation
+        m_T = cls.translation(a.m13, a.m23)
+
+        # rotation and scale_x from first colum
+        scale_x = math.sqrt(a.m11*a.m11 + a.m21*a.m21)
+        if math.isclose(scale_x, 0, rel_tol=1e-9, abs_tol=1e-9):
+            raise ValueError(f"scale_x is close to 0 ({scale_x}), cannot decompose")
+        theta_rotate = math.degrees(math.atan2(a.m21, a.m11))
+        m_R = cls.rotation(theta_rotate, 0, 0)
+
+        # scale_y from det and scale_x
+        det = a.m11*a.m22 - a.m12*a.m21
+        if math.isclose(det, 0, rel_tol=1e-9, abs_tol=1e-9):
+            raise ValueError(f"determinant is close to 0 ({det}), cannot decompose")
+        scale_y = det / scale_x
+        m_S = cls.scaling(scale_x, scale_y)
+
+        # finally, skewX
+        skew_x = ( a.m11*a.m12 + a.m21*a.m22 ) / det
+        m_Hx = cls.skew_x(math.degrees(math.atan(skew_x)))
+
+        return m_T, m_R, m_Hx, m_S
+
     def _mul_column(self, x: float, y: float, w: float) -> tuple[float, float, float]:
         return (
             self.m11 * x + self.m12 * y + self.m13 * w,
