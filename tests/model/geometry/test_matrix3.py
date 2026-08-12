@@ -125,8 +125,8 @@ def test_skew_y_matrix_undefined():
 
 def test_affine():
     assert Matrix3(
-        1, 2, 3,
-        4, 5, 6,
+        1, 3, 5,
+        2, 4, 6,
         0, 0, 1,
     ) == Matrix3.affine(1,2,3,4,5,6)
 

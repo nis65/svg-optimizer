@@ -2,7 +2,7 @@ from re import escape
 import pytest
 
 from svgtools.parser.transform_parser import parse_transform_string
-from svgtools.model.scene.transform import Translate, Scale, Rotate
+from svgtools.model.scene.transform import Translate, Scale, Rotate, SkewX, SkewY, Affine
 
 def test_parse_empty_transform():
     ttext0=""
@@ -75,4 +75,31 @@ def test_parse_rotate_transform():
 def test_parse_invalid_rotate_semantics():
     ttext0="rotate(60 2)"
     with pytest.raises(ValueError, match="rotate needs 1 or 3 parameters, not 2"):
+        parse_transform_string(ttext0)
+
+def test_parse_skewX():
+    ttext0="skewX(60)"
+    assert parse_transform_string(ttext0) == ( SkewX(theta=60,),)
+
+def test_parse_invalid_skewX_semantics():
+    ttext0="skewX(1 3)"
+    with pytest.raises(ValueError, match="skewX needs exactly 1 parameter, not 2"):
+         parse_transform_string(ttext0)
+
+def test_parse_skewY():
+    ttext0="skewY(60)"
+    assert parse_transform_string(ttext0) == ( SkewY(theta=60,),)
+
+def test_parse_invalid_skewY_semantics():
+    ttext0="skewY(1 3)"
+    with pytest.raises(ValueError, match="skewY needs exactly 1 parameter, not 2"):
+        parse_transform_string(ttext0)
+
+def test_parse_affine():
+    ttext0="matrix(1 2 3 4 5 6)"
+    assert parse_transform_string(ttext0) == ( Affine(a=1, b=2, c=3, d=4, e=5, f=6,),)
+
+def test_parse_invalid_affine_semantics():
+    ttext0="matrix(1 2 3)"
+    with pytest.raises(ValueError, match="matrix needs exactly 6 parameters, not 3"):
         parse_transform_string(ttext0)
