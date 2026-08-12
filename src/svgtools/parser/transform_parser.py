@@ -12,7 +12,7 @@ all parser funcions
   a space (or a comma) is separator
 """
 
-from svgtools.model.scene.transform import Translate, Scale, Rotate
+from svgtools.model.scene.transform import Translate, Scale, Rotate, SkewX, SkewY, Affine
 from .float_list_parser import parse_float_list
 
 def parse_transform_string(tstring: str) -> tuple:
@@ -34,12 +34,21 @@ def parse_transform_string(tstring: str) -> tuple:
         elif rest.startswith("rotate"):
             rest = rest.removeprefix("rotate")
             rest, transformation = _parse_rotate(rest)
+        elif rest.startswith("skewX"):
+            rest = rest.removeprefix("skewX")
+            rest, transformation = _parse_skew_x(rest)
+        elif rest.startswith("skewY"):
+            rest = rest.removeprefix("skewY")
+            rest, transformation = _parse_skew_y(rest)
+        elif rest.startswith("matrix"):
+            rest = rest.removeprefix("matrix")
+            rest, transformation = _parse_affine(rest)
         else:
             raise ValueError(f"not supported transformation {rest}")
         transformation_list.append(transformation)
         rest = _skip_spaces(rest)
     return tuple(transformation_list)
-        
+
 def _skip_spaces(text: str) -> str:
     return text.lstrip()
 
@@ -57,7 +66,7 @@ def _parse_translate(text: str):
 def _parse_scale(text: str):
     numbers, rest = _parse_parentheses(text)
     match len(numbers):
-        case 1: 
+        case 1:
             t = Scale(
                     sx=numbers[0],
                     sy=numbers[0]
@@ -89,6 +98,44 @@ def _parse_rotate(text:str):
         case _:
             raise ValueError(f"rotate needs 1 or 3 parameters, not {len(numbers)}")
     return rest, r
+
+def _parse_skew_x(text:str):
+    numbers, rest = _parse_parentheses(text)
+    match len(numbers):
+        case 1:
+            s = SkewX(
+                    theta=numbers[0],
+                )
+        case _:
+            raise ValueError(f"skewX needs exactly 1 parameter, not {len(numbers)}")
+    return rest, s
+
+def _parse_skew_y(text:str):
+    numbers, rest = _parse_parentheses(text)
+    match len(numbers):
+        case 1:
+            s = SkewY(
+                    theta=numbers[0],
+                )
+        case _:
+            raise ValueError(f"skewY needs exactly 1 parameter, not {len(numbers)}")
+    return rest, s
+
+def _parse_affine(text:str):
+    numbers, rest = _parse_parentheses(text)
+    match len(numbers):
+        case 6:
+            m = Affine(
+                    a=numbers[0],
+                    b=numbers[1],
+                    c=numbers[2],
+                    d=numbers[3],
+                    e=numbers[4],
+                    f=numbers[5],
+                )
+        case _:
+            raise ValueError(f"matrix needs exactly 6 parameters, not {len(numbers)}")
+    return rest, m
 
 def _parse_parentheses(text: str) -> tuple[tuple[float, ...], str]:
     rest = _skip_spaces(text)
