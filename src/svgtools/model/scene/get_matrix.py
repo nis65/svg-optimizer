@@ -1,6 +1,12 @@
 from svgtools.model.geometry.matrix3 import Matrix3
 from svgtools.model.scene.transform import Translate, Scale, Rotate, SkewX, SkewY, Affine
 
+def transforms_to_matrix(transforms) -> Matrix3:
+    matrix = Matrix3.identity()
+    for transform in transforms:
+        matrix = matrix * get_matrix(transform)
+    return matrix
+
 def get_matrix(transform) -> Matrix3:
     match transform:
         case Translate():
