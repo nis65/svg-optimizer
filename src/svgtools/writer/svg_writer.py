@@ -1,3 +1,4 @@
+from .transform_write_strategy import TransformWriteStrategy
 from svgtools.model.scene.document import Document
 from svgtools.model.scene.svg import Svg
 from svgtools.model.scene.defs import Defs
@@ -15,8 +16,13 @@ class SvgWriter:
     INDENT = "  "
     PRECISION = 3
 
-    def __init__(self):
+
+    def __init__(
+            self,
+            strategy: TransformWriteStrategy = TransformWriteStrategy.KEEP
+            ):
         self._parts: list[str] = []
+        self.strategy = strategy
 
     def write_svg_string(self, document: Document) -> str:
         self._write_document(document)
@@ -115,9 +121,28 @@ class SvgWriter:
         if viewBox := getattr(element, "viewBox", None):
             self._parts.append(f' viewBox="{self._numberlist_to_string(viewBox)}"')
         if transformations := getattr(element, "transformations", None):
-            self._parts.append(f' transform="{self._transforms_to_string(transformations)}"')
+            output_transformations = self._transformations_to_write(transformations)
+            self._parts.append(f' transform="{self._transforms_to_string(output_transformations)}"')
         for key, value in sorted(element.unknown_attributes.items()):
             self._parts.append(f' {key}="{value}"')
+
+    def _transformations_to_write(self, transformations):
+        match self.strategy:
+            case TransformWriteStrategy.KEEP:
+                return transformations
+            # case TransformWriteStrategy.AGGREGATE :
+            # case TransformWriteStrategy.DECOMPOSE_MATRIX :
+            # case TransformWriteStrategy.AGGREGATE_AND_DECOMPOSE_MATRIX :
+            # case TransformWriteStrategy.CANONICAL_CONSERVATIVE :
+            # case TransformWriteStrategy.CANONICAL_AGGRESSIVE:
+            case _:
+                raise ValueError(f"strategy {self.strategy} not implemented")
+
+    #@staticmethod
+    #def _strategy_aggressive(transformations):
+    #    m = Matrix3.identity()
+    #    for trans in transformations:
+    #        m = m *
 
     @staticmethod
     def _number_to_string(number: float | str) -> str:
