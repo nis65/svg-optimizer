@@ -11,7 +11,7 @@ from svgtools.model.scene.defs import Defs
 from svgtools.model.scene.group import Group
 from svgtools.model.scene.use import Use
 from svgtools.model.scene.shape import Shape
-from svgtools.model.scene.get_matrix import get_matrix
+from svgtools.model.scene.get_matrix import get_matrix, transforms_to_matrix
 
 class _Phase(Enum):
     BUILD_DEFINITION_TABLE = 0
@@ -41,7 +41,7 @@ class BoundingBoxVisitor:
 
         current_matrix = Matrix3.identity()
         if phase == _Phase.VISIT:
-            current_matrix *= self._transforms_to_matrix(svg.transformations)
+            current_matrix *= transforms_to_matrix(svg.transformations)
         for child in svg.children:
             self._walk_element(child, phase, current_matrix)
 
@@ -65,7 +65,7 @@ class BoundingBoxVisitor:
                 if group.id:
                     self.definition_table[group.id] = group
             case _Phase.VISIT:
-                current_matrix *= self._transforms_to_matrix(group.transformations)
+                current_matrix *= transforms_to_matrix(group.transformations)
         for child in group.children:
             self._walk_element(child, phase, current_matrix)
 
@@ -90,7 +90,7 @@ class BoundingBoxVisitor:
                 label = use.href.removeprefix("#")
                 if label not in self.definition_table:
                     raise ValueError(f"Use references unknown label {label}")
-                current_matrix *= self._transforms_to_matrix(use.transformations)
+                current_matrix *= transforms_to_matrix(use.transformations)
                 self._walk_element(self.definition_table[label], phase, current_matrix)
 
     def _walk_shape(self, shape: Shape, phase: _Phase, current_matrix: Matrix3):
@@ -105,16 +105,9 @@ class BoundingBoxVisitor:
                         self.rectangles_visited += 1
                     case GeometryCircle():
                         self.circles_visited += 1
-                current_matrix *= self._transforms_to_matrix(shape.transformations)
+                current_matrix *= transforms_to_matrix(shape.transformations)
                 points = shape.geometry.points_for_bounding_box(128)
                 self._accumulate_bbox(self._transformed_points_bounding_box(points, current_matrix))
-
-    @staticmethod
-    def _transforms_to_matrix(transforms: tuple) -> Matrix3:
-        matrix = Matrix3.identity()
-        for transform in transforms:
-            matrix = matrix * get_matrix(transform)
-        return matrix
 
     @staticmethod
     def _transformed_points_bounding_box(points: set[Point], matrix: Matrix3) -> BoundingBox:
