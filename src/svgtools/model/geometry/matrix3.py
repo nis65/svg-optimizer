@@ -1,6 +1,26 @@
 import math
 from dataclasses import dataclass
 from .point import Point
+from .isclose import geometry_isclose
+
+@dataclass(frozen=True, slots=True)
+class TRHxSDecomposition:
+    tx: float
+    ty: float
+    theta_rotate: float
+    theta_skew_x: float
+    sx: float
+    sy: float
+
+    def isclose(self, other):
+        if not isinstance(other, TRHxSDecomposition):
+            return False
+        return (geometry_isclose(self.tx, other.tx) and
+                geometry_isclose(self.ty, other.ty) and
+                geometry_isclose(self.theta_rotate, other.theta_rotate) and
+                geometry_isclose(self.theta_skew_x, other.theta_skew_x) and
+                geometry_isclose(self.sx, other.sx)
+        )
 
 @dataclass(frozen=True, slots=True)
 class Matrix3:
@@ -85,30 +105,36 @@ class Matrix3:
             0, 0, 1
         )
 
-    @classmethod
-    def decompose(cls, a: "Matrix3") -> tuple["Matrix3", "Matrix3", "Matrix3", "Matrix3"]:
+    @staticmethod
+    def TRHxS_decompose(a: "Matrix3") -> TRHxSDecomposition:
+
         # first, extract translation
-        m_T = cls.translation(a.m13, a.m23)
+        tx, ty = a.m13, a.m23
 
         # rotation and scale_x from first colum
         scale_x = math.sqrt(a.m11*a.m11 + a.m21*a.m21)
         if math.isclose(scale_x, 0, rel_tol=1e-9, abs_tol=1e-9):
             raise ValueError(f"scale_x is close to 0 ({scale_x}), cannot decompose")
         theta_rotate = math.degrees(math.atan2(a.m21, a.m11))
-        m_R = cls.rotation(theta_rotate, 0, 0)
 
         # scale_y from det and scale_x
         det = a.m11*a.m22 - a.m12*a.m21
         if math.isclose(det, 0, rel_tol=1e-9, abs_tol=1e-9):
             raise ValueError(f"determinant is close to 0 ({det}), cannot decompose")
         scale_y = det / scale_x
-        m_S = cls.scaling(scale_x, scale_y)
 
         # finally, skewX
         skew_x = ( a.m11*a.m12 + a.m21*a.m22 ) / det
-        m_Hx = cls.skew_x(math.degrees(math.atan(skew_x)))
+        theta_skew_x = math.degrees(math.atan(skew_x))
 
-        return m_T, m_R, m_Hx, m_S
+        return TRHxSDecomposition(
+            tx= tx,
+            ty= ty,
+            theta_rotate= theta_rotate,
+            theta_skew_x= theta_skew_x,
+            sx= scale_x,
+            sy= scale_y,
+            )
 
     def _mul_column(self, x: float, y: float, w: float) -> tuple[float, float, float]:
         return (
@@ -136,20 +162,16 @@ class Matrix3:
             )
         return NotImplemented
 
-    @staticmethod
-    def _isclose(a: float, b: float):
-        return math.isclose(a, b, rel_tol=1e-9, abs_tol=1e-9)
-
     def isclose(self, other):
         if not isinstance(other, Matrix3):
             return False
-        return (self._isclose(self.m11, other.m11) and
-                self._isclose(self.m12, other.m12) and
-                self._isclose(self.m13, other.m13) and
-                self._isclose(self.m21, other.m21) and
-                self._isclose(self.m22, other.m22) and
-                self._isclose(self.m23, other.m23) and
-                self._isclose(self.m31, other.m31) and
-                self._isclose(self.m32, other.m32) and
-                self._isclose(self.m33, other.m33)
+        return (geometry_isclose(self.m11, other.m11) and
+                geometry_isclose(self.m12, other.m12) and
+                geometry_isclose(self.m13, other.m13) and
+                geometry_isclose(self.m21, other.m21) and
+                geometry_isclose(self.m22, other.m22) and
+                geometry_isclose(self.m23, other.m23) and
+                geometry_isclose(self.m31, other.m31) and
+                geometry_isclose(self.m32, other.m32) and
+                geometry_isclose(self.m33, other.m33)
         )

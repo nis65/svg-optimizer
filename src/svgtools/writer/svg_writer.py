@@ -6,6 +6,7 @@ from svgtools.model.scene.group import Group
 from svgtools.model.scene.use import Use
 from svgtools.model.scene.shape import Shape
 from svgtools.model.scene.transform import Translate, Scale, Rotate, SkewX, SkewY, Affine
+from svgtools.model.scene.get_matrix import get_matrix, transforms_to_matrix
 from svgtools.model.geometry.rect import Rect as GeometryRect
 from svgtools.model.geometry.circle import Circle as GeometryCircle
 from svgtools.model.geometry.point import Point as GeometryPoint
@@ -134,15 +135,15 @@ class SvgWriter:
             # case TransformWriteStrategy.DECOMPOSE_MATRIX :
             # case TransformWriteStrategy.AGGREGATE_AND_DECOMPOSE_MATRIX :
             # case TransformWriteStrategy.CANONICAL_CONSERVATIVE :
-            # case TransformWriteStrategy.CANONICAL_AGGRESSIVE:
+            case TransformWriteStrategy.CANONICAL_AGGRESSIVE:
+                return self._strategy_aggressive(transformations)
             case _:
                 raise ValueError(f"strategy {self.strategy} not implemented")
 
-    #@staticmethod
-    #def _strategy_aggressive(transformations):
-    #    m = Matrix3.identity()
-    #    for trans in transformations:
-    #        m = m *
+    @staticmethod
+    def _strategy_aggressive(transformations):
+        m = transforms_to_matrix(transformations)
+        return (Affine(a=m.m11, b=m.m21, c=m.m12, d=m.m22, e=m.m13, f=m.m23),)
 
     @staticmethod
     def _number_to_string(number: float | str) -> str:
