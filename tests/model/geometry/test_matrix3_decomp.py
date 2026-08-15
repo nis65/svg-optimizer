@@ -7,7 +7,7 @@ def test_matrix3_decomp_translate():
         tx= 2,
         ty= 3,
         theta_rotate= 0,
-        theta_skew_x= 0,
+        h_skew_x= 0,
         sx= 1,
         sy= 1,
     )
@@ -19,7 +19,7 @@ def test_matrix3_decomp_rotate():
         tx= 0,
         ty= 0,
         theta_rotate= 60,
-        theta_skew_x= 0,
+        h_skew_x= 0,
         sx= 1,
         sy= 1,
         )
@@ -33,7 +33,7 @@ def test_matrix3_decomp_translate_and_rotate():
         tx= 2,
         ty= 3,
         theta_rotate= 60,
-        theta_skew_x= 0,
+        h_skew_x= 0,
         sx= 1,
         sy= 1,
         )
@@ -46,7 +46,7 @@ def test_matrix3_decomp_scale():
         tx= 0,
         ty= 0,
         theta_rotate= 0,
-        theta_skew_x= 0,
+        h_skew_x= 0,
         sx= 3,
         sy= 4,
         )
@@ -59,7 +59,7 @@ def test_matrix3_decomp_skewX():
         tx= 0,
         ty= 0,
         theta_rotate= 0,
-        theta_skew_x= 45,
+        h_skew_x= 1,
         sx= 1,
         sy= 1,
         )

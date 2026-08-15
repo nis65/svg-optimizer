@@ -8,9 +8,13 @@ class TRHxSDecomposition:
     tx: float
     ty: float
     theta_rotate: float
-    theta_skew_x: float
+    h_skew_x: float
     sx: float
     sy: float
+
+    @property
+    def theta_skew_x(self) -> float:
+        return math.degrees(math.atan(self.h_skew_x))
 
     def isclose(self, other):
         if not isinstance(other, TRHxSDecomposition):
@@ -125,13 +129,12 @@ class Matrix3:
 
         # finally, skewX
         skew_x = ( a.m11*a.m12 + a.m21*a.m22 ) / det
-        theta_skew_x = math.degrees(math.atan(skew_x))
 
         return TRHxSDecomposition(
             tx= tx,
             ty= ty,
             theta_rotate= theta_rotate,
-            theta_skew_x= theta_skew_x,
+            h_skew_x= skew_x,
             sx= scale_x,
             sy= scale_y,
             )
