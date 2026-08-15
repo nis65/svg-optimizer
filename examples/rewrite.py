@@ -29,6 +29,8 @@ try:
     svg_doc = parse_svg_string(svg_input_text)
     writer = SvgWriter(args.strategy)
     outfile.write(writer.write_svg_string(svg_doc))
+    if args.strategy == TransformWriteStrategy.CANONICAL_CONSERVATIVE:
+       print(f"conservative stats (exact, forced): {writer.conservative_stats}", file=sys.stderr)
 
 finally:
     if infile is not sys.stdin:
