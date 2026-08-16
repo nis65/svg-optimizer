@@ -1,7 +1,7 @@
 from dataclasses import dataclass, field
 from .transform import Translate, Scale, Rotate
 
-from svgtools.model.geometry.geometry_abc import Geometry
+from svgtools.geometry.geometry_abc import Geometry
 
 @dataclass(frozen=True, slots=True)
 class Shape: 

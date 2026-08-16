@@ -1,5 +1,5 @@
-from svgtools.model.geometry.matrix3 import Matrix3
-from svgtools.model.scene.transform import Translate, Scale, Rotate, SkewX, SkewY, Affine
+from svgtools.geometry.matrix3 import Matrix3
+from svgtools.svg.transform import Translate, Scale, Rotate, SkewX, SkewY, Affine
 
 def transforms_to_matrix(transforms) -> Matrix3:
     matrix = Matrix3.identity()

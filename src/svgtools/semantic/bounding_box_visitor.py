@@ -1,17 +1,17 @@
 from enum import Enum
 
-from svgtools.model.geometry.bounding_box import BoundingBox
-from svgtools.model.geometry.point import Point
-from svgtools.model.geometry.matrix3 import Matrix3
-from svgtools.model.geometry.rect import Rect as GeometryRect
-from svgtools.model.geometry.circle import Circle as GeometryCircle
-from svgtools.model.scene.document import Document
-from svgtools.model.scene.svg import Svg
-from svgtools.model.scene.defs import Defs
-from svgtools.model.scene.group import Group
-from svgtools.model.scene.use import Use
-from svgtools.model.scene.shape import Shape
-from svgtools.model.scene.get_matrix import get_matrix, transforms_to_matrix
+from svgtools.geometry.bounding_box import BoundingBox
+from svgtools.geometry.point import Point
+from svgtools.geometry.matrix3 import Matrix3
+from svgtools.geometry.rect import Rect
+from svgtools.geometry.circle import Circle
+from svgtools.svg.document import Document
+from svgtools.svg.svg import Svg
+from svgtools.svg.defs import Defs
+from svgtools.svg.group import Group
+from svgtools.svg.use import Use
+from svgtools.svg.shape import Shape
+from svgtools.svg.get_matrix import get_matrix, transforms_to_matrix
 
 class _Phase(Enum):
     BUILD_DEFINITION_TABLE = 0
@@ -22,7 +22,7 @@ class BoundingBoxVisitor:
     def __init__(self):
 
         self.bounding_box = None
-        self.definition_table = {}  # Maps object ids to reusable scene elements.
+        self.definition_table = {}  # Maps object ids to reusable svg elements.
         self.rectangles_visited = 0
         self.circles_visited = 0
 
@@ -101,9 +101,9 @@ class BoundingBoxVisitor:
                     self.definition_table[shape.id] = shape
             case _Phase.VISIT:
                 match shape.geometry:
-                    case GeometryRect():
+                    case Rect():
                         self.rectangles_visited += 1
-                    case GeometryCircle():
+                    case Circle():
                         self.circles_visited += 1
                 current_matrix *= transforms_to_matrix(shape.transformations)
                 points = shape.geometry.points_for_bounding_box(128)

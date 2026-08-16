@@ -2,8 +2,8 @@ import math
 import pytest
 from dataclasses import FrozenInstanceError
 
-from svgtools.model.geometry.matrix3 import Matrix3
-from svgtools.model.geometry.point import Point
+from svgtools.geometry.matrix3 import Matrix3
+from svgtools.geometry.point import Point
 
 def test_matrix3_construction():
     m = Matrix3(

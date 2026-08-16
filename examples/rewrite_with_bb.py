@@ -3,22 +3,22 @@ import sys
 from dataclasses import replace
 
 from svgtools.parser.svg_parser import parse_svg_string
-from svgtools.model.scene.shape import Shape
+from svgtools.svg.shape import Shape
 
 from svgtools.semantic.bounding_box_visitor import BoundingBoxVisitor
 
-from svgtools.model.geometry.bounding_box import BoundingBox as GeometryBoundingBox
-from svgtools.model.geometry.rect import Rect as GeometryRect
-from svgtools.model.geometry.point import Point as GeometryPoint
+from svgtools.geometry.bounding_box import BoundingBox
+from svgtools.geometry.rect import Rect
+from svgtools.geometry.point import Point
 
 from svgtools.writer.svg_writer import SvgWriter
 
 # Warning: this only works when the top svg tag does NOT do any transformation
-def build_rect_from_bb(bb: GeometryBoundingBox) -> Shape:
+def build_rect_from_bb(bb: BoundingBox) -> Shape:
     return Shape(
         id="bbrect",
-        geometry=GeometryRect(
-            top_left=GeometryPoint(
+        geometry=Rect(
+            top_left=Point(
                 bb.min.x,
                 bb.min.y,
             ),

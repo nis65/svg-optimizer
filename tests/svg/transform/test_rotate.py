@@ -1,7 +1,7 @@
 import pytest
 
 from dataclasses import FrozenInstanceError
-from svgtools.model.scene.transform.rotate import Rotate
+from svgtools.svg.transform.rotate import Rotate
 
 def test_rotate_construction():
     r = Rotate(theta=60, cx=3, cy=4)
