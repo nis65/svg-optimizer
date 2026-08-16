@@ -1,13 +1,9 @@
 import argparse
 import sys
 
-#from svgtools.io import write_svg_file, parse_svg_file
-
 from svgtools.parser.svg_parser import parse_svg_string
-from svgtools.model.scene.document import Document
 from svgtools.writer.svg_writer import SvgWriter
 from svgtools.writer.transform_write_strategy import TransformWriteStrategy
-
 
 parser = argparse.ArgumentParser()
 
