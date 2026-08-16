@@ -2,7 +2,7 @@ from re import escape
 import pytest
 
 from svgtools.parser.transform_parser import parse_transform_string
-from svgtools.model.scene.transform import Translate, Scale, Rotate, SkewX, SkewY, Affine
+from svgtools.svg.transform import Translate, Scale, Rotate, SkewX, SkewY, Affine
 
 def test_parse_empty_transform():
     ttext0=""

@@ -4,15 +4,15 @@ import re
 
 from .transform_parser import parse_transform_string
 from .float_list_parser import parse_float_list
-from svgtools.model.scene.document import Document
-from svgtools.model.scene.svg import Svg
-from svgtools.model.scene.defs import Defs
-from svgtools.model.scene.group import Group
-from svgtools.model.scene.use import Use
-from svgtools.model.scene.shape import Shape
-from svgtools.model.geometry.rect import Rect as GeometryRect
-from svgtools.model.geometry.circle import Circle as GeometryCircle
-from svgtools.model.geometry.point import Point as GeometryPoint
+from svgtools.svg.document import Document
+from svgtools.svg.svg import Svg
+from svgtools.svg.defs import Defs
+from svgtools.svg.group import Group
+from svgtools.svg.use import Use
+from svgtools.svg.shape import Shape
+from svgtools.geometry.rect import Rect
+from svgtools.geometry.circle import Circle
+from svgtools.geometry.point import Point
 
 def parse_svg_string(svg_text: str) -> Document:
 
@@ -90,8 +90,8 @@ def _parse_xml_element(xml_element: ET.Element, namespace_str: str):
             xml_height=xml_element.get("height")
             return Shape(
                 id = rect_id,
-                geometry=GeometryRect(
-                    top_left=GeometryPoint(
+                geometry=Rect(
+                    top_left=Point(
                         x=float(xml_x),
                         y=float(xml_y),
                     ),
@@ -109,8 +109,8 @@ def _parse_xml_element(xml_element: ET.Element, namespace_str: str):
             xml_r=xml_element.get("r")
             return Shape(
                 id = circle_id,
-                geometry=GeometryCircle(
-                    center=GeometryPoint(
+                geometry=Circle(
+                    center=Point(
                         x=float(xml_cx),
                         y=float(xml_cy),
                     ),
@@ -124,12 +124,12 @@ def _parse_xml_element(xml_element: ET.Element, namespace_str: str):
 
 def _parse_xml_children(xml_element: ET.Element, namespace_str: str) -> tuple:
 
-    scene_children = []
+    children = []
 
     for xml_child in xml_element:
-        scene_children.append(_parse_xml_element(xml_child, namespace_str))
+        children.append(_parse_xml_element(xml_child, namespace_str))
 
-    return tuple(scene_children)
+    return tuple(children)
 
 def _collect_unknown_attributes(xml_element: ET.Element, known_list: Collection[str]) -> dict[str, str]:
     return {

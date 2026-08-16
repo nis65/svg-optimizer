@@ -3,16 +3,15 @@ from textwrap import dedent
 
 from svgtools.writer.svg_writer import SvgWriter
 
-from svgtools.model.scene.document import Document
-from svgtools.model.scene.svg import Svg
-from svgtools.model.scene.defs import Defs
-from svgtools.model.scene.group import Group
-from svgtools.model.scene.use import Use
-from svgtools.model.scene.shape import Shape
-from svgtools.model.scene.transform import Translate, Scale, Rotate, SkewX, SkewY, Affine
-from svgtools.model.geometry.rect import Rect as GeometryRect
-from svgtools.model.geometry.circle import Circle as GeometryCircle
-from svgtools.model.geometry.point import Point as GeometryPoint
+from svgtools.svg.document import Document
+from svgtools.svg.svg import Svg
+from svgtools.svg.defs import Defs
+from svgtools.svg.group import Group
+from svgtools.svg.use import Use
+from svgtools.svg.shape import Shape
+from svgtools.svg.transform import Translate, Scale, Rotate, SkewX, SkewY, Affine
+from svgtools.geometry.rect import Rect
+from svgtools.geometry.point import Point
 
 from svgtools.writer.transform_write_strategy import TransformWriteStrategy
 
@@ -28,8 +27,8 @@ def test_write_mode_keep():
                              Translate(dx=1, dy=2),
                              Rotate(theta=45, cx=1, cy=3),
                         ),
-                        geometry=GeometryRect(
-                            top_left=GeometryPoint(
+                        geometry=Rect(
+                            top_left=Point(
                                 x=4,
                                 y=5,
                             ),
@@ -68,8 +67,8 @@ def test_write_mode_aggregate():
                              Affine(a=1, b=2, c=3, d=4, e=5, f=6),
                              Affine(a=6, b=5, c=4, d=3, e=2, f=1),
                         ),
-                        geometry=GeometryRect(
-                            top_left=GeometryPoint(
+                        geometry=Rect(
+                            top_left=Point(
                                 x=4,
                                 y=5,
                             ),
@@ -100,8 +99,8 @@ def test_write_mode_decompose_matrix():
                         transformations=(
                              Affine(a=0, b=2, c=-3, d=3, e=2, f=10),
                         ),
-                        geometry=GeometryRect(
-                            top_left=GeometryPoint(
+                        geometry=Rect(
+                            top_left=Point(
                                 x=4,
                                 y=5,
                             ),
@@ -134,8 +133,8 @@ def test_write_mode_decompose_matrix_and_aggregate():
                              Affine(a=0, b=2, c=-3, d=3, e=2, f=10),
                              Scale(1,2)
                         ),
-                        geometry=GeometryRect(
-                            top_left=GeometryPoint(
+                        geometry=Rect(
+                            top_left=Point(
                                 x=4,
                                 y=5,
                             ),
@@ -169,8 +168,8 @@ def test_write_mode_canonical_conservative():
                              SkewX(theta=45),
                              Scale(sx=2, sy=3),
                         ),
-                        geometry=GeometryRect(
-                            top_left=GeometryPoint(
+                        geometry=Rect(
+                            top_left=Point(
                                 x=4,
                                 y=5,
                             ),
@@ -205,8 +204,8 @@ def test_write_mode_canonical_aggressive():
                              SkewX(theta=45),
                              Scale(sx=2, sy=3),
                         ),
-                        geometry=GeometryRect(
-                            top_left=GeometryPoint(
+                        geometry=Rect(
+                            top_left=Point(
                                 x=4,
                                 y=5,
                             ),

@@ -1,7 +1,7 @@
 import pytest
 
 from dataclasses import FrozenInstanceError
-from svgtools.model.scene.transform.scale import Scale
+from svgtools.svg.transform.scale import Scale
 
 def test_scale_construction():
     s = Scale(sx=3, sy=4)

@@ -1,4 +1,4 @@
-from svgtools.model.geometry.matrix3 import Matrix3, TRHxSDecomposition
+from svgtools.geometry.matrix3 import Matrix3, TRHxSDecomposition
 
 def test_matrix3_decomp_translate():
     mt = Matrix3.translation(2,3)

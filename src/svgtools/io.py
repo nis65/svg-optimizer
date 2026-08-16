@@ -3,7 +3,7 @@ from pathlib import Path
 from svgtools.writer.svg_writer import SvgWriter
 from svgtools.parser.svg_parser import parse_svg_string
 
-from svgtools.model.scene.document import Document
+from svgtools.svg.document import Document
 
 def parse_svg_file(path: str | Path) -> Document:
     path = Path(path)

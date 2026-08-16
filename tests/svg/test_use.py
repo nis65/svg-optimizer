@@ -1,8 +1,8 @@
 
 import pytest
 from dataclasses import FrozenInstanceError
-from svgtools.model.scene.use import Use
-from svgtools.model.scene.transform import Translate, Scale
+from svgtools.svg.use import Use
+from svgtools.svg.transform import Translate, Scale
 
 def test_use_construction():
     u = Use(id="useid", href="#abcde")

@@ -1,8 +1,8 @@
 
 import pytest
 from dataclasses import FrozenInstanceError
-from svgtools.model.scene.document import Document
-from svgtools.model.scene.svg import Svg
+from svgtools.svg.document import Document
+from svgtools.svg.svg import Svg
 
 def test_document_construction():
     doc = Document(Svg(("x", 2)))

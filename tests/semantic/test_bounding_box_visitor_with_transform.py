@@ -1,18 +1,18 @@
 import math
 
-from svgtools.model.geometry.point import Point as GeometryPoint
-from svgtools.model.geometry.rect import Rect as GeometryRect
-from svgtools.model.geometry.circle import Circle as GeometryCircle
-from svgtools.model.geometry.bounding_box import BoundingBox as GeometryBoundingBox
+from svgtools.geometry.point import Point
+from svgtools.geometry.rect import Rect
+from svgtools.geometry.circle import Circle
+from svgtools.geometry.bounding_box import BoundingBox
 
-from svgtools.model.scene.defs import Defs
-from svgtools.model.scene.document import Document
-from svgtools.model.scene.group import Group
-from svgtools.model.scene.shape import Shape
-from svgtools.model.scene.svg import Svg
-from svgtools.model.scene.use import Use
+from svgtools.svg.defs import Defs
+from svgtools.svg.document import Document
+from svgtools.svg.group import Group
+from svgtools.svg.shape import Shape
+from svgtools.svg.svg import Svg
+from svgtools.svg.use import Use
 
-from svgtools.model.scene.transform import Translate, Scale, Rotate
+from svgtools.svg.transform import Translate, Scale, Rotate
 
 from svgtools.semantic.bounding_box_visitor import BoundingBoxVisitor
 
@@ -22,8 +22,8 @@ def test_rect_svg_translate():
             children=(
                 Shape(
                     id="square",
-                    geometry=GeometryRect(
-                        top_left=GeometryPoint(0, 0),
+                    geometry=Rect(
+                        top_left=Point(0, 0),
                         width=10,
                         height=5,
                     ),
@@ -36,9 +36,9 @@ def test_rect_svg_translate():
     visitor = BoundingBoxVisitor()
     visitor.visit(document)
 
-    assert visitor.bounding_box == GeometryBoundingBox(
-                                       min=GeometryPoint(1,1),
-                                       max=GeometryPoint(11,6)
+    assert visitor.bounding_box == BoundingBox(
+                                       min=Point(1,1),
+                                       max=Point(11,6)
                                    )
 
 def test_rect_rect_translate():
@@ -47,8 +47,8 @@ def test_rect_rect_translate():
             children=(
                 Shape(
                     id="square",
-                    geometry=GeometryRect(
-                        top_left=GeometryPoint(0, 0),
+                    geometry=Rect(
+                        top_left=Point(0, 0),
                         width=10,
                         height=5,
                     ),
@@ -60,9 +60,9 @@ def test_rect_rect_translate():
     visitor = BoundingBoxVisitor()
     visitor.visit(document)
 
-    assert visitor.bounding_box == GeometryBoundingBox(
-                                       min=GeometryPoint(1,1),
-                                       max=GeometryPoint(11,6)
+    assert visitor.bounding_box == BoundingBox(
+                                       min=Point(1,1),
+                                       max=Point(11,6)
                                    )
 
 def test_rect_group_translate():
@@ -73,8 +73,8 @@ def test_rect_group_translate():
                     children=(
                         Shape(
                             id="square",
-                            geometry=GeometryRect(
-                                top_left=GeometryPoint(0, 0),
+                            geometry=Rect(
+                                top_left=Point(0, 0),
                                 width=10,
                                 height=5,
                             ),
@@ -88,9 +88,9 @@ def test_rect_group_translate():
     visitor = BoundingBoxVisitor()
     visitor.visit(document)
 
-    assert visitor.bounding_box == GeometryBoundingBox(
-                                       min=GeometryPoint(1,1),
-                                       max=GeometryPoint(11,6)
+    assert visitor.bounding_box == BoundingBox(
+                                       min=Point(1,1),
+                                       max=Point(11,6)
                                    )
 def test_rect_use_translate():
     document = Document(
@@ -100,8 +100,8 @@ def test_rect_use_translate():
                     children=(
                         Shape(
                             id="square",
-                            geometry=GeometryRect(
-                                top_left=GeometryPoint(0, 0),
+                            geometry=Rect(
+                                top_left=Point(0, 0),
                                 width=10,
                                 height=5,
                             ),
@@ -118,9 +118,9 @@ def test_rect_use_translate():
     visitor = BoundingBoxVisitor()
     visitor.visit(document)
 
-    assert visitor.bounding_box == GeometryBoundingBox(
-                                       min=GeometryPoint(1,1),
-                                       max=GeometryPoint(11,6)
+    assert visitor.bounding_box == BoundingBox(
+                                       min=Point(1,1),
+                                       max=Point(11,6)
                                    )
 
 def test_rect_all_translate():
@@ -137,8 +137,8 @@ def test_rect_all_translate():
                                 Shape(
                                     id="square",
                                     transformations=(Translate(dx=3, dy=-2),),
-                                    geometry=GeometryRect(
-                                        top_left=GeometryPoint(0, 0),
+                                    geometry=Rect(
+                                        top_left=Point(0, 0),
                                         width=1,
                                         height=2,
                                     ),
@@ -157,9 +157,9 @@ def test_rect_all_translate():
     visitor = BoundingBoxVisitor()
     visitor.visit(document)
 
-    assert visitor.bounding_box == GeometryBoundingBox(
-                                       min=GeometryPoint(10,-1),
-                                       max=GeometryPoint(11,1)
+    assert visitor.bounding_box == BoundingBox(
+                                       min=Point(10,-1),
+                                       max=Point(11,1)
                                    )
 
 
@@ -170,8 +170,8 @@ def test_circle_svg_scale():
             children=(
                 Shape(
                     id="circle",
-                    geometry=GeometryCircle(
-                        center=GeometryPoint(1, 1),
+                    geometry=Circle(
+                        center=Point(1, 1),
                         radius=1,
                     ),
                     transformations=(),
@@ -184,9 +184,9 @@ def test_circle_svg_scale():
     visitor.visit(document)
 
     assert visitor.bounding_box.isclose(
-        GeometryBoundingBox(
-            min=GeometryPoint(0,0),
-            max=GeometryPoint(4,4)
+        BoundingBox(
+            min=Point(0,0),
+            max=Point(4,4)
         ),
         1e-9
     )
@@ -197,8 +197,8 @@ def test_circle_circle_scale():
             children=(
                 Shape(
                     id="circle",
-                    geometry=GeometryCircle(
-                        center=GeometryPoint(1, 1),
+                    geometry=Circle(
+                        center=Point(1, 1),
                         radius=1,
                     ),
                     transformations=(Scale(sx=2, sy=2),),
@@ -209,9 +209,9 @@ def test_circle_circle_scale():
     visitor = BoundingBoxVisitor()
     visitor.visit(document)
 
-    assert visitor.bounding_box == GeometryBoundingBox(
-                                       min=GeometryPoint(0,0),
-                                       max=GeometryPoint(4,4)
+    assert visitor.bounding_box == BoundingBox(
+                                       min=Point(0,0),
+                                       max=Point(4,4)
                                    )
 
 def test_circle_circle_rotate():
@@ -220,8 +220,8 @@ def test_circle_circle_rotate():
             children=(
                 Shape(
                     id="circle",
-                    geometry=GeometryCircle(
-                        center=GeometryPoint(1, 1),
+                    geometry=Circle(
+                        center=Point(1, 1),
                         radius=1,
                     ),
                     transformations=(Rotate(theta=60, cx=1, cy=1),),
@@ -232,9 +232,9 @@ def test_circle_circle_rotate():
     visitor = BoundingBoxVisitor()
     visitor.visit(document)
 
-    assert visitor.bounding_box.isclose(GeometryBoundingBox(
-                                       min=GeometryPoint(0,0),
-                                       max=GeometryPoint(2,2)
+    assert visitor.bounding_box.isclose(BoundingBox(
+                                       min=Point(0,0),
+                                       max=Point(2,2)
                                    ), 1e-3)
 
 def test_rect_rect_rotate_1():
@@ -243,8 +243,8 @@ def test_rect_rect_rotate_1():
             children=(
                 Shape(
                     id="rect",
-                    geometry=GeometryRect(
-                        top_left=GeometryPoint(0, 0),
+                    geometry=Rect(
+                        top_left=Point(0, 0),
                         width=2,
                         height=2,
                     ),
@@ -256,9 +256,9 @@ def test_rect_rect_rotate_1():
     visitor = BoundingBoxVisitor()
     visitor.visit(document)
     sqrt2=math.sqrt(2)
-    assert visitor.bounding_box.isclose(GeometryBoundingBox(
-                                       min=GeometryPoint(1-sqrt2,1-sqrt2),
-                                       max=GeometryPoint(1+sqrt2,1+sqrt2),
+    assert visitor.bounding_box.isclose(BoundingBox(
+                                       min=Point(1-sqrt2,1-sqrt2),
+                                       max=Point(1+sqrt2,1+sqrt2),
                                    ), 1e-3)
 
 def test_rect_rect_rotate_2():
@@ -267,8 +267,8 @@ def test_rect_rect_rotate_2():
             children=(
                 Shape(
                     id="rect",
-                    geometry=GeometryRect(
-                        top_left=GeometryPoint(0, 0),
+                    geometry=Rect(
+                        top_left=Point(0, 0),
                         width=2,
                         height=2,
                     ),
@@ -280,7 +280,7 @@ def test_rect_rect_rotate_2():
     visitor = BoundingBoxVisitor()
     visitor.visit(document)
     sqrt2=math.sqrt(2)
-    assert visitor.bounding_box.isclose(GeometryBoundingBox(
-                                       min=GeometryPoint(1-sqrt2,1-sqrt2),
-                                       max=GeometryPoint(1+sqrt2,1+sqrt2),
+    assert visitor.bounding_box.isclose(BoundingBox(
+                                       min=Point(1-sqrt2,1-sqrt2),
+                                       max=Point(1+sqrt2,1+sqrt2),
                                    ), 1e-3)

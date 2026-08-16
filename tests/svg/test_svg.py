@@ -2,8 +2,8 @@
 import pytest
 from dataclasses import FrozenInstanceError
 
-from svgtools.model.scene.svg import Svg
-from svgtools.model.scene.transform import Translate, Scale
+from svgtools.svg.svg import Svg
+from svgtools.svg.transform import Translate, Scale
 
 def test_svg_construction():
     svg = Svg(id="svgid", children=("x", 2))

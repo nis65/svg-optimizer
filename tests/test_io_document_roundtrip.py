@@ -1,8 +1,8 @@
 
 from svgtools.io import write_svg_file, parse_svg_file
 
-from svgtools.model.scene.document import Document
-from svgtools.model.scene.svg import Svg
+from svgtools.svg.document import Document
+from svgtools.svg.svg import Svg
 
 def test_io_document_roundtrip(tmp_path):
 

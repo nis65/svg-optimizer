@@ -1,16 +1,16 @@
 import pytest
 
 from svgtools.parser.svg_parser import parse_svg_string
-from svgtools.model.scene.document import Document
-from svgtools.model.scene.svg import Svg
-from svgtools.model.scene.defs import Defs
-from svgtools.model.scene.group import Group
-from svgtools.model.scene.use import Use
-from svgtools.model.scene.shape import Shape
-from svgtools.model.scene.transform import Translate, Scale, Rotate
-from svgtools.model.geometry.rect import Rect as GeometryRect
-from svgtools.model.geometry.circle import Circle as GeometryCircle
-from svgtools.model.geometry.point import Point as GeometryPoint
+from svgtools.svg.document import Document
+from svgtools.svg.svg import Svg
+from svgtools.svg.defs import Defs
+from svgtools.svg.group import Group
+from svgtools.svg.use import Use
+from svgtools.svg.shape import Shape
+from svgtools.svg.transform import Translate, Scale, Rotate
+from svgtools.geometry.rect import Rect
+from svgtools.geometry.circle import Circle
+from svgtools.geometry.point import Point
 
 def test_parse_empty_svg():
     svg_text = "<svg/>"
@@ -71,8 +71,8 @@ def test_parse_svg_with_namespace_and_rect():
         svg=Svg(
             children=(
                 Shape(
-                    geometry=GeometryRect(
-                        top_left=GeometryPoint(
+                    geometry=Rect(
+                        top_left=Point(
                             x=0,
                             y=0,
                         ),
@@ -245,8 +245,8 @@ def test_parse_group_with_elements_and_transform():
                 Group(
                     children=(
                         Shape(
-                            geometry=GeometryCircle(
-                                center=GeometryPoint(
+                            geometry=Circle(
+                                center=Point(
                                     x=1,
                                     y=2,
                                 ),
@@ -257,8 +257,8 @@ def test_parse_group_with_elements_and_transform():
                             href="#arrow",
                         ),
                         Shape(
-                            geometry=GeometryRect(
-                                top_left=GeometryPoint(
+                            geometry=Rect(
+                                top_left=Point(
                                     x=1,
                                     y=2,
                                 ),
@@ -333,8 +333,8 @@ def test_rect():
             children=(
                 Shape(
                     id="rectid",
-                    geometry=GeometryRect(
-                        top_left=GeometryPoint(
+                    geometry=Rect(
+                        top_left=Point(
                             x=1,
                             y=2,
                         ),
@@ -358,8 +358,8 @@ def test_rect_with_defaults_and_unknowns():
             children=(
                 Shape(
                     id="rectid",
-                    geometry=GeometryRect(
-                        top_left=GeometryPoint(
+                    geometry=Rect(
+                        top_left=Point(
                             x=0,
                             y=0,
                         ),
@@ -387,8 +387,8 @@ def test_circle():
             children=(
                 Shape(
                     id="circleid",
-                    geometry=GeometryCircle(
-                        center=GeometryPoint(
+                    geometry=Circle(
+                        center=Point(
                             x=1,
                             y=2,
                         ),
@@ -412,8 +412,8 @@ def test_circle_with_default_and_unknowns():
             children=(
                 Shape(
                     id="circleid",
-                    geometry=GeometryCircle(
-                        center=GeometryPoint(
+                    geometry=Circle(
+                        center=Point(
                             x=0,
                             y=0,
                         ),

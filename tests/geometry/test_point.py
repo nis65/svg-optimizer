@@ -1,6 +1,6 @@
 import pytest
 from dataclasses import FrozenInstanceError
-from svgtools.model.geometry.point import Point
+from svgtools.geometry.point import Point
 
 def test_point_construction():
     p = Point(1.5, -2.0)

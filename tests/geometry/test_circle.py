@@ -1,9 +1,9 @@
 import pytest
 import math
 from dataclasses import FrozenInstanceError
-from svgtools.model.geometry.point import Point
-from svgtools.model.geometry.circle import Circle
-from svgtools.model.geometry.bounding_box import BoundingBox
+from svgtools.geometry.point import Point
+from svgtools.geometry.circle import Circle
+from svgtools.geometry.bounding_box import BoundingBox
 
 def test_circle_construction():
     c = Circle(center=Point(1.5, -2.0), radius=23)
