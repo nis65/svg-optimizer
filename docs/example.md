@@ -31,3 +31,9 @@ The example is a simple logo that consist of four speakers:
 ![logo rendered](./logo.svg)
 
 To see the source code, move to the [current directory](.) and click on `logo.svg` and then on *Code*. Sorry, Github doesn't offer a way to integrate a link into a `md` file that renders an `.svg` as code and not as picture.
+
+This file is also copied to the [testdata directory](/tests/testdata) and used for some of the automated tests.
+
+## Example programs
+
+To see how to use this library, have a look at the [examples directory](/examples).

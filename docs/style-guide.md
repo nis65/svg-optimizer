@@ -9,18 +9,18 @@
 
 ## Code style
 
-* Python ≥ 3.12
-* `ruff format`
-* `ruff check`
-* `pytest`
-* `pyright --strict`
+* [x] Python ≥ 3.12
+* [ ] `ruff format`
+* [ ] `ruff check`
+* [x] `pytest`
+* [ ] `pyright --strict`
 
 ## Git principles
-* conventional commits: `feat:`, `fix:`, `refactor:`, `test:`, `chore`, `docs:`, `build:`, `ci:`, `style:`, `perf:`
-* small commits
-* no squash merges
-* all changes via pull request
-* Semantic versioning, start with `0.0.1`
+* [x] conventional commits: `feat:`, `fix:`, `refactor:`, `test:`, `chore`, `docs:`, `build:`, `ci:`, `style:`, `perf:`
+* [x] small commits
+* [x] no squash merges
+* [x] all changes via pull request
+* [ ] Semantic versioning, start with `0.0.1`
 
 ## Design principles
 

@@ -10,8 +10,8 @@ It turned out that this is a very nice python exercise. As I am not experienced 
 
 ## Design Goals
 
-* SVG parser to build an internal python representation of the picture
-* SVG renderer to output the final result
+* SVG parser to build an internal python representation from an svg file
+* SVG writer to output the internal representation to an svg file
 * Immutable geometry objects
 * Exact bounding box computation
 * Minimal dependencies
