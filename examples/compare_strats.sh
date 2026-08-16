@@ -10,6 +10,8 @@ else
 fi
 rm -rf $TARGETDIR/*
 
+echo "Results in $TARGETDIR"
+
 (
 cd $(dirname $0)
 

@@ -3,7 +3,6 @@ import sys
 from dataclasses import replace
 
 from svgtools.parser.svg_parser import parse_svg_string
-from svgtools.model.scene.document import Document
 from svgtools.model.scene.shape import Shape
 
 from svgtools.semantic.bounding_box_visitor import BoundingBoxVisitor

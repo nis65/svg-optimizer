@@ -2,10 +2,7 @@ import argparse
 import sys
 
 from svgtools.parser.svg_parser import parse_svg_string
-from svgtools.model.scene.document import Document
 from svgtools.semantic.bounding_box_visitor import BoundingBoxVisitor
-from svgtools.model.geometry.bounding_box import BoundingBox as GeometryBoundingBox
-from svgtools.model.geometry.point import Point as GeometryPoint
 
 parser = argparse.ArgumentParser()
 
