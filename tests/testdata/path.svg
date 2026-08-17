@@ -1,0 +1,14 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
+<path d="M 500 500 L 600 600" stroke="red" />
+<path d="M 500 500 l -100 100" stroke="yellow" />
+<path d="m 500 500 100 -100 100 -200" stroke="green" />
+<path d="M 200 500 h 50 v 100 h -50" stroke="blue" />
+<path d="M 500 200 c 10 20 30 40 50 0" stroke="orange" />
+<path d="M 700 700 q 10 20 30 0" stroke="white" />
+<path d="M 800 700 s 20 40 60 0" stroke="white" />
+<path d="M 200 700 a 30 20 45 0 1 100 100" stroke="purple" />
+<path d="M 200 700 a 30 20 45 1 0 100 100" stroke="white" />
+<path d="M 300 700 a 30 20 45 1 1 100 100" stroke="purple" />
+<path d="M 300 700 a 30 20 45 0 0 100 100 Z" stroke="white" />
+</svg>
