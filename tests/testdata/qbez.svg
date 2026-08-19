@@ -1,0 +1,11 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
+<rect x="100" y="100" width="400" height="400" stroke="red" />
+<rect x="150" y="300" width="200" height="150" stroke="red" />
+<path d="M 200 500 q 50 50 50 100" stroke="white" />
+<path d="M 500 500 q 50 50 50 100" stroke="white" />
+<path d="M 200 500 Q 50 50 50 100" stroke="orange" />
+<path d="M 500 500 Q 150 150 150 200" stroke="orange" />
+<path d="M 100 100 Q 200 200 300 300" stroke="red" />
+<path d="M 100 400 Q 200 500 300 400" stroke="blue" />
+</svg>
