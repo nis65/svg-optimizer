@@ -1,4 +1,5 @@
 import pytest
+import math
 
 from svgtools.geometry.point import Point
 from svgtools.geometry.path import Path
@@ -7,6 +8,7 @@ from svgtools.geometry.path_elements.lineto import LineTo
 from svgtools.geometry.path_elements.closepath import ClosePath
 from svgtools.geometry.path_elements.quadraticbezier import QuadraticBezier
 from svgtools.geometry.path_elements.cubicbezier import CubicBezier
+from svgtools.geometry.path_elements.arc import Arc
 
 def test_path_construction():
     p = Path(children=())
@@ -259,7 +261,149 @@ def test_path_with_bounding_box_for_cubic_bezier_curve():
         )
     assert Point.points_are_close(p.points_for_bounding_box(3), {
         Point(x=1, y=1,),
-        Point(x=46/27, y=45/27,),
-        Point(x=35/27, y=45/27,),
+        Point(x=46/27, y=5/3,),
+        Point(x=35/27, y=5/3,),
         Point(x=2, y=1,),
     }, 1e-9)
+
+def test_path_with_arc():
+    p = Path(
+            children = (
+                Arc(
+                    rx = 1,
+                    ry = 2,
+                    phi = 45,
+                    large_arc_flag = 0,
+                    sweep_flag = 1,
+                    end = Point(
+                        x = 3,
+                        y = 4,
+                    ),
+                    representation='A',
+                ),
+            )
+        )
+    assert type(p.children[0]) == Arc
+    assert p.children[0].rx == 1
+    assert p.children[0].ry == 2
+    assert p.children[0].phi == 45
+    assert p.children[0].large_arc_flag == 0
+    assert p.children[0].sweep_flag == 1
+    assert p.children[0].end.x == 3
+    assert p.children[0].end.y == 4
+    assert p.children[0].representation == 'A'
+
+def test_path_with_bounding_box_for_small_arc_circle():
+    p = Path(
+            children = (
+                MoveTo(
+                    target = Point(
+                        x = 200,
+                        y = 200,
+                    ),
+                    representation='M',
+                ),
+                Arc(
+                    rx = 100,
+                    ry = 100,
+                    phi = -10,
+                    large_arc_flag = 0,
+                    sweep_flag = 1,
+                    end = Point(
+                        x = 300,
+                        y = 100,
+                    ),
+                    representation='A',
+                ),
+            )
+        )
+    assert Point.points_are_close(p.points_for_bounding_box(2), {
+        Point(x=200, y=200,),
+        Point(x=300 - 100 * math.sqrt(2) / 2,
+              y=200 - 100 * math.sqrt(2) / 2
+             ),
+        Point(x=300, y=100,),
+    }, 1e-9)
+
+def test_path_with_bounding_box_for_big_arc_circle():
+    p = Path(
+            children = (
+                MoveTo(
+                    target = Point(
+                        x = 200,
+                        y = 500,
+                    ),
+                    representation='M',
+                ),
+                Arc(
+                    rx = 100,
+                    ry = 100,
+                    phi = 15,
+                    large_arc_flag = 1,
+                    sweep_flag = 1,
+                    end = Point(
+                        x = 300,
+                        y = 400,
+                    ),
+                    representation='A',
+                ),
+            )
+        )
+    assert Point.points_are_close(p.points_for_bounding_box(3), {
+        Point(x=200, y=500,),
+        Point(x=100, y=400,),
+        Point(x=200, y=300,),
+        Point(x=300, y=400,),
+    }, 1e-9)
+
+def test_path_with_bounding_box_for_two_similar_random_arcs():
+    p1 = Path(
+            children = (
+                MoveTo(
+                    target = Point(
+                        x = 3,
+                        y = 7,
+                    ),
+                    representation='M',
+                ),
+                Arc(
+                    rx = 3,
+                    ry = 7,
+                    phi = 27,
+                    large_arc_flag = 1,
+                    sweep_flag = 1,
+                    end = Point(
+                        x = 10,
+                        y = 11,
+                    ),
+                    representation='A',
+                ),
+            )
+        )
+    p2 = Path(
+            children = (
+                MoveTo(
+                    target = Point(
+                        x = 10,
+                        y = 11,
+                    ),
+                    representation='M',
+                ),
+                Arc(
+                    rx = 3,
+                    ry = 7,
+                    phi = 27,
+                    large_arc_flag = 1,
+                    sweep_flag = 0,
+                    end = Point(
+                        x = 3,
+                        y = 7,
+                    ),
+                    representation='A',
+                ),
+            )
+        )
+    assert Point.points_are_close(
+             p1.points_for_bounding_box(36),
+             p2.points_for_bounding_box(36),
+             1e-9)
