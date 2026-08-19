@@ -7,6 +7,15 @@ from ..point import Point
 @dataclass(frozen=True, slots=True)
 class LineTo(PathElement):
 
+    parameter_counts = {
+            "L": 2,
+            "l": 2,
+            "H": 1,
+            "h": 1,
+            "V": 1,
+            "v": 1,
+    }
+
     target: Point
     representation: str
 

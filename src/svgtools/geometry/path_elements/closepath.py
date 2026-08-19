@@ -7,6 +7,11 @@ from ..point import Point
 @dataclass(frozen=True, slots=True)
 class ClosePath(PathElement):
 
+    parameter_counts = {
+            "Z": 0,
+            "z": 0,
+    }
+
     representation: str
 
     def __post_init__(self) -> None:

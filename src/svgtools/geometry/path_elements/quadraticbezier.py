@@ -7,6 +7,13 @@ from ..point import Point
 @dataclass(frozen=True, slots=True)
 class QuadraticBezier(PathElement):
 
+    parameter_counts = {
+            "Q": 4,
+            "q": 4,
+            "T": 2,
+            "t": 2,
+    }
+
     control1: Point
     end: Point
     representation: str

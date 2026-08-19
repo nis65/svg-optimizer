@@ -7,6 +7,11 @@ from ..point import Point
 @dataclass(frozen=True, slots=True)
 class MoveTo(PathElement):
 
+    parameter_counts = {
+            "M": 2,
+            "m": 2,
+    }
+
     target: Point
     representation: str
 

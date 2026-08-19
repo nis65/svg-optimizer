@@ -7,6 +7,11 @@ from ..point import Point
 @dataclass(frozen=True, slots=True)
 class Arc(PathElement):
 
+    parameter_counts = {
+            "A": 7,
+            "a": 7,
+    }
+
     rx: float
     ry: float
     phi: float

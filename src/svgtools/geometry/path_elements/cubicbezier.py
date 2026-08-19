@@ -7,6 +7,13 @@ from ..point import Point
 @dataclass(frozen=True, slots=True)
 class CubicBezier(PathElement):
 
+    parameter_counts = {
+            "C": 6,
+            "c": 6,
+            "S": 4,
+            "s": 4,
+    }
+
     control1: Point
     control2: Point
     end: Point
