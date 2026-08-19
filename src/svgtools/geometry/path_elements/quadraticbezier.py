@@ -1,0 +1,41 @@
+import math
+
+from dataclasses import dataclass
+from .path_element_abc import PathElement
+from ..geometry_abc import Geometry
+from ..point import Point
+
+@dataclass(frozen=True, slots=True)
+class QuadraticBezier(PathElement, Geometry):
+
+    control1: Point
+    end: Point
+    representation: str
+
+    def __post_init__(self) -> None:
+        if not (self.representation == 'q' or self.representation == 'Q'
+             or self.representation == 't' or self.representation == 'T'
+            ):
+            raise ValueError(
+                f"LineTo can only be represented by one of 'qQtT', not {self.representation}"
+            )
+
+    @property
+    def endpoint(self) -> Point:
+        return self.end
+
+    @staticmethod
+    def _qb(p0: float, p1: float, p2: float, t: float) -> float:
+        return (1-t)*(1-t)*p0 + 2*(1-t)*t*p1 + t*t*p2
+
+    def _point_at(self, start: Point, t: float) -> Point:
+        new_x = self._qb(start.x, self.control1.x, self.end.x, t)
+        new_y = self._qb(start.y, self.control1.y, self.end.y, t)
+        return Point(x = new_x, y=new_y)
+
+    def points_for_bounding_box(self, start: Point, count: int) -> set[Point]:
+        points = []
+        for i in range(0, count+1):
+            t = i / count
+            points.append(self._point_at(start, t))
+        return set(points)
