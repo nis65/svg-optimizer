@@ -6,6 +6,7 @@ from svgtools.geometry.path_elements.moveto import MoveTo
 from svgtools.geometry.path_elements.lineto import LineTo
 from svgtools.geometry.path_elements.closepath import ClosePath
 from svgtools.geometry.path_elements.quadraticbezier import QuadraticBezier
+from svgtools.geometry.path_elements.cubicbezier import CubicBezier
 
 def test_path_construction():
     p = Path(children=())
@@ -165,3 +166,100 @@ def test_path_with_bounding_box_for_quadratic_bezier_curve():
         Point(x=2, y=1.5,),
         Point(x=3, y=1,),
     }
+
+def test_path_with_cubic_bezier():
+    p = Path(
+            children = (
+                CubicBezier(
+                    control1 = Point(
+                        x = 2,
+                        y = 2,
+                    ),
+                    control2 = Point(
+                        x = 3,
+                        y = 3,
+                    ),
+                    end = Point(
+                        x = 4,
+                        y = 4,
+                    ),
+                    representation='C',
+                ),
+            )
+        )
+    assert type(p.children[0]) == CubicBezier
+    assert p.children[0].control1.x == 2
+    assert p.children[0].control1.y == 2
+    assert p.children[0].control2.x == 3
+    assert p.children[0].control2.y == 3
+    assert p.children[0].end.x == 4
+    assert p.children[0].end.y == 4
+    assert p.children[0].representation == 'C'
+
+def test_path_with_bounding_box_for_cubic_bezier_line():
+    p = Path(
+            children = (
+                MoveTo(
+                    target = Point(
+                        x = 1,
+                        y = 1,
+                    ),
+                    representation='M',
+                ),
+                CubicBezier(
+                    control1 = Point(
+                        x = 2,
+                        y = 2,
+                    ),
+                    control2 = Point(
+                        x = 3,
+                        y = 3,
+                    ),
+                    end = Point(
+                        x = 4,
+                        y = 4,
+                    ),
+                    representation='C',
+                ),
+            )
+        )
+    assert p.points_for_bounding_box(3) == {
+        Point(x=1, y=1,),
+        Point(x=2, y=2,),
+        Point(x=3, y=3,),
+        Point(x=4, y=4,),
+    }
+
+def test_path_with_bounding_box_for_cubic_bezier_curve():
+    p = Path(
+            children = (
+                MoveTo(
+                    target = Point(
+                        x = 1,
+                        y = 1,
+                    ),
+                    representation='M',
+                ),
+                CubicBezier(
+                    control1 = Point(
+                        x = 3,
+                        y = 2,
+                    ),
+                    control2 = Point(
+                        x = 0,
+                        y = 2,
+                    ),
+                    end = Point(
+                        x = 2,
+                        y = 1,
+                    ),
+                    representation='C',
+                ),
+            )
+        )
+    assert Point.points_are_close(p.points_for_bounding_box(3), {
+        Point(x=1, y=1,),
+        Point(x=46/27, y=45/27,),
+        Point(x=35/27, y=45/27,),
+        Point(x=2, y=1,),
+    }, 1e-9)
