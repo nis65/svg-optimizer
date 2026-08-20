@@ -57,13 +57,20 @@ class TokenIterator:
 def print_stderr(text: str):
     print(f"{text}", file=sys.stderr)
 
+@dataclass
+class PathParseState:
+    current_point: Point = Point(0, 0)
+    current_subpath_start: Point = Point(0, 0)
+    previous_command: str | None = None
+    previous_quadratic_control: Point | None = None
+    previous_cubic_control: Point | None = None
+
 def parse_path_string(text: str) -> tuple:
     tokens = _lexer(text)
     token_iterator = TokenIterator(tokens)
 
     path_element_list = []
-    current_point = Point(0,0)
-    current_subpath_start = current_point
+    current_state = PathParseState()
     
     while True:
         token = token_iterator.get()
@@ -74,26 +81,26 @@ def parse_path_string(text: str) -> tuple:
         command = token.value
         match command:
             case 'm'|'M':
-                current_point, parsed_elements = _parse_mM_list(command, current_point, token_iterator)
+                current_state, parsed_elements = _parse_mM_list(command, current_state, token_iterator)
             case 'l'|'L':
-                current_point, parsed_elements = _parse_any_list(command, current_point, token_iterator,
+                current_state, parsed_elements = _parse_any_list(command, current_state, token_iterator,
                                                  LineTo.parameter_counts[command], _parse_lL)
             case 'h'|'H':
-                current_point, parsed_elements = _parse_any_list(command, current_point, token_iterator,
+                current_state, parsed_elements = _parse_any_list(command, current_state, token_iterator,
                                                  LineTo.parameter_counts[command], _parse_hH)
             case 'v'|'V':
-                current_point, parsed_elements = _parse_any_list(command, current_point, token_iterator,
+                current_state, parsed_elements = _parse_any_list(command, current_state, token_iterator,
                                                  LineTo.parameter_counts[command], _parse_vV)
         for element in parsed_elements:
             path_element_list.append(element)
     return Path(children = tuple(path_element_list))
                 
-def _parse_mM_list(command: str, current_point: Point, iterator: TokenIterator) -> tuple:
+def _parse_mM_list(command: str, current_state: PathParseState, iterator: TokenIterator) -> (PathParseState, tuple):
     expected_numbers = MoveTo.parameter_counts[command]
     if not iterator.has_numbers(expected_numbers):
         raise ValueError(f"Not enough numbers {expected_numbers} for command {command}")
     else:
-        current_point, parsed_element = _parse_mM(command, current_point, iterator)
+        current_state, parsed_element = _parse_mM(command, current_state, iterator)
         match command:
             case 'm':
                 replaced_command = 'l'
@@ -103,83 +110,88 @@ def _parse_mM_list(command: str, current_point: Point, iterator: TokenIterator) 
         other_elements = ()
         while iterator.peek() is not None and iterator.peek().kind == TokenKind.NUMBER:
             if iterator.has_numbers(expected_numbers):
-                current_point, other_elements = _parse_any_list(replaced_command, current_point, iterator,
+                current_state, other_elements = _parse_any_list(replaced_command, current_state, iterator,
                                                                 expected_numbers, _parse_lL)
             else:
                 print_stderr(f"WARNING: dropping extra number {iterator.get().value} in {command} command")
-    return current_point, (parsed_element, *other_elements)
+    return current_state, (parsed_element, *other_elements)
 
-def _parse_any_list(command: str, current_point: Point, iterator: TokenIterator,
-                   expected_numbers, parse_element_function):
+def _parse_any_list(command: str, current_state: PathParseState, iterator: TokenIterator,
+                   expected_numbers, parse_element_function) -> (PathParseState, tuple):
     parsed_path_elements = []
     if not iterator.has_numbers(expected_numbers):
         raise ValueError(f"Not enough numbers {expected_numbers} for command {command}")
     else:
-        current_point, parsed_element = parse_element_function(command, current_point, iterator)
+        current_state, parsed_element = parse_element_function(command, current_state, iterator)
         parsed_path_elements.append(parsed_element)
         while iterator.peek() is not None and iterator.peek().kind == TokenKind.NUMBER:
             if iterator.has_numbers(LineTo.parameter_counts[command]):
-                current_point, parsed_element = parse_element_function(command, current_point, iterator)
+                current_state, parsed_element = parse_element_function(command, current_state, iterator)
                 parsed_path_elements.append(parsed_element)
             else:
                print_stderr(f"WARNING: dropping extra number {iterator.get().value} in {command} command")
-    return current_point, tuple(parsed_path_elements)
+    return current_state, tuple(parsed_path_elements)
 
-def _parse_mM(command: str, current_point: Point, iterator: TokenIterator) -> (Point, MoveTo):
+def _parse_mM(command: str, current_state: PathParseState, iterator: TokenIterator) -> (PathParseState, MoveTo):
     match command:
         case 'm': 
-            new_x = current_point.x + float(iterator.get().value)
-            new_y = current_point.y + float(iterator.get().value)
+            new_x = current_state.current_point.x + float(iterator.get().value)
+            new_y = current_state.current_point.y + float(iterator.get().value)
         case 'M':
             new_x = float(iterator.get().value)
             new_y = float(iterator.get().value)
-    end_point = Point(new_x, new_y) 
-    return (end_point,
+    current_state.current_point = Point(new_x, new_y)
+    current_state.current_subpath_start = current_state.current_point
+    current_state.previous_command = command
+    return (current_state,
         MoveTo(
-            target = end_point,
+            target = current_state.current_point,
             representation = command,
         ))
 
-def _parse_lL(command: str, current_point: Point, iterator: TokenIterator) -> (Point, LineTo):
+def _parse_lL(command: str, current_state: PathParseState, iterator: TokenIterator) -> (PathParseState, LineTo):
     match command:
         case 'l': 
-            new_x = current_point.x + float(iterator.get().value)
-            new_y = current_point.y + float(iterator.get().value)
+            new_x = current_state.current_point.x + float(iterator.get().value)
+            new_y = current_state.current_point.y + float(iterator.get().value)
         case 'L':
             new_x = float(iterator.get().value)
             new_y = float(iterator.get().value)
-    end_point = Point(new_x, new_y) 
-    return (end_point,
+    current_state.current_point = Point(new_x, new_y)
+    current_state.previous_command = command
+    return (current_state,
         LineTo(
-            target = end_point,
+            target = current_state.current_point,
             representation = command,
         ))
 
-def _parse_hH(command: str, current_point: Point, iterator: TokenIterator) -> (Point, LineTo):
+def _parse_hH(command: str, current_state: PathParseState, iterator: TokenIterator) -> (PathParseState, LineTo):
     match command:
         case 'h': 
-            new_x = current_point.x + float(iterator.get().value)
+            new_x = current_state.current_point.x + float(iterator.get().value)
         case 'H':
             new_x = float(iterator.get().value)
-    new_y = current_point.y
-    end_point = Point(new_x, new_y)
-    return (end_point,
+    new_y = current_state.current_point.y
+    current_state.current_point = Point(new_x, new_y)
+    current_state.previous_command = command
+    return (current_state,
         LineTo(
-            target = end_point,
+            target = current_state.current_point,
             representation = command,
         ))
 
-def _parse_vV(command: str, current_point: Point, iterator: TokenIterator) -> (Point, LineTo):
-    new_x = current_point.x
+def _parse_vV(command: str, current_state: PathParseState, iterator: TokenIterator) -> (PathParseState, LineTo):
+    new_x = current_state.current_point.x
     match command:
         case 'v': 
-            new_y = current_point.y + float(iterator.get().value)
+            new_y = current_state.current_point.y + float(iterator.get().value)
         case 'V':
             new_y = float(iterator.get().value)
-    end_point = Point(new_x, new_y)
-    return (end_point,
+    current_state.current_point = Point(new_x, new_y)
+    current_state.previous_command = command
+    return (current_state,
         LineTo(
-            target = end_point,
+            target = current_state.current_point,
             representation = command,
         ))
 
