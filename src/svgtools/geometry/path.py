@@ -10,9 +10,10 @@ class Path(Geometry):
     children: tuple = ()
 
     def points_for_bounding_box(self, count: int) -> set[Point]:
-        # as every path MUST start with a moveto, we don't need to
-        # initialise current_point and current_subpath_start here
         points = []
+        # a path does not need to start with an explicit MoveTo
+        current_point = Point(0,0)
+        current_subpath_start = current_point
 
         for child in self.children:
             if type(child) == MoveTo:
