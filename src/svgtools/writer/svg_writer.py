@@ -10,6 +10,7 @@ from svgtools.svg.transform import Translate, Scale, Rotate, SkewX, SkewY, Affin
 from svgtools.svg.get_matrix import get_matrix, transforms_to_matrix
 from svgtools.geometry.rect import Rect
 from svgtools.geometry.circle import Circle
+from svgtools.geometry.ellipse import Ellipse
 from svgtools.geometry.line import Line
 from svgtools.geometry.polyline import Polyline
 from svgtools.geometry.polygon import Polygon
@@ -112,6 +113,8 @@ class SvgWriter:
                 self._parts.append(indent + "<rect")
             case Circle():
                 self._parts.append(indent + "<circle")
+            case Ellipse():
+                self._parts.append(indent + "<ellipse")
             case Path():
                 self._parts.append(indent + "<path")
             case Line():
@@ -144,6 +147,13 @@ class SvgWriter:
                                        f' cy="{self._number_to_string(geometry.center.y)}"'
                                       )
                     self._parts.append(f' r="{self._number_to_string(geometry.radius)}"')
+                case Ellipse():
+                    self._parts.append(f' cx="{self._number_to_string(geometry.center.x)}"'
+                                       f' cy="{self._number_to_string(geometry.center.y)}"'
+                                      )
+                    self._parts.append(f' rx="{self._number_to_string(geometry.radiusx)}"'
+                                       f' ry="{self._number_to_string(geometry.radiusy)}"'
+                                      )
                 case Path():
                     path_elements = geometry.children
                     self._parts.append(f' d="{self._path_elements_to_string(path_elements)}"')
@@ -156,7 +166,7 @@ class SvgWriter:
                 case Polyline() | Polygon() :
                     self._parts.append(f' points="{self._polypoints_to_string(geometry.children)}"')
                 case _:
-                    raise NotImplementedError("I know nothing but Rects, Circles, Lines, Polylines, Polygons and Paths")
+                    raise NotImplementedError("I know nothing but Rects, Circles, Ellipses, Lines, Polylines, Polygons and Paths")
         if width := getattr(element, "width", None):
             self._parts.append(f' width="{self._number_to_string(width)}"')
         if height := getattr(element, "height", None):
