@@ -10,6 +10,7 @@ from svgtools.svg.shape import Shape
 from svgtools.svg.transform import Translate, Scale, Rotate
 from svgtools.geometry.rect import Rect
 from svgtools.geometry.circle import Circle
+from svgtools.geometry.ellipse import Ellipse
 from svgtools.geometry.path import Path
 from svgtools.geometry.path_elements.moveto import MoveTo
 from svgtools.geometry.path_elements.lineto import LineTo
@@ -435,6 +436,32 @@ def test_circle_with_default_and_unknowns():
                     unknown_attributes = {
                         "unknown": "unknown_value",
                     }
+                ),
+            ),
+        ),
+    )
+
+def test_ellipse():
+
+    svg_text = """
+    <svg>
+        <ellipse id="eid" cx="1" cy="2" rx="3.5" ry="2.5" transform="scale(13 10)"/>
+    </svg>
+    """
+    assert parse_svg_string(svg_text) == Document(
+        svg=Svg(
+            children=(
+                Shape(
+                    id="eid",
+                    geometry=Ellipse(
+                        center=Point(
+                            x=1,
+                            y=2,
+                        ),
+                        radiusx=3.5,
+                        radiusy=2.5,
+                    ),
+                    transformations=(Scale(sx=13, sy=10),)
                 ),
             ),
         ),
