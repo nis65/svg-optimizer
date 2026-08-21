@@ -10,6 +10,13 @@ from svgtools.svg.shape import Shape
 from svgtools.svg.transform import Translate, Scale, Rotate
 from svgtools.geometry.rect import Rect
 from svgtools.geometry.circle import Circle
+from svgtools.geometry.path import Path
+from svgtools.geometry.path_elements.moveto import MoveTo
+from svgtools.geometry.path_elements.lineto import LineTo
+from svgtools.geometry.path_elements.closepath import ClosePath
+from svgtools.geometry.path_elements.quadraticbezier import QuadraticBezier
+from svgtools.geometry.path_elements.cubicbezier import CubicBezier
+from svgtools.geometry.path_elements.arc import Arc
 from svgtools.geometry.point import Point
 
 def test_parse_empty_svg():
@@ -418,6 +425,46 @@ def test_circle_with_default_and_unknowns():
                             y=0,
                         ),
                         radius=3.5,
+                    ),
+                    transformations=(
+                        Rotate(theta=30, cx=0, cy=0),
+                        Scale(sx=13, sy=13),),
+                    unknown_attributes = {
+                        "unknown": "unknown_value",
+                    }
+                ),
+            ),
+        ),
+    )
+
+def test_path():
+    svg_text = """
+    <svg>
+        <path id="mypath" d="m 3 4 l 5+6" transform="rotate(30) scale(13)" unknown="unknown_value"/>
+    </svg>
+    """
+    assert parse_svg_string(svg_text) == Document(
+        svg=Svg(
+            children=(
+                Shape(
+                    id="mypath",
+                    geometry = Path (
+                        children = (
+                            MoveTo(
+                                target = Point(
+                                    x = 3,
+                                    y = 4,
+                                ),
+                                representation = 'm',
+                            ),
+                            LineTo(
+                                target = Point(
+                                    x = 8,
+                                    y = 10,
+                                ),
+                                representation = 'l',
+                            ),
+                        )
                     ),
                     transformations=(
                         Rotate(theta=30, cx=0, cy=0),
