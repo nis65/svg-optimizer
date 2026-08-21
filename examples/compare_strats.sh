@@ -24,7 +24,7 @@ do
   for strat in KEEP AGGREGATE DECOMPOSE_MATRIX DECOMPOSE_MATRIX_AND_AGGREGATE CANONICAL_CONSERVATIVE CANONICAL_AGGRESSIVE
   do
     targetname=$THISTARGETDIR/${strat}.svg
-    ./run_rewrite.sh --strategy $strat < $file > $targetname
+    ./run_rewrite.sh --transform-strategy $strat < $file > $targetname
   done
 done
 
