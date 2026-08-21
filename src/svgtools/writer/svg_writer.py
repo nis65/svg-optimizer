@@ -10,6 +10,9 @@ from svgtools.svg.transform import Translate, Scale, Rotate, SkewX, SkewY, Affin
 from svgtools.svg.get_matrix import get_matrix, transforms_to_matrix
 from svgtools.geometry.rect import Rect
 from svgtools.geometry.circle import Circle
+from svgtools.geometry.line import Line
+from svgtools.geometry.polyline import Polyline
+from svgtools.geometry.polygon import Polygon
 from svgtools.geometry.path import Path
 from svgtools.geometry.path_elements.moveto import MoveTo
 from svgtools.geometry.path_elements.lineto import LineTo
@@ -111,6 +114,12 @@ class SvgWriter:
                 self._parts.append(indent + "<circle")
             case Path():
                 self._parts.append(indent + "<path")
+            case Line():
+                self._parts.append(indent + "<line")
+            case Polyline():
+                self._parts.append(indent + "<polyline")
+            case Polygon():
+                self._parts.append(indent + "<polygon")
         self._append_attributes(shape)
         self._parts.append(" />\n")
 
@@ -138,8 +147,16 @@ class SvgWriter:
                 case Path():
                     path_elements = geometry.children
                     self._parts.append(f' d="{self._path_elements_to_string(path_elements)}"')
+                case Line():
+                    self._parts.append(f' x1="{self._number_to_string(geometry.start.x)}"'
+                                       f' y1="{self._number_to_string(geometry.start.y)}"'
+                                       f' x2="{self._number_to_string(geometry.end.x)}"'
+                                       f' y2="{self._number_to_string(geometry.end.y)}"'
+                                      )
+                case Polyline() | Polygon() :
+                    self._parts.append(f' points="{self._polypoints_to_string(geometry.children)}"')
                 case _:
-                    raise NotImplementedError("I know nothing but Rects, Circles and Paths")
+                    raise NotImplementedError("I know nothing but Rects, Circles, Lines, Polylines, Polygons and Paths")
         if width := getattr(element, "width", None):
             self._parts.append(f' width="{self._number_to_string(width)}"')
         if height := getattr(element, "height", None):
@@ -151,6 +168,13 @@ class SvgWriter:
             self._parts.append(f' transform="{self._transforms_to_string(output_transformations)}"')
         for key, value in sorted(element.unknown_attributes.items()):
             self._parts.append(f' {key}="{value}"')
+
+    def _polypoints_to_string(self, polypoints):
+        result = ""
+        for point in polypoints:
+            coords = ( point.x, point.y )
+            result += f'{SvgWriter._numberlist_to_string(coords)} '
+        return result.strip()
 
     def _path_elements_to_string(self, path_elements):
         match self.path_strategy:

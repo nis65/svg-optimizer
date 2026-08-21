@@ -4,6 +4,7 @@ import re
 
 from .transform_parser import parse_transform_string
 from .float_list_parser import parse_float_list
+from .token_lexer import TokenIterator, token_lexer, print_stderr
 from .path_parser import parse_path_string
 from svgtools.svg.document import Document
 from svgtools.svg.svg import Svg
@@ -14,6 +15,9 @@ from svgtools.svg.shape import Shape
 from svgtools.geometry.rect import Rect
 from svgtools.geometry.circle import Circle
 from svgtools.geometry.path import Path
+from svgtools.geometry.line import Line
+from svgtools.geometry.polyline import Polyline
+from svgtools.geometry.polygon import Polygon
 from svgtools.geometry.point import Point
 
 def parse_svg_string(svg_text: str) -> Document:
@@ -133,7 +137,72 @@ def _parse_xml_element(xml_element: ET.Element, namespace_str: str):
                     xml_element, {"id", "d", "transform"})
             )
 
-    raise NotImplementedError(f"can parse only defs, g, use, rect, circle and path yet, not {xml_element.tag}. ns: '{namespace_str}'")
+        case "line":
+            line_id = xml_element.get("id")
+            line_x1 = xml_element.get("x1")
+            line_y1 = xml_element.get("y1")
+            line_x2 = xml_element.get("x2")
+            line_y2 = xml_element.get("y2")
+            return Shape(
+                id = line_id,
+                geometry = Line(
+                    start = Point(float(line_x1), float(line_y1)),
+                    end   = Point(float(line_x2), float(line_y2)),
+                ),
+                transformations=parse_transform_string(xml_element.get("transform")),
+                unknown_attributes = _collect_unknown_attributes(
+                    xml_element, {"id", "x1", "y1", "x2", "y2", "transform"}),
+            )
+
+        case "polyline":
+            polyline_id = xml_element.get("id")
+            points_string = xml_element.get("points")
+            tokens = token_lexer(points_string, commands="")
+            token_iterator = TokenIterator(tokens)
+            points = []
+            while token_iterator.has_numbers(2):
+                points.append(Point(
+                    x = float(token_iterator.get().value),
+                    y = float(token_iterator.get().value),
+                    )
+                )
+            if token_iterator.peek() is not None:
+                print_stderr(f"WARNING: dropping extra number {token_iterator.get().value} in polyline")
+            return Shape(
+                id = polyline_id,
+                geometry = Polyline(
+                    children = tuple(points)
+                ),
+                transformations=parse_transform_string(xml_element.get("transform")),
+                unknown_attributes = _collect_unknown_attributes(
+                    xml_element, {"id", "points", "transform"}),
+            )
+
+        case "polygon":
+            polygon_id = xml_element.get("id")
+            points_string = xml_element.get("points")
+            tokens = token_lexer(points_string, commands="")
+            token_iterator = TokenIterator(tokens)
+            points = []
+            while token_iterator.has_numbers(2):
+                points.append(Point(
+                    x = float(token_iterator.get().value),
+                    y = float(token_iterator.get().value),
+                    )
+                )
+            if token_iterator.peek() is not None:
+                print_stderr(f"WARNING: dropping extra number {token_iterator.get().value} in polygon")
+            return Shape(
+                id = polygon_id,
+                geometry = Polygon(
+                    children = tuple(points)
+                ),
+                transformations=parse_transform_string(xml_element.get("transform")),
+                unknown_attributes = _collect_unknown_attributes(
+                    xml_element, {"id", "points", "transform"}),
+            )
+
+    raise NotImplementedError(f"can parse only defs, g, use, rect, circle, path, line and polyline yet, not {xml_element.tag}. ns: '{namespace_str}'")
 
 def _parse_xml_children(xml_element: ET.Element, namespace_str: str) -> tuple:
 

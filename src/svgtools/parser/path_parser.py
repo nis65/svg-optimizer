@@ -1,7 +1,7 @@
 import sys
 from dataclasses import dataclass
 
-from .token_lexer import TokenKind, Token, TokenIterator, token_lexer
+from .token_lexer import TokenKind, Token, TokenIterator, token_lexer, print_stderr
 from svgtools.geometry.geometry_abc import Geometry
 from svgtools.geometry.point import Point
 from svgtools.geometry.path import Path
@@ -11,9 +11,6 @@ from svgtools.geometry.path_elements.closepath import ClosePath
 from svgtools.geometry.path_elements.quadraticbezier import QuadraticBezier
 from svgtools.geometry.path_elements.cubicbezier import CubicBezier
 from svgtools.geometry.path_elements.arc import Arc
-
-def print_stderr(text: str):
-    print(f"{text}", file=sys.stderr)
 
 @dataclass
 class PathParseState:
