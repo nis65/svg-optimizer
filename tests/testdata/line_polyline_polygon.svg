@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
+<line id="myline" x1="100" y1="100" x2="500" y2="400" stroke="blue" />
+<polyline id="polyl" points="200 600 400 400 500 600 700 400" stroke="orange" />
+<polygon id="polyg"  points="300 700 500 500 600 700 800 500" stroke="green" />
+</svg>
+
