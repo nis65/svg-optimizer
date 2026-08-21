@@ -12,6 +12,14 @@ from svgtools.svg.shape import Shape
 from svgtools.svg.transform import Translate, Scale, Rotate, SkewX, SkewY, Affine
 from svgtools.geometry.rect import Rect
 from svgtools.geometry.circle import Circle
+from svgtools.geometry.path import Path
+from svgtools.geometry.path_elements.moveto import MoveTo
+from svgtools.geometry.path_elements.lineto import LineTo
+from svgtools.geometry.path_elements.closepath import ClosePath
+from svgtools.geometry.path_elements.quadraticbezier import QuadraticBezier
+from svgtools.geometry.path_elements.cubicbezier import CubicBezier
+from svgtools.geometry.path_elements.arc import Arc
+
 from svgtools.geometry.point import Point
 
 def test_write_empty_svg():
@@ -258,6 +266,84 @@ def test_write_circle_with_attributes():
     <circle id="circleid" cx="3" cy="2" r="7" transform="translate(-1 -3) scale(2 1)" unknown="unknown_value" />
     </svg>
     """)
+
+def test_write_path():
+    d = Document(
+        svg=Svg(
+            children=(
+                Shape (
+                    id="mypath",
+                    geometry = Path (
+                        children = (
+                            MoveTo(
+                                target = Point(
+                                    x = 3,
+                                    y = 4,
+                                ),
+                                representation = 'm',
+                            ),
+                            LineTo(
+                                target = Point(
+                                    x = 4,
+                                    y = 5,
+                                ),
+                                representation = 'L',
+                            ),
+                            ClosePath(
+                                representation = 'z',
+                            ),
+                            QuadraticBezier(
+                                control1 = Point (
+                                    x = 7,
+                                    y = 8,
+                                ),
+                                end = Point (
+                                    x = 10,
+                                    y = 11,
+                                ),
+                                representation = 't',
+                            ),
+                            CubicBezier(
+                                control1 = Point (
+                                    x = 20,
+                                    y = 21,
+                                ),
+                                control2 = Point (
+                                    x = 22,
+                                    y = 23,
+                                ),
+                                end = Point (
+                                    x = 24,
+                                    y = 25,
+                                ),
+                                representation = 's',
+                            ),
+                            Arc(
+                                rx = 30,
+                                ry = 31,
+                                phi = 60,
+                                large_arc_flag = 0,
+                                sweep_flag = 1,
+                                end = Point (
+                                    x = 35,
+                                    y = 36,
+                                ),
+                                representation = 'a'
+                            ),
+                        ),
+                    ),
+                ),
+            ),
+        ),
+    )
+    writer = SvgWriter()
+    assert writer.write_svg_string(d) == dedent("""\
+    <?xml version='1.0' encoding='UTF-8'?>
+    <svg>
+    <path id="mypath" d="M 3 4 L 4 5 Z Q 7 8 10 11 C 20 21 22 23 24 25 A 30 31 60 0 1 35 36" />
+    </svg>
+    """)
+
 
 def test_write_use():
     d = Document(
