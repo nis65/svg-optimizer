@@ -4,6 +4,10 @@ from svgtools.geometry.point import Point
 from svgtools.geometry.path import Path
 from svgtools.geometry.path_elements.moveto import MoveTo
 from svgtools.geometry.path_elements.lineto import LineTo
+from svgtools.geometry.path_elements.closepath import ClosePath
+from svgtools.geometry.path_elements.quadraticbezier import QuadraticBezier
+from svgtools.geometry.path_elements.cubicbezier import CubicBezier
+from svgtools.geometry.path_elements.arc import Arc
 
 def test_iterator_empty(): 
     tokens=[]
@@ -56,7 +60,7 @@ def test_lexer_exception():
     with pytest.raises(ValueError, match="Cannot lex this"):
         parse_path_string("a1 2c3+3-2 1e-e9 2")
 
-def test_parser_with_mM(capsys):
+def test_parser_with_mM_and_warning(capsys):
     p = parse_path_string("M 1 2 3 4 m 5 6 7")
     assert p == Path(
             children = (
@@ -180,6 +184,233 @@ def test_parser_with_vV():
                         y = 4,
                     ),
                     representation='V',
+                ),
+            )
+        )
+
+def test_parser_with_zZ():
+    p = parse_path_string("M 1 2 l 3 4 z l 5 6")
+    assert p == Path(
+            children = (
+                MoveTo(
+                    target = Point(
+                        x = 1,
+                        y = 2,
+                    ),
+                    representation='M',
+                ),
+                LineTo(
+                    target = Point(
+                        x = 4,
+                        y = 6,
+                    ),
+                    representation='l',
+                ),
+                ClosePath(
+                    representation='z',
+                ),
+                LineTo(
+                    target = Point(
+                        x = 6,
+                        y = 8,
+                    ),
+                    representation='l',
+                ),
+            )
+        )
+
+def test_parser_with_zZ_and_warning(capsys):
+    p = parse_path_string("Z 123 m 3 3")
+    assert p == Path(
+            children = (
+                ClosePath(
+                    representation='Z',
+                ),
+                MoveTo(
+                    target = Point(
+                        x = 3,
+                        y = 3,
+                    ),
+                    representation='m',
+                ),
+            )
+        )
+    captured = capsys.readouterr()
+    assert "WARNING: dropping extra number 123 in Z command" in captured.err
+
+def test_parser_with_qbezier_and_warning(capsys):
+    p = parse_path_string("M 1 2 q 3 4 5 6 7")
+    assert p == Path(
+            children = (
+                MoveTo(
+                    target = Point(
+                        x = 1,
+                        y = 2,
+                    ),
+                    representation='M',
+                ),
+                QuadraticBezier(
+                    control1 = Point(
+                        x = 4,
+                        y = 6,
+                    ),
+                    end = Point(
+                        x = 6,
+                        y = 8,
+                    ),
+                    representation='q',
+                ),
+            )
+        )
+    captured = capsys.readouterr()
+    assert "WARNING: dropping extra number 7 in q command" in captured.err
+
+def test_parser_with_qbezier_q_and_t():
+    p = parse_path_string("M 1 2 q 3 4 5 6 t 7 8")
+    assert p == Path(
+            children = (
+                MoveTo(
+                    target = Point(
+                        x = 1,
+                        y = 2,
+                    ),
+                    representation='M',
+                ),
+                QuadraticBezier(
+                    control1 = Point(
+                        x = 4,
+                        y = 6,
+                    ),
+                    end = Point(
+                        x = 6,
+                        y = 8,
+                    ),
+                    representation='q',
+                ),
+                QuadraticBezier(
+                    control1 = Point(
+                        x = 8,
+                        y = 10,
+                    ),
+                    end = Point(
+                        x = 13,
+                        y = 16,
+                    ),
+                    representation='t',
+                ),
+            )
+        )
+
+def test_parser_with_qbezier_q_l_and_t():
+    p = parse_path_string("M 1 2 q 3 4 5 6 l 1 1 t 7 8")
+    assert p == Path(
+            children = (
+                MoveTo(
+                    target = Point(
+                        x = 1,
+                        y = 2,
+                    ),
+                    representation='M',
+                ),
+                QuadraticBezier(
+                    control1 = Point(
+                        x = 4,
+                        y = 6,
+                    ),
+                    end = Point(
+                        x = 6,
+                        y = 8,
+                    ),
+                    representation='q',
+                ),
+                LineTo(
+                    target = Point(
+                        x = 7,
+                        y = 9,
+                    ),
+                    representation='l',
+                ),
+                QuadraticBezier(
+                    control1 = Point(
+                        x = 7,
+                        y = 9,
+                    ),
+                    end = Point(
+                        x = 14,
+                        y = 17,
+                    ),
+                    representation='t',
+                ),
+            )
+        )
+
+
+def test_parser_with_cbezier_with_c_and_s():
+    p = parse_path_string("M 1 2 c 3 4 5 6 7 8 s 10 11 12 13")
+    assert p == Path(
+            children = (
+                MoveTo(
+                    target = Point(
+                        x = 1,
+                        y = 2,
+                    ),
+                    representation='M',
+                ),
+                CubicBezier(
+                    control1 = Point(
+                        x = 4,
+                        y = 6,
+                    ),
+                    control2 = Point(
+                        x = 6,
+                        y = 8
+                    ),
+                    end = Point(
+                        x = 8,
+                        y = 10,
+                    ),
+                    representation='c',
+                ),
+                CubicBezier(
+                    control1 = Point(
+                        x = 10,
+                        y = 12,
+                    ),
+                    control2 = Point(
+                        x = 18,
+                        y = 21,
+                    ),
+                    end = Point(
+                        x = 20,
+                        y = 23,
+                    ),
+                    representation='s',
+                ),
+            )
+        )
+
+def test_parser_with_cbezier_with_m_and_arc():
+    p = parse_path_string("M 1 2 a 10 20 45 0 1 30 35")
+    assert p == Path(
+            children = (
+                MoveTo(
+                    target = Point(
+                        x = 1,
+                        y = 2,
+                    ),
+                    representation='M',
+                ),
+                Arc(
+                    rx = 10,
+                    ry = 20,
+                    phi = 45,
+                    large_arc_flag = 0,
+                    sweep_flag = 1,
+                    end = Point(
+                        x = 31,
+                        y = 37,
+                    ),
+                    representation = 'a'
                 ),
             )
         )
