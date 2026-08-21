@@ -1,5 +1,6 @@
 from enum import Enum, auto
 import re
+import sys
 from dataclasses import dataclass
 
 class TokenKind(Enum):
@@ -77,3 +78,6 @@ def token_lexer(text: str, commands: str) -> tuple:
             i = match.end()
 
     return tuple(tokens)
+
+def print_stderr(text: str):
+    print(f"{text}", file=sys.stderr)
