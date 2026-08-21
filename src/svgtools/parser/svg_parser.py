@@ -14,6 +14,7 @@ from svgtools.svg.use import Use
 from svgtools.svg.shape import Shape
 from svgtools.geometry.rect import Rect
 from svgtools.geometry.circle import Circle
+from svgtools.geometry.ellipse import Ellipse
 from svgtools.geometry.path import Path
 from svgtools.geometry.line import Line
 from svgtools.geometry.polyline import Polyline
@@ -125,6 +126,26 @@ def _parse_xml_element(xml_element: ET.Element, namespace_str: str):
                 transformations=parse_transform_string(xml_element.get("transform")),
                 unknown_attributes = _collect_unknown_attributes(
                     xml_element, {"id", "cx", "cy", "r", "transform"})
+            )
+        case "ellipse":
+            ellipse_id = xml_element.get("id")
+            xml_cx=xml_element.get("cx", "0")
+            xml_cy=xml_element.get("cy", "0")
+            xml_rx=xml_element.get("rx")
+            xml_ry=xml_element.get("ry")
+            return Shape(
+                id = ellipse_id,
+                geometry=Ellipse(
+                    center=Point(
+                        x=float(xml_cx),
+                        y=float(xml_cy),
+                    ),
+                    radiusx=float(xml_rx),
+                    radiusy=float(xml_ry),
+                ),
+                transformations=parse_transform_string(xml_element.get("transform")),
+                unknown_attributes = _collect_unknown_attributes(
+                    xml_element, {"id", "cx", "cy", "rx", "ry", "transform"})
             )
         case "path":
             path_id = xml_element.get("id")
