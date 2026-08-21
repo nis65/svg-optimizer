@@ -17,6 +17,9 @@ from svgtools.geometry.path_elements.closepath import ClosePath
 from svgtools.geometry.path_elements.quadraticbezier import QuadraticBezier
 from svgtools.geometry.path_elements.cubicbezier import CubicBezier
 from svgtools.geometry.path_elements.arc import Arc
+from svgtools.geometry.line import Line
+from svgtools.geometry.polyline import Polyline
+from svgtools.geometry.polygon import Polygon
 from svgtools.geometry.point import Point
 
 def test_parse_empty_svg():
@@ -465,6 +468,117 @@ def test_path():
                                 representation = 'l',
                             ),
                         )
+                    ),
+                    transformations=(
+                        Rotate(theta=30, cx=0, cy=0),
+                        Scale(sx=13, sy=13),),
+                    unknown_attributes = {
+                        "unknown": "unknown_value",
+                    }
+                ),
+            ),
+        ),
+    )
+
+def test_line():
+
+    svg_text = """
+    <svg>
+        <line id="myline" x1="4" y1="5" x2="7" y2="8" transform="rotate(30) scale(13)" unknown="unknown_value"/>
+    </svg>
+    """
+    assert parse_svg_string(svg_text) == Document(
+        svg=Svg(
+            children=(
+                Shape(
+                    id="myline",
+                    geometry = Line(
+                        start = Point(
+                            x = 4,
+                            y = 5,
+                        ),
+                        end = Point(
+                            x = 7,
+                            y = 8,
+                        ),
+                    ),
+                    transformations=(
+                        Rotate(theta=30, cx=0, cy=0),
+                        Scale(sx=13, sy=13),),
+                    unknown_attributes = {
+                        "unknown": "unknown_value",
+                    }
+                ),
+            ),
+        ),
+    )
+
+def test_polyline():
+
+    svg_text = """
+    <svg>
+        <polyline id="mypoly" points="1 2 3 4 5 6 7" transform="rotate(30) scale(13)" unknown="unknown_value"/>
+    </svg>
+    """
+    assert parse_svg_string(svg_text) == Document(
+        svg=Svg(
+            children=(
+                Shape(
+                    id="mypoly",
+                    geometry = Polyline(
+                        children = (
+                            Point(
+                                x = 1,
+                                y = 2,
+                            ),
+                            Point(
+                                x = 3,
+                                y = 4,
+                            ),
+                            Point(
+                                x = 5,
+                                y = 6,
+                            ),
+                        ),
+                    ),
+                    transformations=(
+                        Rotate(theta=30, cx=0, cy=0),
+                        Scale(sx=13, sy=13),),
+                    unknown_attributes = {
+                        "unknown": "unknown_value",
+                    }
+                ),
+            ),
+        ),
+    )
+
+def test_polygon():
+
+    svg_text = """
+    <svg>
+        <polygon id="mypoly" points="1 2 3 4 5 6 7" transform="rotate(30) scale(13)" unknown="unknown_value"/>
+    </svg>
+    """
+    assert parse_svg_string(svg_text) == Document(
+        svg=Svg(
+            children=(
+                Shape(
+                    id="mypoly",
+                    geometry = Polygon(
+                        children = (
+                            Point(
+                                x = 1,
+                                y = 2,
+                            ),
+                            Point(
+                                x = 3,
+                                y = 4,
+                            ),
+                            Point(
+                                x = 5,
+                                y = 6,
+                            ),
+                        ),
                     ),
                     transformations=(
                         Rotate(theta=30, cx=0, cy=0),

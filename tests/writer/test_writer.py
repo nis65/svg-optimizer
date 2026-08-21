@@ -12,6 +12,9 @@ from svgtools.svg.shape import Shape
 from svgtools.svg.transform import Translate, Scale, Rotate, SkewX, SkewY, Affine
 from svgtools.geometry.rect import Rect
 from svgtools.geometry.circle import Circle
+from svgtools.geometry.line import Line
+from svgtools.geometry.polyline import Polyline
+from svgtools.geometry.polygon import Polygon
 from svgtools.geometry.path import Path
 from svgtools.geometry.path_elements.moveto import MoveTo
 from svgtools.geometry.path_elements.lineto import LineTo
@@ -21,7 +24,7 @@ from svgtools.geometry.path_elements.cubicbezier import CubicBezier
 from svgtools.geometry.path_elements.arc import Arc
 
 from svgtools.geometry.point import Point
-
+# {{{ def test_write_empty_svg():
 def test_write_empty_svg():
     d = Document(
             svg=Svg(
@@ -33,7 +36,8 @@ def test_write_empty_svg():
     <?xml version='1.0' encoding='UTF-8'?>
     <svg />
     """)
-
+# }}}
+# {{{ def test_write_empty_svg_with_attributes():
 def test_write_empty_svg_with_attributes():
     d = Document(
             svg=Svg(
@@ -56,7 +60,9 @@ def test_write_empty_svg_with_attributes():
     <?xml version='1.0' encoding='UTF-8'?>
     <svg xmlns="http://www.w3.org/2000/svg" id="svgid" width="1024" height="1024" viewBox="0 0 1024 1024" transform="translate(4 5)" unknown="unknown_value" />
     """)
+# }}}
 
+# {{{ def test_write_empty_defs_with_id():
 def test_write_empty_defs_with_id():
     d = Document(
             svg=Svg(
@@ -78,7 +84,8 @@ def test_write_empty_defs_with_id():
     <defs id="defid" unknown="unknown_value" />
     </svg>
     """)
-
+# }}}
+# {{{ def test_write_defs_with_children():
 def test_write_defs_with_children():
     d = Document(
             svg=Svg(
@@ -110,7 +117,9 @@ def test_write_defs_with_children():
     </defs>
     </svg>
     """)
+# }}}
 
+# {{{ def test_write_empty_group_with_attributes():
 def test_write_empty_group_with_attributes():
     d = Document(
             svg=Svg(
@@ -135,7 +144,8 @@ def test_write_empty_group_with_attributes():
     <g id="grpid" transform="scale(4 5)" unknown="unknown_value" />
     </svg>
     """)
-
+# }}}
+# {{{ def test_write_group_with_children():
 def test_write_group_with_children():
     d = Document(
             svg=Svg(
@@ -166,7 +176,9 @@ def test_write_group_with_children():
     </g>
     </svg>
     """)
+# }}}
 
+# {{{ def test_write_rect_with_attributes():
 def test_write_rect_with_attributes():
     d = Document(
             svg=Svg(
@@ -200,7 +212,8 @@ def test_write_rect_with_attributes():
     <rect id="rectid" x="4" y="5" width="2" height="1" transform="scale(4 5) translate(1 2) rotate(45 1 3)" unknown="unknown_value" />
     </svg>
     """)
-
+# }}}
+# {{{ def test_write_rect_with_more_transformations():
 def test_write_rect_with_more_transformations():
     d = Document(
             svg=Svg(
@@ -234,7 +247,9 @@ def test_write_rect_with_more_transformations():
     <rect id="rectid" x="4" y="5" width="2" height="1" transform="skewX(60) skewY(30) matrix(1 2 3 4 5 6)" unknown="unknown_value" />
     </svg>
     """)
+# }}}
 
+# {{{ def test_write_circle_with_attributes():
 def test_write_circle_with_attributes():
     d = Document(
             svg=Svg(
@@ -266,8 +281,61 @@ def test_write_circle_with_attributes():
     <circle id="circleid" cx="3" cy="2" r="7" transform="translate(-1 -3) scale(2 1)" unknown="unknown_value" />
     </svg>
     """)
+# }}}
 
-def test_write_path():
+# {{{ def test_write_path_shorter():
+def test_write_path_shorter():
+    d = Document(
+        svg=Svg(
+            children=(
+                Shape (
+                    id="mypath",
+                    geometry = Path (
+                        children = (
+                            MoveTo(
+                                target = Point(
+                                    x = 3,
+                                    y = 4,
+                                ),
+                                representation = 'm',
+                            ),
+                            LineTo(
+                                target = Point(
+                                    x = 4,
+                                    y = 5,
+                                ),
+                                representation = 'L',
+                            ),
+                            ClosePath(
+                                representation = 'z',
+                            ),
+                            QuadraticBezier(
+                                control1 = Point (
+                                    x = 7,
+                                    y = 8,
+                                ),
+                                end = Point (
+                                    x = 10,
+                                    y = 11,
+                                ),
+                                representation = 't',
+                            ),
+                        ),
+                    ),
+                ),
+            ),
+        ),
+    )
+    writer = SvgWriter()
+    assert writer.write_svg_string(d) == dedent("""\
+    <?xml version='1.0' encoding='UTF-8'?>
+    <svg>
+    <path id="mypath" d="M 3 4 L 4 5 Z Q 7 8 10 11" />
+    </svg>
+    """)
+# }}}
+# {{{ def test_write_path_complete():
+def test_write_path_complete():
     d = Document(
         svg=Svg(
             children=(
@@ -343,8 +411,125 @@ def test_write_path():
     <path id="mypath" d="M 3 4 L 4 5 Z Q 7 8 10 11 C 20 21 22 23 24 25 A 30 31 60 0 1 35 36" />
     </svg>
     """)
+# }}}
 
+# {{{ def test_write_line():
+def test_write_line():
+    d = Document(
+            svg=Svg(
+                children=(
+                    Shape(
+                        id="lineid",
+                        transformations=(
+                             Scale(sx=4, sy=5),
+                             Translate(dx=1, dy=2),
+                             Rotate(theta=45, cx=1, cy=3),
+                        ),
+                        geometry=Line(
+                            start=Point(
+                                x=4,
+                                y=5,
+                            ),
+                            end=Point(
+                                x=10,
+                                y=11,
+                            ),
+                        ),
+                        unknown_attributes={
+                            "unknown": "unknown_value",
+                        }
+                    ),
+                )
+            )
+        )
+    writer = SvgWriter()
+    assert writer.write_svg_string(d) == dedent("""\
+    <?xml version='1.0' encoding='UTF-8'?>
+    <svg>
+    <line id="lineid" x1="4" y1="5" x2="10" y2="11" transform="scale(4 5) translate(1 2) rotate(45 1 3)" unknown="unknown_value" />
+    </svg>
+    """)
+# }}}
+# {{{ def test_write_polyline():
+def test_write_polyline():
+    d = Document(
+            svg=Svg(
+                children=(
+                    Shape(
+                        id="polylineid",
+                        transformations=(
+                             Scale(sx=4, sy=5),
+                             Translate(dx=1, dy=2),
+                             Rotate(theta=45, cx=1, cy=3),
+                        ),
+                        geometry=Polyline(
+                            children = (
+                                Point(
+                                    x=4,
+                                    y=5,
+                                ),
+                                Point(
+                                    x=10,
+                                    y=11,
+                                ),
+                            ),
+                        ),
+                        unknown_attributes={
+                            "unknown": "unknown_value",
+                        }
+                    ),
+                )
+            )
+        )
+    writer = SvgWriter()
+    assert writer.write_svg_string(d) == dedent("""\
+    <?xml version='1.0' encoding='UTF-8'?>
+    <svg>
+    <polyline id="polylineid" points="4 5 10 11" transform="scale(4 5) translate(1 2) rotate(45 1 3)" unknown="unknown_value" />
+    </svg>
+    """)
+# }}}
+# {{{ def test_write_polygon():
+def test_write_polygon():
+    d = Document(
+            svg=Svg(
+                children=(
+                    Shape(
+                        id="polygonid",
+                        transformations=(
+                             Scale(sx=4, sy=5),
+                             Translate(dx=1, dy=2),
+                             Rotate(theta=45, cx=1, cy=3),
+                        ),
+                        geometry=Polygon(
+                            children = (
+                                Point(
+                                    x=4,
+                                    y=5,
+                                ),
+                                Point(
+                                    x=10,
+                                    y=11,
+                                ),
+                            ),
+                        ),
+                        unknown_attributes={
+                            "unknown": "unknown_value",
+                        }
+                    ),
+                )
+            )
+        )
+    writer = SvgWriter()
+    assert writer.write_svg_string(d) == dedent("""\
+    <?xml version='1.0' encoding='UTF-8'?>
+    <svg>
+    <polygon id="polygonid" points="4 5 10 11" transform="scale(4 5) translate(1 2) rotate(45 1 3)" unknown="unknown_value" />
+    </svg>
+    """)
+# }}}
 
+# {{{ def test_write_use():
 def test_write_use():
     d = Document(
             svg=Svg(
@@ -389,3 +574,4 @@ def test_write_use():
     <use href="#rectid" transform="translate(1 1)" unknown="unknown_value" />
     </svg>
     """)
+# }}}
