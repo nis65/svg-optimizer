@@ -1,4 +1,5 @@
 from .transform_write_strategy import TransformWriteStrategy
+from .path_write_strategy import PathWriteStrategy
 from svgtools.svg.document import Document
 from svgtools.svg.svg import Svg
 from svgtools.svg.defs import Defs
@@ -9,6 +10,13 @@ from svgtools.svg.transform import Translate, Scale, Rotate, SkewX, SkewY, Affin
 from svgtools.svg.get_matrix import get_matrix, transforms_to_matrix
 from svgtools.geometry.rect import Rect
 from svgtools.geometry.circle import Circle
+from svgtools.geometry.path import Path
+from svgtools.geometry.path_elements.moveto import MoveTo
+from svgtools.geometry.path_elements.lineto import LineTo
+from svgtools.geometry.path_elements.closepath import ClosePath
+from svgtools.geometry.path_elements.quadraticbezier import QuadraticBezier
+from svgtools.geometry.path_elements.cubicbezier import CubicBezier
+from svgtools.geometry.path_elements.arc import Arc
 from svgtools.geometry.point import Point
 from svgtools.geometry.matrix3 import Matrix3, TRHxSDecomposition
 from svgtools.geometry.isclose import geometry_isclose
@@ -22,9 +30,11 @@ class SvgWriter:
     def __init__(
             self,
             transform_strategy: TransformWriteStrategy = TransformWriteStrategy.KEEP,
+            path_strategy: PathWriteStrategy = PathWriteStrategy.ABSOLUTE,
             ):
         self._parts: list[str] = []
         self.transform_strategy = transform_strategy
+        self.path_strategy = path_strategy
         self.total_aggregated_chains = 0
         self.total_aggressive_chains = 0
 
@@ -99,6 +109,8 @@ class SvgWriter:
                 self._parts.append(indent + "<rect")
             case Circle():
                 self._parts.append(indent + "<circle")
+            case Path():
+                self._parts.append(indent + "<path")
         self._append_attributes(shape)
         self._parts.append(" />\n")
 
@@ -123,8 +135,11 @@ class SvgWriter:
                                        f' cy="{self._number_to_string(geometry.center.y)}"'
                                       )
                     self._parts.append(f' r="{self._number_to_string(geometry.radius)}"')
+                case Path():
+                    path_elements = geometry.children
+                    self._parts.append(f' d="{self._path_elements_to_string(path_elements)}"')
                 case _:
-                    raise NotImplementedError("I know nothing but Rects and Circles")
+                    raise NotImplementedError("I know nothing but Rects, Circles and Paths")
         if width := getattr(element, "width", None):
             self._parts.append(f' width="{self._number_to_string(width)}"')
         if height := getattr(element, "height", None):
