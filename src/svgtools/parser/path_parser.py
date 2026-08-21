@@ -1,8 +1,7 @@
-from enum import Enum, auto
-import re
 import sys
 from dataclasses import dataclass
 
+from .token_lexer import TokenKind, Token, token_lexer
 from svgtools.geometry.geometry_abc import Geometry
 from svgtools.geometry.point import Point
 from svgtools.geometry.path import Path
@@ -12,15 +11,6 @@ from svgtools.geometry.path_elements.closepath import ClosePath
 from svgtools.geometry.path_elements.quadraticbezier import QuadraticBezier
 from svgtools.geometry.path_elements.cubicbezier import CubicBezier
 from svgtools.geometry.path_elements.arc import Arc
-
-class TokenKind(Enum):
-    COMMAND = auto()
-    NUMBER = auto()
-
-@dataclass(frozen=True, slots=True)
-class Token:
-    kind: TokenKind
-    value: str
 
 class TokenIterator:
     def __init__(self, tokens):
@@ -71,7 +61,7 @@ class PathParseState:
     previous_cubic_control: Point | None = None
 
 def parse_path_string(text: str) -> Geometry:
-    tokens = _lexer(text)
+    tokens = token_lexer(text, commands="mMlLhHvVzZqQtTcCsSaA")
     token_iterator = TokenIterator(tokens)
 
     path_element_list = []
@@ -354,34 +344,3 @@ def _mirror_point(center: Point, point_to_mirror: Point) -> Point:
             x = 2 * center.x - point_to_mirror.x,
             y = 2 * center.y - point_to_mirror.y,
     )
-
-def _lexer(text: str) -> tuple:
-
-    COMMANDS = "mMlLhHvVzZqQtTcCsSaA"
-    NUMBER_RE = re.compile(
-        r"[+-]?(?:(?:\d+(?:\.\d*)?)|(?:\.\d+))(?:[eE][+-]?\d+)?"
-        )
-
-    tokens=[]
-
-    i = 0
-    while i < len(text):
-        char = text[i]
-    
-        if char in COMMANDS:
-            tokens.append(Token(TokenKind.COMMAND, char))
-            i += 1
-    
-        elif char in " ,\t\r\n":
-            i += 1
-    
-        else:
-            match = NUMBER_RE.match(text, i)
-    
-            if not match:
-                raise ValueError(f"Cannot lex this (is neither a command, nor a separator, nor a number): {text[i:]}")
-    
-            tokens.append(Token(TokenKind.NUMBER, match.group()))
-            i = match.end()
-
-    return tuple(tokens)
