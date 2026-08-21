@@ -3,6 +3,7 @@ import re
 import sys
 from dataclasses import dataclass
 
+from svgtools.geometry.geometry_abc import Geometry
 from svgtools.geometry.point import Point
 from svgtools.geometry.path import Path
 from svgtools.geometry.path_elements.moveto import MoveTo
@@ -69,7 +70,7 @@ class PathParseState:
     previous_quadratic_control: Point | None = None
     previous_cubic_control: Point | None = None
 
-def parse_path_string(text: str) -> tuple:
+def parse_path_string(text: str) -> Geometry:
     tokens = _lexer(text)
     token_iterator = TokenIterator(tokens)
 
