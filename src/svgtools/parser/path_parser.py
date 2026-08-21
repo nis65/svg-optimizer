@@ -1,7 +1,7 @@
 import sys
 from dataclasses import dataclass
 
-from .token_lexer import TokenKind, Token, token_lexer
+from .token_lexer import TokenKind, Token, TokenIterator, token_lexer
 from svgtools.geometry.geometry_abc import Geometry
 from svgtools.geometry.point import Point
 from svgtools.geometry.path import Path
@@ -11,43 +11,6 @@ from svgtools.geometry.path_elements.closepath import ClosePath
 from svgtools.geometry.path_elements.quadraticbezier import QuadraticBezier
 from svgtools.geometry.path_elements.cubicbezier import CubicBezier
 from svgtools.geometry.path_elements.arc import Arc
-
-class TokenIterator:
-    def __init__(self, tokens):
-        self._iterator = iter(tokens)
-        self._buffer = []
-
-    def _lookahead(self, count=1):
-        while len(self._buffer) < count:
-            try:
-                self._buffer.append(next(self._iterator))
-            except StopIteration:
-                return False
-        return True
-
-    def peek(self):
-        if len(self._buffer) == 0:
-            if self._lookahead(count=1): 
-                return self._buffer[0]
-            else:
-                return None
-        else:
-            return self._buffer[0]
-
-    def has_numbers(self, count: int):
-        if self._lookahead(count):
-            for token in self._buffer[:count]: 
-                if token.kind != TokenKind.NUMBER:
-                    return False
-            return True
-        else:
-            return False
-
-    def get(self):
-        token = self.peek()
-        if token is not None:
-            del self._buffer[0]
-        return token
 
 def print_stderr(text: str):
     print(f"{text}", file=sys.stderr)
