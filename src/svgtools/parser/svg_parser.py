@@ -4,6 +4,7 @@ import re
 
 from .transform_parser import parse_transform_string
 from .float_list_parser import parse_float_list
+from .path_parser import parse_path_string
 from svgtools.svg.document import Document
 from svgtools.svg.svg import Svg
 from svgtools.svg.defs import Defs
@@ -12,6 +13,7 @@ from svgtools.svg.use import Use
 from svgtools.svg.shape import Shape
 from svgtools.geometry.rect import Rect
 from svgtools.geometry.circle import Circle
+from svgtools.geometry.path import Path
 from svgtools.geometry.point import Point
 
 def parse_svg_string(svg_text: str) -> Document:
@@ -120,7 +122,18 @@ def _parse_xml_element(xml_element: ET.Element, namespace_str: str):
                 unknown_attributes = _collect_unknown_attributes(
                     xml_element, {"id", "cx", "cy", "r", "transform"})
             )
-    raise NotImplementedError(f"can parse only defs, g, use, rect and circle yet, not {xml_element.tag}. ns: '{namespace_str}'")
+        case "path":
+            path_id = xml_element.get("id")
+            p_geometry = parse_path_string(xml_element.get("d"))
+            return Shape(
+                id = path_id,
+                geometry = p_geometry,
+                transformations=parse_transform_string(xml_element.get("transform")),
+                unknown_attributes = _collect_unknown_attributes(
+                    xml_element, {"id", "d", "transform"})
+            )
+
+    raise NotImplementedError(f"can parse only defs, g, use, rect, circle and path yet, not {xml_element.tag}. ns: '{namespace_str}'")
 
 def _parse_xml_children(xml_element: ET.Element, namespace_str: str) -> tuple:
 
