@@ -11,6 +11,43 @@ class Token:
     kind: TokenKind
     value: str
 
+class TokenIterator:
+    def __init__(self, tokens):
+        self._iterator = iter(tokens)
+        self._buffer = []
+
+    def _lookahead(self, count=1):
+        while len(self._buffer) < count:
+            try:
+                self._buffer.append(next(self._iterator))
+            except StopIteration:
+                return False
+        return True
+
+    def peek(self):
+        if len(self._buffer) == 0:
+            if self._lookahead(count=1):
+                return self._buffer[0]
+            else:
+                return None
+        else:
+            return self._buffer[0]
+
+    def has_numbers(self, count: int):
+        if self._lookahead(count):
+            for token in self._buffer[:count]:
+                if token.kind != TokenKind.NUMBER:
+                    return False
+            return True
+        else:
+            return False
+
+    def get(self):
+        token = self.peek()
+        if token is not None:
+            del self._buffer[0]
+        return token
+
 def token_lexer(text: str, commands: str) -> tuple:
 
     NUMBER_RE = re.compile(
