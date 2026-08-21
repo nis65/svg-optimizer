@@ -21,10 +21,10 @@ class SvgWriter:
 
     def __init__(
             self,
-            strategy: TransformWriteStrategy = TransformWriteStrategy.KEEP
+            transform_strategy: TransformWriteStrategy = TransformWriteStrategy.KEEP,
             ):
         self._parts: list[str] = []
-        self.strategy = strategy
+        self.transform_strategy = transform_strategy
         self.total_aggregated_chains = 0
         self.total_aggressive_chains = 0
 
@@ -137,23 +137,61 @@ class SvgWriter:
         for key, value in sorted(element.unknown_attributes.items()):
             self._parts.append(f' {key}="{value}"')
 
+    def _path_elements_to_string(self, path_elements):
+        match self.path_strategy:
+            case PathWriteStrategy.ABSOLUTE:
+                return self._path_string_strategy_absolute(path_elements)
+            case _:
+                raise ValueError(f"path_strategy {self.path_strategy} not implemented")
+
+    def _path_string_strategy_absolute(self, path_elements):
+        result = ""
+        for element in path_elements:
+            match element:
+                case MoveTo():
+                    result += " M "
+                    numberlist = ( element.target.x, element.target.y, )
+                case LineTo():
+                    result += " L "
+                    numberlist = ( element.target.x, element.target.y, )
+                case ClosePath():
+                    result += " Z"
+                    numberlist = ()
+                case QuadraticBezier():
+                    result += " Q "
+                    numberlist = ( element.control1.x, element.control1.y, element.end.x, element.end.y,)
+                case CubicBezier():
+                    result += " C "
+                    numberlist = ( element.control1.x, element.control1.y,
+                                   element.control2.x, element.control2.y,
+                                   element.end.x, element.end.y,
+                                 )
+                case Arc():
+                    result += " A "
+                    numberlist = ( element.rx, element.ry, element.phi,
+                                   element.large_arc_flag, element.sweep_flag,
+                                   element.end.x, element.end.y,
+                                 )
+            result += f'{SvgWriter._numberlist_to_string(numberlist)}'
+        return result.strip()
+
     def _transformations_to_write(self, transformations):
-        match self.strategy:
+        match self.transform_strategy:
             case TransformWriteStrategy.KEEP:
                 return transformations
             case TransformWriteStrategy.AGGREGATE:
-                return self._strategy_aggregate(transformations)
+                return self._transform_strategy_aggregate(transformations)
             case TransformWriteStrategy.DECOMPOSE_MATRIX:
-                return self._strategy_decompose_matrix(transformations)
+                return self._transform_strategy_decompose_matrix(transformations)
             case TransformWriteStrategy.DECOMPOSE_MATRIX_AND_AGGREGATE:
-                decomposed=self._strategy_decompose_matrix(transformations)
-                return self._strategy_aggregate(decomposed)
+                decomposed=self._transform_strategy_decompose_matrix(transformations)
+                return self._transform_strategy_aggregate(decomposed)
             case TransformWriteStrategy.CANONICAL_CONSERVATIVE :
-                return self._strategy_conservative(transformations)
+                return self._transform_strategy_conservative(transformations)
             case TransformWriteStrategy.CANONICAL_AGGRESSIVE:
-                return self._strategy_aggressive(transformations)
+                return self._transform_strategy_aggressive(transformations)
             case _:
-                raise ValueError(f"strategy {self.strategy} not implemented")
+                raise ValueError(f"transform_strategy {self.transform_strategy} not implemented")
 
     @staticmethod
     def _is_canonical(transformations) -> bool:
@@ -171,7 +209,7 @@ class SvgWriter:
         return True
 
     @staticmethod
-    def _strategy_aggregate(transformations):
+    def _transform_strategy_aggregate(transformations):
         if len(transformations) == 0:
             raise ValueError(f"should not be called with 0 transformations")
         t_list = []
@@ -207,7 +245,7 @@ class SvgWriter:
         return tuple(t_list)
 
     @staticmethod
-    def _strategy_decompose_matrix(transformations):
+    def _transform_strategy_decompose_matrix(transformations):
         t_list = []
         for t in transformations:
             match t:
@@ -229,20 +267,20 @@ class SvgWriter:
                     t_list.append(t)
         return tuple(t_list)
 
-    def _strategy_conservative(self, transformations):
+    def _transform_strategy_conservative(self, transformations):
         # attempt aggregate
-        aggregated = self._strategy_aggregate(transformations)
+        aggregated = self._transform_strategy_aggregate(transformations)
         if self._is_canonical(aggregated):
             self.total_aggregated_chains +=1
             return aggregated
         else:
             self.total_aggressive_chains +=1
-            return self._strategy_aggressive(transformations)
+            return self._transform_strategy_aggressive(transformations)
 
     @staticmethod
-    def _strategy_aggressive(transformations):
+    def _transform_strategy_aggressive(transformations):
         m = transforms_to_matrix(transformations)
-        return SvgWriter._strategy_decompose_matrix((Affine(a=m.m11, b=m.m21, c=m.m12, d=m.m22, e=m.m13, f=m.m23),))
+        return SvgWriter._transform_strategy_decompose_matrix((Affine(a=m.m11, b=m.m21, c=m.m12, d=m.m22, e=m.m13, f=m.m23),))
 
     @staticmethod
     def _number_to_string(number: float | str) -> str:
