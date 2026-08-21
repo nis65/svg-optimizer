@@ -1,6 +1,14 @@
 from svgtools.geometry.point import Point
 from svgtools.geometry.rect import Rect
 from svgtools.geometry.circle import Circle
+from svgtools.geometry.path import Path
+from svgtools.geometry.path_elements.moveto import MoveTo
+from svgtools.geometry.path_elements.lineto import LineTo
+from svgtools.geometry.path_elements.closepath import ClosePath
+from svgtools.geometry.path_elements.quadraticbezier import QuadraticBezier
+from svgtools.geometry.path_elements.cubicbezier import CubicBezier
+from svgtools.geometry.path_elements.arc import Arc
+
 from svgtools.geometry.bounding_box import BoundingBox
 
 from svgtools.svg.defs import Defs
@@ -126,6 +134,43 @@ def test_bounding_box_circle():
                                        min=Point(2,3),
                                        max=Point(6,7)
                                    )
+
+def test_bounding_box_path_ml():
+    document = Document(
+        svg=Svg(
+            children=(
+                Shape (
+                    id="path",
+                    geometry = Path (
+                        children = (
+                            MoveTo(
+                                target = Point(
+                                    x = 3,
+                                    y = 4,
+                                ),
+                                representation = 'm',
+                            ),
+                            LineTo(
+                                target = Point(
+                                    x = 4,
+                                    y = 5,
+                                ),
+                                representation = 'L',
+                            ),
+                        ),
+                    ),
+                ),
+            ),
+        ),
+    )
+    visitor = BoundingBoxVisitor()
+    visitor.visit(document)
+
+    assert visitor.bounding_box == BoundingBox(
+                                       min=Point(3,4),
+                                       max=Point(4,5)
+                                   )
+
 
 def test_bounding_box_with_use():
     document = Document(
