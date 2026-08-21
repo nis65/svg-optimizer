@@ -157,17 +157,7 @@ def _parse_xml_element(xml_element: ET.Element, namespace_str: str):
         case "polyline":
             polyline_id = xml_element.get("id")
             points_string = xml_element.get("points")
-            tokens = token_lexer(points_string, commands="")
-            token_iterator = TokenIterator(tokens)
-            points = []
-            while token_iterator.has_numbers(2):
-                points.append(Point(
-                    x = float(token_iterator.get().value),
-                    y = float(token_iterator.get().value),
-                    )
-                )
-            if token_iterator.peek() is not None:
-                print_stderr(f"WARNING: dropping extra number {token_iterator.get().value} in polyline")
+            points = _parse_poly_points(points_string, "polyline")
             return Shape(
                 id = polyline_id,
                 geometry = Polyline(
@@ -181,17 +171,7 @@ def _parse_xml_element(xml_element: ET.Element, namespace_str: str):
         case "polygon":
             polygon_id = xml_element.get("id")
             points_string = xml_element.get("points")
-            tokens = token_lexer(points_string, commands="")
-            token_iterator = TokenIterator(tokens)
-            points = []
-            while token_iterator.has_numbers(2):
-                points.append(Point(
-                    x = float(token_iterator.get().value),
-                    y = float(token_iterator.get().value),
-                    )
-                )
-            if token_iterator.peek() is not None:
-                print_stderr(f"WARNING: dropping extra number {token_iterator.get().value} in polygon")
+            points = _parse_poly_points(points_string, "polygon")
             return Shape(
                 id = polygon_id,
                 geometry = Polygon(
@@ -203,6 +183,20 @@ def _parse_xml_element(xml_element: ET.Element, namespace_str: str):
             )
 
     raise NotImplementedError(f"can parse only defs, g, use, rect, circle, path, line and polyline yet, not {xml_element.tag}. ns: '{namespace_str}'")
+
+def _parse_poly_points(points_string: str, name: str):
+    tokens = token_lexer(points_string, commands="")
+    token_iterator = TokenIterator(tokens)
+    points = []
+    while token_iterator.has_numbers(2):
+        points.append(Point(
+            x = float(token_iterator.get().value),
+            y = float(token_iterator.get().value),
+            )
+        )
+    if token_iterator.peek() is not None:
+        print_stderr(f"WARNING: dropping extra number {token_iterator.get().value} in {name}")
+    return tuple(points)
 
 def _parse_xml_children(xml_element: ET.Element, namespace_str: str) -> tuple:
 
