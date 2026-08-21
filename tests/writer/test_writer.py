@@ -12,6 +12,7 @@ from svgtools.svg.shape import Shape
 from svgtools.svg.transform import Translate, Scale, Rotate, SkewX, SkewY, Affine
 from svgtools.geometry.rect import Rect
 from svgtools.geometry.circle import Circle
+from svgtools.geometry.ellipse import Ellipse
 from svgtools.geometry.line import Line
 from svgtools.geometry.polyline import Polyline
 from svgtools.geometry.polygon import Polygon
@@ -279,6 +280,40 @@ def test_write_circle_with_attributes():
     <?xml version='1.0' encoding='UTF-8'?>
     <svg>
     <circle id="circleid" cx="3" cy="2" r="7" transform="translate(-1 -3) scale(2 1)" unknown="unknown_value" />
+    </svg>
+    """)
+# }}}
+# {{{ def test_write_ellipse_with_attributes():
+def test_write_ellipse_with_attributes():
+    d = Document(
+            svg=Svg(
+                children=(
+                    Shape(
+                        id="ellipseid",
+                        transformations=(
+                             Translate(dx=-1, dy=-3),
+                             Scale(sx=2, sy=1),
+                        ),
+                        geometry=Ellipse(
+                            center=Point(
+                                x=3,
+                                y=2,
+                            ),
+                            radiusx=7,
+                            radiusy=8,
+                        ),
+                        unknown_attributes={
+                            "unknown": "unknown_value",
+                        }
+                    ),
+                )
+            )
+        )
+    writer = SvgWriter()
+    assert writer.write_svg_string(d) == dedent("""\
+    <?xml version='1.0' encoding='UTF-8'?>
+    <svg>
+    <ellipse id="ellipseid" cx="3" cy="2" rx="7" ry="8" transform="translate(-1 -3) scale(2 1)" unknown="unknown_value" />
     </svg>
     """)
 # }}}
