@@ -1,5 +1,5 @@
 from .transform_write_strategy import TransformWriteStrategy
-from .path_write_options import PathCoordinates, PathCompactness
+from .path_write_options import PathCoordinates, PathCompactness, PathCommandSet, PathCommand, PathWriteState
 from svgtools.svg.document import Document
 from svgtools.svg.svg import Svg
 from svgtools.svg.defs import Defs
@@ -35,10 +35,14 @@ class SvgWriter:
             self,
             transform_strategy: TransformWriteStrategy = TransformWriteStrategy.KEEP,
             path_coordinates: PathCoordinates = PathCoordinates.ABSOLUTE,
+            path_compactness: PathCompactness = PathCompactness.CANONICAL,
+            path_command_set: PathCommandSet = PathCommandSet.BASE
             ):
         self._parts: list[str] = []
         self.transform_strategy = transform_strategy
         self.path_coordinates = path_coordinates
+        self.path_compactness = path_compactness
+        self.path_command_set = path_command_set
         self.total_aggregated_chains = 0
         self.total_aggressive_chains = 0
 
@@ -187,42 +191,171 @@ class SvgWriter:
         return result.strip()
 
     def _path_elements_to_string(self, path_elements):
-        match self.path_coordinates:
-            case PathCoordinates.ABSOLUTE:
-                return self._path_string_coords_absolute(path_elements)
-            case _:
-                raise ValueError(f"path_coordinates {self.path_coordinates} not implemented")
-
-    def _path_string_coords_absolute(self, path_elements):
+        path_command_list = self._path_elements_to_path_commands(path_elements)
         result = ""
+        match self.path_compactness:
+            case PathCompactness.CANONICAL:
+                for command in path_command_list:
+                    if command.parameters:
+                       result += f"{command.command} {command.parameters} "
+                    else:
+                       result += f"{command.command} "
+            case _:
+                raise ValueError(f"path_compactness {self.path_compactness} not implemented")
+        return result.strip()
+
+    def _path_elements_to_path_commands(self, path_elements):
+        current_state = PathWriteState()
+        path_command_list = []
         for element in path_elements:
             match element:
                 case MoveTo():
-                    result += " M "
-                    numberlist = ( element.target.x, element.target.y, )
+                    current_state, path_command = self._build_path_command_moveto(current_state, element)
                 case LineTo():
-                    result += " L "
-                    numberlist = ( element.target.x, element.target.y, )
+                    current_state, path_command = self._build_path_command_lineto(current_state, element)
                 case ClosePath():
-                    result += " Z"
-                    numberlist = ()
+                    current_state, path_command = self._build_path_command_closepath(current_state, element)
                 case QuadraticBezier():
-                    result += " Q "
-                    numberlist = ( element.control1.x, element.control1.y, element.end.x, element.end.y,)
+                    current_state, path_command = self._build_path_command_qbezier(current_state, element)
                 case CubicBezier():
-                    result += " C "
-                    numberlist = ( element.control1.x, element.control1.y,
-                                   element.control2.x, element.control2.y,
-                                   element.end.x, element.end.y,
-                                 )
+                    current_state, path_command = self._build_path_command_cbezier(current_state, element)
                 case Arc():
-                    result += " A "
-                    numberlist = ( element.rx, element.ry, element.phi,
-                                   element.large_arc_flag, element.sweep_flag,
-                                   element.end.x, element.end.y,
-                                 )
-            result += f'{SvgWriter._numberlist_to_string(numberlist)}'
-        return result.strip()
+                    current_state, path_command = self._build_path_command_arc(current_state, element)
+            path_command_list.append(path_command)
+        return path_command_list
+
+    def _get_command(self, representation: str) -> str:
+
+        match self.path_coordinates:
+            case PathCoordinates.KEEP:
+                new_representation = representation
+            case PathCoordinates.ABSOLUTE:
+                new_representation = representation.upper()
+            case PathCoordinates.RELATIVE:
+                new_representation = representation.lower()
+        base_commands = {
+                "h": "l",
+                "v": "l",
+                "H": "L",
+                "V": "L",
+                "t": "q",
+                "T": "Q",
+                "s": "c",
+                "S": "C",
+                }
+        if self.path_command_set is PathCommandSet.BASE:
+            new_representation = base_commands.get(new_representation, new_representation)
+        return new_representation
+
+    def _build_path_command_moveto(self, current_state, moveto):
+
+        new_command = self._get_command(moveto.representation)
+        if new_command.isupper():
+            new_x = moveto.target.x
+            new_y = moveto.target.y
+        else:
+            new_x = moveto.target.x - current_state.current_point.x
+            new_y = moveto.target.y - current_state.current_point.y
+        current_state.current_point = moveto.target
+        current_state.current_subpath_start = current_state.current_point
+        number_string = self._numberlist_to_string((new_x, new_y))
+        return current_state, PathCommand(command=new_command, parameters=number_string)
+
+    def _build_path_command_lineto(self, current_state, lineto):
+
+        new_command = self._get_command(lineto.representation)
+        if new_command.isupper():
+            new_x = lineto.target.x
+            new_y = lineto.target.y
+        else:
+            new_x = lineto.target.x - current_state.current_point.x
+            new_y = lineto.target.y - current_state.current_point.y
+        current_state.current_point = lineto.target
+        match new_command:
+            case 'L' | 'l':
+               number_string = self._numberlist_to_string((new_x, new_y))
+            case 'H' | 'h':
+               number_string = self._numberlist_to_string((new_x,))
+            case 'V' | 'v':
+               number_string = self._numberlist_to_string((new_y,))
+        return current_state, PathCommand(command=new_command, parameters=number_string)
+
+    def _build_path_command_closepath(self, current_state, closepath):
+
+        new_command = self._get_command(closepath.representation)
+        current_state.current_point = current_state.current_subpath_start
+
+        return current_state, PathCommand(command=new_command, parameters="")
+
+    def _build_path_command_qbezier(self, current_state, qbezier):
+
+        new_command = self._get_command(qbezier.representation)
+        if new_command.isupper():
+            new_control1_x = qbezier.control1.x
+            new_control1_y = qbezier.control1.y
+            new_end_x = qbezier.end.x
+            new_end_y = qbezier.end.y
+        else:
+            new_control1_x = qbezier.control1.x - current_state.current_point.x
+            new_control1_y = qbezier.control1.y - current_state.current_point.y
+            new_end_x = qbezier.end.x - current_state.current_point.x
+            new_end_y = qbezier.end.y - current_state.current_point.y
+        current_state.current_point = qbezier.end
+        match new_command:
+            case 'Q' | 'q':
+                number_string = self._numberlist_to_string(
+                                      (new_control1_x, new_control1_y,
+                                       new_end_x, new_end_y)
+                                      )
+            case 'T' | 't':
+                number_string = self._numberlist_to_string((new_end_x, new_end_y))
+        return current_state, PathCommand(command=new_command, parameters=number_string)
+
+    def _build_path_command_cbezier(self, current_state, cbezier):
+        new_command = self._get_command(cbezier.representation)
+        if new_command.isupper():
+            new_control1_x = cbezier.control1.x
+            new_control1_y = cbezier.control1.y
+            new_control2_x = cbezier.control2.x
+            new_control2_y = cbezier.control2.y
+            new_end_x = cbezier.end.x
+            new_end_y = cbezier.end.y
+        else:
+            new_control1_x = cbezier.control1.x - current_state.current_point.x
+            new_control1_y = cbezier.control1.y - current_state.current_point.y
+            new_control2_x = cbezier.control2.x - current_state.current_point.x
+            new_control2_y = cbezier.control2.y - current_state.current_point.y
+            new_end_x = cbezier.end.x - current_state.current_point.x
+            new_end_y = cbezier.end.y - current_state.current_point.y
+        current_state.current_point = cbezier.end
+        match new_command:
+            case 'C' | 'c':
+                number_string = self._numberlist_to_string(
+                                      (new_control1_x, new_control1_y,
+                                       new_control2_x, new_control2_y,
+                                       new_end_x, new_end_y)
+                                      )
+            case 'S' | 's':
+                number_string = self._numberlist_to_string(
+                                      (new_control2_x, new_control2_y,
+                                       new_end_x, new_end_y)
+                                      )
+        return current_state, PathCommand(command=new_command, parameters=number_string)
+
+    def _build_path_command_arc(self, current_state, arc):
+        new_command = self._get_command(arc.representation)
+        if new_command.isupper():
+            new_end_x = arc.end.x
+            new_end_y = arc.end.y
+        else:
+            new_end_x = arc.end.x - current_state.current_point.x
+            new_end_y = arc.end.y - current_state.current_point.y
+        current_state.current_point = arc.end
+        number_string = self._numberlist_to_string(
+            ( arc.rx, arc.ry, arc.phi, arc.large_arc_flag, arc.sweep_flag,
+              new_end_x, new_end_y )
+            )
+        return current_state, PathCommand(command=new_command, parameters=number_string)
 
     def _transformations_to_write(self, transformations):
         match self.transform_strategy:
