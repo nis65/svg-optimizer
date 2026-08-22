@@ -192,17 +192,46 @@ class SvgWriter:
 
     def _path_elements_to_string(self, path_elements):
         path_command_list = self._path_elements_to_path_commands(path_elements)
-        result = ""
         match self.path_compactness:
             case PathCompactness.CANONICAL:
-                for command in path_command_list:
-                    if command.parameters:
-                       result += f"{command.command} {command.parameters} "
-                    else:
-                       result += f"{command.command} "
+                new_path_command_list = path_command_list
+            case PathCompactness.COMPACT:
+                new_path_command_list = self._compact_command_list(path_command_list)
             case _:
                 raise ValueError(f"path_compactness {self.path_compactness} not implemented")
+        result = ""
+        for command in new_path_command_list:
+            if command.parameters:
+               result += f"{command.command} {command.parameters} "
+            else:
+               result += f"{command.command} "
         return result.strip()
+
+    @staticmethod
+    def _can_aggregate(previous, current) -> bool:
+        if previous.command == current.command:
+            return True
+        if previous.command == 'm' and current.command == 'l':
+            return True
+        if previous.command == 'M' and current.command == 'L':
+            return True
+        return False
+
+    @classmethod
+    def _compact_command_list(cls, command_list):
+        result = []
+        for c in command_list:
+            if not result:
+                result.append(c)
+            elif cls._can_aggregate(result[-1], c):
+                new_command = PathCommand(
+                    command = result[-1].command,
+                    parameters = result[-1].parameters + f" {c.parameters}",
+                    )
+                result[-1] = new_command
+            else:
+                result.append(c)
+        return result
 
     def _path_elements_to_path_commands(self, path_elements):
         current_state = PathWriteState()
