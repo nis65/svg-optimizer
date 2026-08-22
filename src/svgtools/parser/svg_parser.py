@@ -202,7 +202,7 @@ def _parse_xml_element(xml_element: ET.Element, namespace_str: str):
                     xml_element, {"id", "points", "transform"}),
             )
 
-    raise NotImplementedError(f"can parse only defs, g, use, rect, circle, path, line and polyline yet, not {xml_element.tag}. ns: '{namespace_str}'")
+    raise NotImplementedError(f"can parse only defs, g, use, rect, circle, path, line and polyline yet, not '{tag}' in namespace '{namespace_str}'")
 
 def _parse_poly_points(points_string: str, name: str):
     tokens = token_lexer(points_string, commands="")
