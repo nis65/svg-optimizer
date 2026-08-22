@@ -40,7 +40,6 @@ def parse_svg_string(svg_text: str) -> Document:
     else:
         namespace_str = ""
 
-    #known_attributes = {"id", "width", "height", "viewBox", "transform"}
     return Document(
         svg=Svg(
             id = xml_root.get("id"),
@@ -229,8 +228,21 @@ def _parse_xml_children(xml_element: ET.Element, namespace_str: str) -> tuple:
     return tuple(children)
 
 def _collect_unknown_attributes(xml_element: ET.Element, known_list: Collection[str]) -> dict[str, str]:
-    return {
-        key: value
-        for key, value in xml_element.attrib.items()
-        if key not in known_list
-    }
+
+    XML_NAMESPACE="http://www.w3.org/XML/1998/namespace"
+    xml_namespace_prefix = "{" + XML_NAMESPACE + "}"
+
+    unknown_attributes = {}
+    for key, value in xml_element.attrib.items():
+        if key in known_list:
+            continue
+        if key.startswith("{"):
+            if key.startswith(xml_namespace_prefix):
+                key = "xml:" + key.removeprefix(xml_namespace_prefix)
+            else:
+                print_stderr(
+                        f'WARNING: dropping attribute with unsupported namespace: {key}="{value}"'
+                    )
+                continue
+        unknown_attributes[key] = value
+    return unknown_attributes
