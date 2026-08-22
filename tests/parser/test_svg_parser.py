@@ -75,7 +75,7 @@ def test_parse_empty_svg_with_all_other_attrs():
         )
     )
 
-def test_parse_svg_with_unkown_name_space_attribute():
+def test_parse_svg_with_unkown_name_space_attribute(capsys):
     svg_text = """
     <svg xmlns="http://www.w3.org/2000/svg" xmlns:foo="http://i-dont-exist.com/">
        <rect foo:tag="hello" x="10" y="20" width="100" height="50" />
@@ -96,6 +96,8 @@ def test_parse_svg_with_unkown_name_space_attribute():
             xmlnamespace="http://www.w3.org/2000/svg",
         )
     )
+    captured = capsys.readouterr()
+    assert 'WARNING: dropping attribute with unsupported namespace: {http://i-dont-exist.com/}tag="hello"' in captured.err
 
 
 def test_parse_svg_with_namespace_and_rect():
