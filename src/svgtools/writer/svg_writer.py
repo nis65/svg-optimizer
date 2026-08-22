@@ -1,5 +1,5 @@
 from .transform_write_strategy import TransformWriteStrategy
-from .path_write_strategy import PathWriteStrategy
+from .path_write_options import PathCoordinates, PathCompactness
 from svgtools.svg.document import Document
 from svgtools.svg.svg import Svg
 from svgtools.svg.defs import Defs
@@ -34,11 +34,11 @@ class SvgWriter:
     def __init__(
             self,
             transform_strategy: TransformWriteStrategy = TransformWriteStrategy.KEEP,
-            path_strategy: PathWriteStrategy = PathWriteStrategy.ABSOLUTE,
+            path_coordinates: PathCoordinates = PathCoordinates.ABSOLUTE,
             ):
         self._parts: list[str] = []
         self.transform_strategy = transform_strategy
-        self.path_strategy = path_strategy
+        self.path_coordinates = path_coordinates
         self.total_aggregated_chains = 0
         self.total_aggressive_chains = 0
 
@@ -187,13 +187,13 @@ class SvgWriter:
         return result.strip()
 
     def _path_elements_to_string(self, path_elements):
-        match self.path_strategy:
-            case PathWriteStrategy.ABSOLUTE:
-                return self._path_string_strategy_absolute(path_elements)
+        match self.path_coordinates:
+            case PathCoordinates.ABSOLUTE:
+                return self._path_string_coords_absolute(path_elements)
             case _:
-                raise ValueError(f"path_strategy {self.path_strategy} not implemented")
+                raise ValueError(f"path_coordinates {self.path_coordinates} not implemented")
 
-    def _path_string_strategy_absolute(self, path_elements):
+    def _path_string_coords_absolute(self, path_elements):
         result = ""
         for element in path_elements:
             match element:
