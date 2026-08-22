@@ -111,21 +111,25 @@ class BoundingBoxVisitor:
 
     @staticmethod
     def _transformed_points_bounding_box(points: set[Point], matrix: Matrix3) -> BoundingBox:
-        if len(points) < 2:
-            raise ValueError(f"need at least two points to create a BoundingBox")
-        points_iterator = iter(points)
-        first = matrix * next(points_iterator)
-        second = matrix * next(points_iterator)
-        bb = BoundingBox(
-            Point(
-                min(first.x, second.x),
-                min(first.y, second.y)
-            ),
-            Point(
-                max(first.x, second.x),
-                max(first.y, second.y)
+        if len(points) < 1:
+            raise ValueError(f"need at least one point to create a BoundingBox, not {len(points)}")
+        if len(points) == 1:
+            moved_point = matrix * next(iter(points))
+            bb = BoundingBox(moved_point, moved_point)
+        else:
+            points_iterator = iter(points)
+            first = matrix * next(points_iterator)
+            second = matrix * next(points_iterator)
+            bb = BoundingBox(
+                Point(
+                    min(first.x, second.x),
+                    min(first.y, second.y)
+                ),
+                Point(
+                    max(first.x, second.x),
+                    max(first.y, second.y)
+                )
             )
-        )
-        for p in points_iterator:
-            bb = bb.include(matrix * p)
+            for p in points_iterator:
+                bb = bb.include(matrix * p)
         return bb
