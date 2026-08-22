@@ -75,6 +75,29 @@ def test_parse_empty_svg_with_all_other_attrs():
         )
     )
 
+def test_parse_svg_with_unkown_name_space_attribute():
+    svg_text = """
+    <svg xmlns="http://www.w3.org/2000/svg" xmlns:foo="http://i-dont-exist.com/">
+       <rect foo:tag="hello" x="10" y="20" width="100" height="50" />
+    </svg>
+    """
+    assert parse_svg_string(svg_text) == Document(
+        svg=Svg(
+            children=( 
+                Shape(
+                    geometry=Rect(
+                        top_left=Point(x=10, y=20,),
+                        width=100,
+                        height=50,
+                    ),
+                ),
+            ),
+            transformations=(),
+            xmlnamespace="http://www.w3.org/2000/svg",
+        )
+    )
+
+
 def test_parse_svg_with_namespace_and_rect():
     svg_text = """
     <svg xmlns="http://www.w3.org/2000/svg">
