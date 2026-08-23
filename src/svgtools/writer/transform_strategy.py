@@ -65,7 +65,7 @@ class TransformStrategy:
                     result += f' matrix({numberlist_to_string(numberlist)})'
 
         return result.strip()
-    
+
     @staticmethod
     def _is_canonical(transformations) -> bool:
         _CANONICAL_ORDER = (Translate, Rotate, SkewX, Scale)

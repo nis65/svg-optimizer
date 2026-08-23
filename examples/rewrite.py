@@ -2,7 +2,7 @@ import argparse
 import sys
 
 from svgtools.parser.svg_parser import parse_svg_string
-from svgtools.writer.path_write_options import (
+from svgtools.writer.path_writer import (
     PathCommandSet,
     PathCompactness,
     PathCoordinates,
