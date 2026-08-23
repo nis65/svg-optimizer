@@ -1,29 +1,36 @@
-from .transform_write_strategy import TransformWriteStrategy
-from .path_write_options import PathCoordinates, PathCompactness, PathCommandSet, PathCommand, PathWriteState
-from svgtools.svg.document import Document
-from svgtools.svg.svg import Svg
-from svgtools.svg.defs import Defs
-from svgtools.svg.group import Group
-from svgtools.svg.use import Use
-from svgtools.svg.shape import Shape
-from svgtools.svg.transform import Translate, Scale, Rotate, SkewX, SkewY, Affine
-from svgtools.svg.get_matrix import get_matrix, transforms_to_matrix
-from svgtools.geometry.rect import Rect
 from svgtools.geometry.circle import Circle
 from svgtools.geometry.ellipse import Ellipse
-from svgtools.geometry.line import Line
-from svgtools.geometry.polyline import Polyline
-from svgtools.geometry.polygon import Polygon
-from svgtools.geometry.path import Path
-from svgtools.geometry.path_elements.moveto import MoveTo
-from svgtools.geometry.path_elements.lineto import LineTo
-from svgtools.geometry.path_elements.closepath import ClosePath
-from svgtools.geometry.path_elements.quadraticbezier import QuadraticBezier
-from svgtools.geometry.path_elements.cubicbezier import CubicBezier
-from svgtools.geometry.path_elements.arc import Arc
-from svgtools.geometry.point import Point
-from svgtools.geometry.matrix3 import Matrix3, TRHxSDecomposition
 from svgtools.geometry.isclose import geometry_isclose
+from svgtools.geometry.line import Line
+from svgtools.geometry.matrix3 import Matrix3
+from svgtools.geometry.path import Path
+from svgtools.geometry.path_elements.arc import Arc
+from svgtools.geometry.path_elements.closepath import ClosePath
+from svgtools.geometry.path_elements.cubicbezier import CubicBezier
+from svgtools.geometry.path_elements.lineto import LineTo
+from svgtools.geometry.path_elements.moveto import MoveTo
+from svgtools.geometry.path_elements.quadraticbezier import QuadraticBezier
+from svgtools.geometry.polygon import Polygon
+from svgtools.geometry.polyline import Polyline
+from svgtools.geometry.rect import Rect
+from svgtools.svg.defs import Defs
+from svgtools.svg.document import Document
+from svgtools.svg.get_matrix import get_matrix, transforms_to_matrix
+from svgtools.svg.group import Group
+from svgtools.svg.shape import Shape
+from svgtools.svg.svg import Svg
+from svgtools.svg.transform import Affine, Rotate, Scale, SkewX, SkewY, Translate
+from svgtools.svg.use import Use
+
+from .path_write_options import (
+    PathCommand,
+    PathCommandSet,
+    PathCompactness,
+    PathCoordinates,
+    PathWriteState,
+)
+from .transform_write_strategy import TransformWriteStrategy
+
 
 class SvgWriter:
 
@@ -213,7 +220,7 @@ class SvgWriter:
             return True
         if previous.command == 'm' and current.command == 'l':
             return True
-        if previous.command == 'M' and current.command == 'L':
+        if previous.command == 'M' and current.command == 'L':  # noqa: SIM103
             return True
         return False
 
@@ -409,9 +416,8 @@ class SvgWriter:
         _CANONICAL_ORDER = (Translate, Rotate, SkewX, Scale)
         reference = iter(_CANONICAL_ORDER)
         for t in transformations:
-            if type(t) == Rotate:
-                if not (t.cx == 0 and t.cy == 0):
-                    return False
+            if type(t) == Rotate and not (t.cx == 0 and t.cy == 0):
+                return False
             for expected in reference:
                 if type(t) == expected:
                     break
@@ -422,7 +428,7 @@ class SvgWriter:
     @staticmethod
     def _transform_strategy_aggregate(transformations):
         if len(transformations) == 0:
-            raise ValueError(f"should not be called with 0 transformations")
+            raise ValueError("should not be called with 0 transformations")
         t_list = []
         agg_t = None
         for t in transformations:
