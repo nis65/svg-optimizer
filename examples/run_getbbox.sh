@@ -2,6 +2,6 @@
 
 ( 
 cd $(dirname $0)
-PYTHONPATH=../src python3 getbbox.py
+PYTHONPATH=../src python3 getbbox.py $*
 )
 
