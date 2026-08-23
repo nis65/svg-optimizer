@@ -1,13 +1,15 @@
 import math
-
 from dataclasses import dataclass
-from .path_element_abc import PathElement
+from typing import ClassVar
+
 from ..point import Point
+from .path_element_abc import PathElement
+
 
 @dataclass(frozen=True, slots=True)
 class Arc(PathElement):
 
-    parameter_counts = {
+    parameter_counts: ClassVar[dict[str, int]] = {
             "A": 7,
             "a": 7,
     }
@@ -127,7 +129,7 @@ class Arc(PathElement):
             delta_theta = delta_theta + 2 * math.pi
 
         points = []
-        for i in range(0, count+1):
+        for i in range(count+1):
             t = i / count
             points.append(self._point_at(center, lrx, lry, theta_start, delta_theta, cos_rphi, sin_rphi, t))
         return set(points)
