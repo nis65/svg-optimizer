@@ -137,7 +137,7 @@ class SvgWriter:
         self._append_attributes(shape)
         self._parts.append(" />\n")
 
-    def _append_attributes(self, element) -> None:
+    def _append_attributes(self, element) -> None:    # noqa: PLR0912
         if xmlnamespace := getattr(element, "xmlnamespace", None):
             self._parts.append(f' xmlns="{xmlnamespace}"')
         if element_id := getattr(element, "id", None):
@@ -190,7 +190,8 @@ class SvgWriter:
         for key, value in sorted(element.unknown_attributes.items()):
             self._parts.append(f' {key}="{value}"')
 
-    def _polypoints_to_string(self, polypoints):
+    @staticmethod
+    def _polypoints_to_string(polypoints):
         result = ""
         for point in polypoints:
             coords = ( point.x, point.y )

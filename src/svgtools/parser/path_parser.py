@@ -21,7 +21,7 @@ class PathParseState:
     previous_quadratic_control: Point | None = None
     previous_cubic_control: Point | None = None
 
-def parse_path_string(text: str) -> Geometry:
+def parse_path_string(text: str) -> Geometry:     # noqa: PLR0912
     tokens = token_lexer(text, commands="mMlLhHvVzZqQtTcCsSaA")
     token_iterator = TokenIterator(tokens)
 
@@ -198,7 +198,7 @@ def _parse_qQ(command: str, current_state: PathParseState, iterator: TokenIterat
         ))
 
 def _parse_tT(command: str, current_state: PathParseState, iterator: TokenIterator) -> (PathParseState, QuadraticBezier):
-    if current_state.previous_command in ('q', 'Q', 't', 'T'):
+    if current_state.previous_command in {'q', 'Q', 't', 'T'}:
         new_control1 = _mirror_point(current_state.current_point, current_state.previous_quadratic_control)
     else:
         new_control1 = current_state.current_point
@@ -247,7 +247,7 @@ def _parse_cC(command: str, current_state: PathParseState, iterator: TokenIterat
         ))
 
 def _parse_sS(command: str, current_state: PathParseState, iterator: TokenIterator) -> (PathParseState, CubicBezier):
-    if current_state.previous_command in ('c', 'C', 's', 'S'):
+    if current_state.previous_command in {'c', 'C', 's', 'S'}:
         new_control1 = _mirror_point(current_state.current_point, current_state.previous_cubic_control)
     else:
         new_control1 = current_state.current_point

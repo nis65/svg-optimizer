@@ -55,7 +55,7 @@ def parse_svg_string(svg_text: str) -> Document:
         )
     )
 
-def _parse_xml_element(xml_element: ET.Element, namespace_str: str):
+def _parse_xml_element(xml_element: ET.Element, namespace_str: str): # noqa: PLR0911 PLR0914
 
     tag = xml_element.tag.removeprefix(namespace_str)
 
