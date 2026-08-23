@@ -3,6 +3,7 @@ from dataclasses import FrozenInstanceError
 import pytest
 
 from svgtools.geometry.point import Point
+from svgtools.geometry.tolerance import GEOMETRY_REL_TOL, GEOMETRY_ABS_TOL
 
 
 def test_point_construction():
@@ -25,19 +26,19 @@ def test_points_are_close():
     p = Point(0,0)
     q = Point(0.000000001,
              -0.000000001)
-    assert not p.isclose(q,1e-10)
-    assert p.isclose(q,1e-9)
+    assert not p.isclose(q,abs_tol=(GEOMETRY_ABS_TOL/10))
+    assert p.isclose(q,abs_tol=GEOMETRY_ABS_TOL)
     # test rel_tol off 0
     p = Point(1000, 1)
     q = Point(1000.00001, 1)
     r = Point(1000.000001, 1)
-    assert not p.isclose(q,1e-20)
-    assert p.isclose(r,1e-20)
+    assert not p.isclose(q,abs_tol=(GEOMETRY_ABS_TOL*GEOMETRY_ABS_TOL))
+    assert p.isclose(r,abs_tol=(GEOMETRY_ABS_TOL*GEOMETRY_ABS_TOL))
 
 def test_points_are_close_different_sized_sets():
     p = Point(0,0)
     q = Point(1,1)
     set1 = { p }
     set2 = { p, q }
-    assert not Point.points_are_close(set1, set2, 1e-9)
+    assert not Point.points_are_close(set1, set2, abs_tol=GEOMETRY_ABS_TOL)
 

@@ -34,8 +34,5 @@ class BoundingBox:
     def __add__(self, other) -> "BoundingBox":
         return self.union(other)
 
-    def isclose(self, other, svg_abs_tol) -> bool:
-        return (
-            self.min.isclose(other.min, svg_abs_tol) and
-            self.max.isclose(other.max, svg_abs_tol)
-        )
+    def isclose(self, other, abs_tol) -> bool:
+        return Point.points_are_close({self.min, self.max}, {other.min, other.max}, abs_tol=abs_tol)

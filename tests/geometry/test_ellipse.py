@@ -5,6 +5,8 @@ import pytest
 
 from svgtools.geometry.ellipse import Ellipse
 from svgtools.geometry.point import Point
+from svgtools.geometry.tolerance import GEOMETRY_REL_TOL, GEOMETRY_ABS_TOL
+
 
 
 def test_ellipse_construction():
@@ -39,7 +41,7 @@ def test_ellipse_transformed_bounding_box():
         Point(-2,0),
         Point(0,1),
     }
-    assert Point.points_are_close(expected, e.points_for_bounding_box(4), 1e-8)
+    assert Point.points_are_close(expected, e.points_for_bounding_box(4), abs_tol=GEOMETRY_ABS_TOL)
 
     sqrt2 = math.sqrt(2)
     expected = {
@@ -52,4 +54,4 @@ def test_ellipse_transformed_bounding_box():
         Point(-sqrt2, sqrt2/2),
         Point(-sqrt2, -sqrt2/2),
     }
-    assert Point.points_are_close(expected, e.points_for_bounding_box(8), 1e-8)
+    assert Point.points_are_close(expected, e.points_for_bounding_box(8), abs_tol=GEOMETRY_ABS_TOL)

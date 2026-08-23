@@ -1,7 +1,8 @@
+import math
 from enum import Enum, auto
 
-from svgtools.geometry.isclose import geometry_isclose
 from svgtools.geometry.matrix3 import Matrix3
+from svgtools.geometry.tolerance import GEOMETRY_ABS_TOL, GEOMETRY_REL_TOL
 from svgtools.svg.get_matrix import get_matrix, transforms_to_matrix
 from svgtools.svg.transform import Affine, Rotate, Scale, SkewX, SkewY, Translate
 
@@ -129,9 +130,9 @@ class TransformStrategy:
                     )
                     if not (md.tx == 0 and md.ty == 0):
                         t_list.append(Translate(dx=md.tx, dy=md.ty))
-                    if not geometry_isclose(md.theta_rotate, 0):
+                    if not math.isclose(md.theta_rotate, 0, rel_tol=GEOMETRY_REL_TOL, abs_tol=GEOMETRY_ABS_TOL):
                         t_list.append(Rotate(theta=md.theta_rotate, cx=0, cy=0))
-                    if not geometry_isclose(md.theta_skew_x, 0):
+                    if not math.isclose(md.theta_skew_x, 0, rel_tol=GEOMETRY_REL_TOL, abs_tol=GEOMETRY_ABS_TOL):
                         t_list.append(SkewX(theta=md.theta_skew_x))
                     if not (md.sx == 1 and md.sy == 1):
                         t_list.append(Scale(sx=md.sx, sy=md.sy))

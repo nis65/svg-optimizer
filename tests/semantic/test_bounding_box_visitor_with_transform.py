@@ -4,6 +4,7 @@ from svgtools.geometry.bounding_box import BoundingBox
 from svgtools.geometry.circle import Circle
 from svgtools.geometry.point import Point
 from svgtools.geometry.rect import Rect
+from svgtools.geometry.tolerance import GEOMETRY_REL_TOL, GEOMETRY_ABS_TOL
 from svgtools.semantic.bounding_box_visitor import BoundingBoxVisitor
 from svgtools.svg.defs import Defs
 from svgtools.svg.document import Document
@@ -186,7 +187,7 @@ def test_circle_svg_scale():
             min=Point(0,0),
             max=Point(4,4)
         ),
-        1e-9
+        abs_tol=GEOMETRY_ABS_TOL
     )
 
 def test_circle_circle_scale():
@@ -233,7 +234,7 @@ def test_circle_circle_rotate():
     assert visitor.bounding_box.isclose(BoundingBox(
                                        min=Point(0,0),
                                        max=Point(2,2)
-                                   ), 1e-3)
+                                   ), abs_tol=1e-3)
 
 def test_rect_rect_rotate_1():
     document = Document(
@@ -257,7 +258,7 @@ def test_rect_rect_rotate_1():
     assert visitor.bounding_box.isclose(BoundingBox(
                                        min=Point(1-sqrt2,1-sqrt2),
                                        max=Point(1+sqrt2,1+sqrt2),
-                                   ), 1e-3)
+                                   ), abs_tol=GEOMETRY_ABS_TOL)
 
 def test_rect_rect_rotate_2():
     document = Document(
@@ -281,7 +282,7 @@ def test_rect_rect_rotate_2():
     assert visitor.bounding_box.isclose(BoundingBox(
                                        min=Point(1-sqrt2,1-sqrt2),
                                        max=Point(1+sqrt2,1+sqrt2),
-                                   ), 1e-3)
+                                   ), abs_tol=GEOMETRY_ABS_TOL)
 
 def test_rect_skew_y():
     document = Document(
@@ -304,4 +305,4 @@ def test_rect_skew_y():
     assert visitor.bounding_box.isclose(BoundingBox(
                                        min=Point(0,0),
                                        max=Point(2,4),
-                                   ), 1e-9)
+                                   ), abs_tol=GEOMETRY_ABS_TOL)

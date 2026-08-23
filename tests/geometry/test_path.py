@@ -10,6 +10,7 @@ from svgtools.geometry.path_elements.lineto import LineTo
 from svgtools.geometry.path_elements.moveto import MoveTo
 from svgtools.geometry.path_elements.quadraticbezier import QuadraticBezier
 from svgtools.geometry.point import Point
+from svgtools.geometry.tolerance import GEOMETRY_REL_TOL, GEOMETRY_ABS_TOL
 
 
 def test_invalid_arc_repr():
@@ -358,7 +359,7 @@ def test_path_with_bounding_box_for_cubic_bezier_curve():
         Point(x=46/27, y=5/3,),
         Point(x=35/27, y=5/3,),
         Point(x=2, y=1,),
-    }, 1e-9)
+    }, abs_tol=GEOMETRY_ABS_TOL)
 
 def test_path_with_arc():
     p = Path(
@@ -417,7 +418,7 @@ def test_path_with_bounding_box_for_small_arc_circle():
               y=200 - 100 * math.sqrt(2) / 2
              ),
         Point(x=300, y=100,),
-    }, 1e-9)
+    }, abs_tol=GEOMETRY_ABS_TOL)
 
 def test_path_with_bounding_box_for_big_arc_circle():
     p = Path(
@@ -448,7 +449,7 @@ def test_path_with_bounding_box_for_big_arc_circle():
         Point(x=100, y=400,),
         Point(x=200, y=300,),
         Point(x=300, y=400,),
-    }, 1e-9)
+    }, abs_tol=GEOMETRY_ABS_TOL)
 
 def test_path_with_bounding_box_for_two_similar_random_arcs():
     p1 = Path(
@@ -500,4 +501,4 @@ def test_path_with_bounding_box_for_two_similar_random_arcs():
     assert Point.points_are_close(
              p1.points_for_bounding_box(36),
              p2.points_for_bounding_box(36),
-             1e-9)
+             abs_tol=GEOMETRY_ABS_TOL)
