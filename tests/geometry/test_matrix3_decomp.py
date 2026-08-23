@@ -1,5 +1,25 @@
+import pytest
+
 from svgtools.geometry.matrix3 import Matrix3, TRHxSDecomposition
 
+
+def test_matrix3_invalid_call():
+    mt = Matrix3.translation(2,3)
+    assert not mt.isclose(1)
+
+def test_matrix3_decomp_invalid_call():
+    md = TRHxSDecomposition(1, 2, 3, 4, 5, 6)
+    assert not md.isclose(12)
+
+def test_matrix3_decomp_scale_0():
+    mt = Matrix3.scaling(0.0000000000000001,3)
+    with pytest.raises(ValueError):
+        md = Matrix3.TRHxS_decompose(mt)   # noqa: F841
+
+def test_matrix_decomp_det_is_0():
+    mt = Matrix3.affine(1,1,1,1.0000000000001,0,0)
+    with pytest.raises(ValueError):
+        md = Matrix3.TRHxS_decompose(mt)   # noqa: F841
 
 def test_matrix3_decomp_translate():
     mt = Matrix3.translation(2,3)

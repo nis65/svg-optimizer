@@ -12,6 +12,98 @@ from svgtools.geometry.path_elements.quadraticbezier import QuadraticBezier
 from svgtools.geometry.point import Point
 
 
+def test_invalid_arc_repr():
+    with pytest.raises(ValueError, match="Arc can only be represented"):
+        a = Arc(                       # noqa: F841
+                rx = 1,
+                ry = 2,
+                phi = 45,
+                large_arc_flag = 0,
+                sweep_flag = 1,
+                end = Point(
+                    x = 3,
+                    y = 4,
+                ),
+                representation='x',
+            )
+
+def test_invalid_closepath_repr():
+    with pytest.raises(ValueError, match="ClosePath can only be represented"):
+        c = ClosePath(                # noqa: F841
+                representation='x',
+            )
+
+def test_closepath_has_no_endpoint_no_boundingbox():
+    c = ClosePath(
+            representation='z',
+        )
+    with pytest.raises(ValueError, match="ClosePath has no internal endpoint"):
+        p = c.endpoint()              # noqa: F841
+    with pytest.raises(ValueError, match="ClosePath has no points for bounding box"):
+        points = c.points_for_bounding_box(Point(0,0), 100)       # noqa: F841
+
+def test_invalid_qbezier_repr():
+    with pytest.raises(ValueError, match="QuadraticBezier can only be represented by"):
+        q = QuadraticBezier(          # noqa: F841
+                control1 = Point(
+                    x = 2,
+                    y = 2,
+                ),
+                end = Point(
+                    x = 3,
+                    y = 3,
+                ),
+                representation='x',
+            )
+
+def test_invalid_cbezier_repr():
+    with pytest.raises(ValueError, match="CubicBezier can only be represented by"):
+        q = CubicBezier(              # noqa: F841
+                control1 = Point(
+                    x = 2,
+                    y = 2,
+                ),
+                control2 = Point(
+                    x = 1.5,
+                    y = 1.5,
+                ),
+                end = Point(
+                    x = 3,
+                    y = 3,
+                ),
+                representation='x',
+            )
+
+def test_invalid_lineto():
+    with pytest.raises(ValueError, match="LineTo can only be represented by"):
+        l = LineTo(                  # noqa: F841
+            target = Point(
+                x = 1,
+                y = 2,
+            ),
+            representation='x',
+        ),
+
+def test_invalid_moveto():
+    with pytest.raises(ValueError, match="MoveTo can only be represented by"):
+        m = MoveTo(                  # noqa: F841
+            target = Point(
+                x = 1,
+                y = 2,
+            ),
+            representation='x',
+        ),
+
+def test_endpoint_but_no_bb_moveto():
+    target_point = Point(1,2)
+    m = MoveTo(
+        target = target_point,
+        representation='m',
+    )
+    assert m.endpoint == target_point
+    with pytest.raises(ValueError, match="MoveTo has no points for bounding box"):
+        m.points_for_bounding_box(200)
+
 def test_path_construction():
     p = Path(children=())
     assert len(p.children) == 0

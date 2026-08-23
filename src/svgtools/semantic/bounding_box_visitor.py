@@ -57,7 +57,7 @@ class BoundingBoxVisitor:
                 self._walk_use(element,phase, current_matrix)
             case Shape():
                  self._walk_shape(element,phase, current_matrix)
-            case _:
+            case _:      # pragma: no cover
                 raise NotImplementedError(type(element))
 
     def _walk_group(self, group: Group, phase: _Phase, current_matrix: Matrix3):
