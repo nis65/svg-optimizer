@@ -11,7 +11,7 @@ from svgtools.geometry.point import Point
 from svgtools.svg.document import Document
 from svgtools.svg.shape import Shape
 from svgtools.svg.svg import Svg
-from svgtools.writer.path_write_options import (
+from svgtools.writer.path_writer import (
     PathCommandSet,
     PathCompactness,
     PathCoordinates,
