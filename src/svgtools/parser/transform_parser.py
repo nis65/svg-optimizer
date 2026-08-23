@@ -56,7 +56,7 @@ def _skip_spaces(text: str) -> str:
 
 def _parse_translate(text: str):
     numbers, rest = _parse_parentheses(text)
-    if len(numbers) == 2:
+    if len(numbers) == 2:   # noqa: PLR2004
         t = Translate(
                 dx=numbers[0],
                 dy=numbers[1]

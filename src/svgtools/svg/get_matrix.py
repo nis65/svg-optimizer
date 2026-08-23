@@ -5,7 +5,7 @@ from svgtools.svg.transform import Affine, Rotate, Scale, SkewX, SkewY, Translat
 def transforms_to_matrix(transforms) -> Matrix3:
     matrix = Matrix3.identity()
     for transform in transforms:
-        matrix = matrix * get_matrix(transform)
+        matrix *= get_matrix(transform)
     return matrix
 
 def get_matrix(transform) -> Matrix3:
