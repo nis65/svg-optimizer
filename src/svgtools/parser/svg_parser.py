@@ -1,25 +1,26 @@
-from xml.etree import ElementTree as ET
-from collections.abc import Collection
 import re
+from collections.abc import Collection
+from xml.etree import ElementTree as ET
 
-from .transform_parser import parse_transform_string
-from .float_list_parser import parse_float_list
-from .token_lexer import TokenIterator, token_lexer, print_stderr
-from .path_parser import parse_path_string
-from svgtools.svg.document import Document
-from svgtools.svg.svg import Svg
-from svgtools.svg.defs import Defs
-from svgtools.svg.group import Group
-from svgtools.svg.use import Use
-from svgtools.svg.shape import Shape
-from svgtools.geometry.rect import Rect
 from svgtools.geometry.circle import Circle
 from svgtools.geometry.ellipse import Ellipse
-from svgtools.geometry.path import Path
 from svgtools.geometry.line import Line
-from svgtools.geometry.polyline import Polyline
-from svgtools.geometry.polygon import Polygon
 from svgtools.geometry.point import Point
+from svgtools.geometry.polygon import Polygon
+from svgtools.geometry.polyline import Polyline
+from svgtools.geometry.rect import Rect
+from svgtools.svg.defs import Defs
+from svgtools.svg.document import Document
+from svgtools.svg.group import Group
+from svgtools.svg.shape import Shape
+from svgtools.svg.svg import Svg
+from svgtools.svg.use import Use
+
+from .float_list_parser import parse_float_list
+from .path_parser import parse_path_string
+from .token_lexer import TokenIterator, print_stderr, token_lexer
+from .transform_parser import parse_transform_string
+
 
 def parse_svg_string(svg_text: str) -> Document:
 
