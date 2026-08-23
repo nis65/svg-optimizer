@@ -1,5 +1,7 @@
 from dataclasses import dataclass
+
 from .point import Point
+
 
 @dataclass(frozen=True, slots=True)
 class BoundingBox:

@@ -1,9 +1,10 @@
 from dataclasses import dataclass
+
 from .geometry_abc import Geometry
-from .point import Point
-from .path_elements.moveto import MoveTo
-from .path_elements.lineto import LineTo
 from .path_elements.closepath import ClosePath
+from .path_elements.moveto import MoveTo
+from .point import Point
+
 
 @dataclass(frozen=True, slots=True)
 class Path(Geometry):
@@ -24,7 +25,6 @@ class Path(Geometry):
                 points.append(current_subpath_start)
                 current_point = current_subpath_start
             else:
-                for point in child.points_for_bounding_box(current_point, count):
-                    points.append(point)
+                points.extend(child.points_for_bounding_box(current_point, count))
                 current_point = child.endpoint
         return set(points)
