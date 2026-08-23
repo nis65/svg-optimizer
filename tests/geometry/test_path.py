@@ -1,14 +1,16 @@
-import pytest
 import math
 
-from svgtools.geometry.point import Point
+import pytest
+
 from svgtools.geometry.path import Path
-from svgtools.geometry.path_elements.moveto import MoveTo
-from svgtools.geometry.path_elements.lineto import LineTo
-from svgtools.geometry.path_elements.closepath import ClosePath
-from svgtools.geometry.path_elements.quadraticbezier import QuadraticBezier
-from svgtools.geometry.path_elements.cubicbezier import CubicBezier
 from svgtools.geometry.path_elements.arc import Arc
+from svgtools.geometry.path_elements.closepath import ClosePath
+from svgtools.geometry.path_elements.cubicbezier import CubicBezier
+from svgtools.geometry.path_elements.lineto import LineTo
+from svgtools.geometry.path_elements.moveto import MoveTo
+from svgtools.geometry.path_elements.quadraticbezier import QuadraticBezier
+from svgtools.geometry.point import Point
+
 
 def test_path_construction():
     p = Path(children=())
@@ -32,7 +34,7 @@ def test_path_with_moveto():
 
 def test_path_with_moveto_invalid():
     with pytest.raises(ValueError, match="MoveTo can only be represented"):
-        p = Path(
+        p = Path(                                   # noqa: F841
                 children = (
                     MoveTo(
                         target = Point(

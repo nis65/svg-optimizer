@@ -1,8 +1,10 @@
+from dataclasses import FrozenInstanceError
+
 import pytest
 
-from dataclasses import FrozenInstanceError
 from svgtools.svg.transform.skew_x import SkewX
 from svgtools.svg.transform.skew_y import SkewY
+
 
 def test_skew_x_construction():
     s = SkewX(theta=60)

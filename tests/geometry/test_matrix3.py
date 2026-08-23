@@ -1,9 +1,11 @@
 import math
-import pytest
 from dataclasses import FrozenInstanceError
+
+import pytest
 
 from svgtools.geometry.matrix3 import Matrix3
 from svgtools.geometry.point import Point
+
 
 def test_matrix3_construction():
     m = Matrix3(
@@ -100,7 +102,7 @@ def test_skew_x_matrix_undefined():
     with pytest.raises(ValueError):
         m = Matrix3.skew_x(90)
     with pytest.raises(ValueError):
-        m = Matrix3.skew_x(270)
+        m = Matrix3.skew_x(270)  # noqa: F841
 
 def test_skew_y_matrix():
     assert Matrix3(
@@ -121,7 +123,7 @@ def test_skew_y_matrix_undefined():
     with pytest.raises(ValueError):
         m = Matrix3.skew_y(90)
     with pytest.raises(ValueError):
-        m = Matrix3.skew_y(270)
+        m = Matrix3.skew_y(270)  # noqa: F841
 
 def test_affine():
     assert Matrix3(
@@ -137,7 +139,7 @@ def test_matrix_multiplication_not_implemented():
         7, 8, 9,
     )
     with pytest.raises(TypeError):
-        n = m * 3.5
+        n = m * 3.5  # noqa: F841
 
 def test_identity_multiplication():
     m = Matrix3(

@@ -1,10 +1,12 @@
-import pytest
 from dataclasses import FrozenInstanceError
-from svgtools.geometry.point import Point
+
+import pytest
+
 from svgtools.geometry.line import Line
-from svgtools.geometry.polyline import Polyline
+from svgtools.geometry.point import Point
 from svgtools.geometry.polygon import Polygon
-from svgtools.geometry.bounding_box import BoundingBox
+from svgtools.geometry.polyline import Polyline
+
 
 def test_line_construction():
     l = Line(start=Point(1, 2), end=Point(5, 6))

@@ -1,20 +1,18 @@
 import math
 
+from svgtools.geometry.bounding_box import BoundingBox
+from svgtools.geometry.circle import Circle
 from svgtools.geometry.point import Point
 from svgtools.geometry.rect import Rect
-from svgtools.geometry.circle import Circle
-from svgtools.geometry.bounding_box import BoundingBox
-
+from svgtools.semantic.bounding_box_visitor import BoundingBoxVisitor
 from svgtools.svg.defs import Defs
 from svgtools.svg.document import Document
 from svgtools.svg.group import Group
 from svgtools.svg.shape import Shape
 from svgtools.svg.svg import Svg
+from svgtools.svg.transform import Rotate, Scale, Translate
 from svgtools.svg.use import Use
 
-from svgtools.svg.transform import Translate, Scale, Rotate
-
-from svgtools.semantic.bounding_box_visitor import BoundingBoxVisitor
 
 def test_rect_svg_translate():
     document = Document(

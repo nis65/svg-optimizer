@@ -1,10 +1,13 @@
 
-import pytest
 from dataclasses import FrozenInstanceError
-from svgtools.geometry.point import Point
+
+import pytest
+
 from svgtools.geometry.circle import Circle
+from svgtools.geometry.point import Point
 from svgtools.svg.shape import Shape
-from svgtools.svg.transform import Translate, Scale, Rotate
+from svgtools.svg.transform import Rotate, Scale, Translate
+
 
 def test_circle_construction():
     c = Shape(id="circle",

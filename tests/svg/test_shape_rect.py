@@ -1,10 +1,13 @@
 
-import pytest
 from dataclasses import FrozenInstanceError
+
+import pytest
+
 from svgtools.geometry.point import Point
 from svgtools.geometry.rect import Rect
-from svgtools.svg.transform import Translate, Scale, Rotate
 from svgtools.svg.shape import Shape
+from svgtools.svg.transform import Rotate, Translate
+
 
 def test_rect_construction():
     r = Shape(id="rect",

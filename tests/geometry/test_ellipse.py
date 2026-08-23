@@ -1,9 +1,11 @@
-import pytest
 import math
 from dataclasses import FrozenInstanceError
-from svgtools.geometry.point import Point
+
+import pytest
+
 from svgtools.geometry.ellipse import Ellipse
-from svgtools.geometry.bounding_box import BoundingBox
+from svgtools.geometry.point import Point
+
 
 def test_ellipse_construction():
     e = Ellipse(center=Point(1.5, -2.0), radiusx=23, radiusy=10)

@@ -1,14 +1,16 @@
 import pytest
-from svgtools.parser.path_parser import parse_path_string
-from svgtools.parser.token_lexer import Token, TokenKind, TokenIterator
-from svgtools.geometry.point import Point
+
 from svgtools.geometry.path import Path
-from svgtools.geometry.path_elements.moveto import MoveTo
-from svgtools.geometry.path_elements.lineto import LineTo
-from svgtools.geometry.path_elements.closepath import ClosePath
-from svgtools.geometry.path_elements.quadraticbezier import QuadraticBezier
-from svgtools.geometry.path_elements.cubicbezier import CubicBezier
 from svgtools.geometry.path_elements.arc import Arc
+from svgtools.geometry.path_elements.closepath import ClosePath
+from svgtools.geometry.path_elements.cubicbezier import CubicBezier
+from svgtools.geometry.path_elements.lineto import LineTo
+from svgtools.geometry.path_elements.moveto import MoveTo
+from svgtools.geometry.path_elements.quadraticbezier import QuadraticBezier
+from svgtools.geometry.point import Point
+from svgtools.parser.path_parser import parse_path_string
+from svgtools.parser.token_lexer import Token, TokenIterator, TokenKind
+
 
 def test_iterator_empty(): 
     tokens=[]

@@ -1,8 +1,10 @@
-import pytest
 from dataclasses import FrozenInstanceError
+
+import pytest
+
 from svgtools.geometry.point import Point
 from svgtools.geometry.rect import Rect
-from svgtools.geometry.bounding_box import BoundingBox
+
 
 def test_rect_construction():
     r = Rect(top_left=Point(1.5, -2.0), width=2, height=3)
