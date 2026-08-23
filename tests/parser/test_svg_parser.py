@@ -143,6 +143,15 @@ def test_parse_empty_svg_with_unknowns():
         )
     )
 
+def test_parse_svg_with_unknown_tag():
+    svg_text = """
+    <svg>
+    <unknown />
+    </svg>
+    """
+    with pytest.raises(NotImplementedError, match="can parse only defs, g, use, rect,"):
+        parse_svg_string(svg_text)
+
 def test_parse_empty_defs():
     svg_text_one_tag = """
     <svg>

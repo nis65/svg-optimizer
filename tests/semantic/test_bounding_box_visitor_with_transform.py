@@ -10,7 +10,7 @@ from svgtools.svg.document import Document
 from svgtools.svg.group import Group
 from svgtools.svg.shape import Shape
 from svgtools.svg.svg import Svg
-from svgtools.svg.transform import Rotate, Scale, Translate
+from svgtools.svg.transform import Rotate, Scale, SkewY, Translate
 from svgtools.svg.use import Use
 
 
@@ -282,3 +282,26 @@ def test_rect_rect_rotate_2():
                                        min=Point(1-sqrt2,1-sqrt2),
                                        max=Point(1+sqrt2,1+sqrt2),
                                    ), 1e-3)
+
+def test_rect_skew_y():
+    document = Document(
+        svg=Svg(
+            children=(
+                Shape(
+                    id="rect",
+                    geometry=Rect(
+                        top_left=Point(0, 0),
+                        width=2,
+                        height=2,
+                    ),
+                    transformations=(SkewY(theta=45),),
+                ),
+            ),
+        ),
+    )
+    visitor = BoundingBoxVisitor()
+    visitor.visit(document)
+    assert visitor.bounding_box.isclose(BoundingBox(
+                                       min=Point(0,0),
+                                       max=Point(2,4),
+                                   ), 1e-9)

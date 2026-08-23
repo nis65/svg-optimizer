@@ -88,7 +88,7 @@ class SvgWriter:
                 self._walk_use(element, indent)
             case Shape():
                 self._walk_shape(element, indent)
-            case _:
+            case _:     # pragma: no cover
                 raise NotImplementedError(type(element))
 
     def _walk_group(self, group: Group, indent: str):
@@ -176,7 +176,7 @@ class SvgWriter:
                                       )
                 case Polyline() | Polygon() :
                     self._parts.append(f' points="{self._polypoints_to_string(geometry.children)}"')
-                case _:
+                case _:      # pragma: no cover
                     raise NotImplementedError("I know nothing but Rects, Circles, Ellipses, Lines, Polylines, Polygons and Paths")
         if width := getattr(element, "width", None):
             self._parts.append(f' width="{self._number_to_string(width)}"')
@@ -204,7 +204,7 @@ class SvgWriter:
                 new_path_command_list = path_command_list
             case PathCompactness.COMPACT:
                 new_path_command_list = self._compact_command_list(path_command_list)
-            case _:
+            case _:    # pragma: no cover
                 raise ValueError(f"path_compactness {self.path_compactness} not implemented")
         result = ""
         for command in new_path_command_list:
@@ -408,7 +408,7 @@ class SvgWriter:
                 return self._transform_strategy_conservative(transformations)
             case TransformWriteStrategy.CANONICAL_AGGRESSIVE:
                 return self._transform_strategy_aggressive(transformations)
-            case _:
+            case _:    # pragma: no cover
                 raise ValueError(f"transform_strategy {self.transform_strategy} not implemented")
 
     @staticmethod

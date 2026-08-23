@@ -33,3 +33,11 @@ def test_points_are_close():
     r = Point(1000.000001, 1)
     assert not p.isclose(q,1e-20)
     assert p.isclose(r,1e-20)
+
+def test_points_are_close_different_sized_sets():
+    p = Point(0,0)
+    q = Point(1,1)
+    set1 = { p }
+    set2 = { p, q }
+    assert not Point.points_are_close(set1, set2, 1e-9)
+

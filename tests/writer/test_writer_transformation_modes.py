@@ -1,5 +1,6 @@
-
 from textwrap import dedent
+
+import pytest
 
 from svgtools.geometry.point import Point
 from svgtools.geometry.rect import Rect
@@ -10,6 +11,10 @@ from svgtools.svg.transform import Affine, Rotate, Scale, SkewX, Translate
 from svgtools.writer.svg_writer import SvgWriter
 from svgtools.writer.transform_write_strategy import TransformWriteStrategy
 
+
+def test_aggregate_with_0_transforms():
+    with pytest.raises(ValueError, match="should not be called with 0 transformations"):
+        SvgWriter._transform_strategy_aggregate({})
 
 def test_write_mode_keep():
     d = Document(
@@ -57,6 +62,8 @@ def test_write_mode_aggregate():
                              Rotate(theta=30, cx=0, cy=0),
                              Rotate(theta=30, cx=0, cy=0),
                              Rotate(theta=-10, cx=1, cy=1),
+                             SkewX(theta=5),
+                             SkewX(theta=10),
                              Scale(sx=2, sy=3),
                              Scale(sx=4, sy=2),
                              Affine(a=1, b=2, c=3, d=4, e=5, f=6),
@@ -81,7 +88,7 @@ def test_write_mode_aggregate():
     assert writer.write_svg_string(d) == dedent("""\
     <?xml version='1.0' encoding='UTF-8'?>
     <svg>
-    <rect id="rectid" x="4" y="5" width="2" height="1" transform="translate(1 12) rotate(60 0 0) rotate(-10 1 1) scale(8 6) matrix(21 32 13 20 10 14)" unknown="unknown_value" />
+    <rect id="rectid" x="4" y="5" width="2" height="1" transform="translate(1 12) rotate(60 0 0) rotate(-10 1 1) skewX(5) skewX(10) scale(8 6) matrix(21 32 13 20 10 14)" unknown="unknown_value" />
     </svg>
     """)
 
@@ -151,7 +158,7 @@ def test_write_mode_decompose_matrix_and_aggregate():
     </svg>
     """)
 
-def test_write_mode_canonical_conservative():
+def test_write_mode_canonical_conservative_with_rotate_around_non_zero():
     d = Document(
             svg=Svg(
                 children=(
@@ -173,6 +180,23 @@ def test_write_mode_canonical_conservative():
                         ),
                         unknown_attributes={
                             "unknown": "unknown_value",
+                        },
+                    ),
+                    Shape(
+                        id="rectid",
+                        transformations=(
+                             Rotate(theta=90, cx=1, cy=1),
+                        ),
+                        geometry=Rect(
+                            top_left=Point(
+                                x=4,
+                                y=5,
+                            ),
+                            width=2,
+                            height=1,
+                        ),
+                        unknown_attributes={
+                            "unknown": "unknown_value",
                         }
                     ),
                 )
@@ -183,9 +207,46 @@ def test_write_mode_canonical_conservative():
     <?xml version='1.0' encoding='UTF-8'?>
     <svg>
     <rect id="rectid" x="4" y="5" width="2" height="1" transform="translate(2 10) rotate(90 0 0) skewX(45) scale(2 3)" unknown="unknown_value" />
+    <rect id="rectid" x="4" y="5" width="2" height="1" transform="translate(2 0) rotate(90 0 0)" unknown="unknown_value" />
     </svg>
     """)
-    assert writer.conservative_stats == (1, 0)
+    assert writer.conservative_stats == (1, 1)
+
+def test_write_mode_canonical_conservative_wrong_order():
+    d = Document(
+            svg=Svg(
+                children=(
+                    Shape(
+                        id="rectid",
+                        transformations=(
+                             Rotate(theta=90, cx=0, cy=0),
+                             SkewX(theta=45),
+                             Translate(dx=2, dy=10),
+                             Scale(sx=2, sy=3),
+                        ),
+                        geometry=Rect(
+                            top_left=Point(
+                                x=4,
+                                y=5,
+                            ),
+                            width=2,
+                            height=1,
+                        ),
+                        unknown_attributes={
+                            "unknown": "unknown_value",
+                        },
+                    ),
+                )
+            )
+        )
+    writer = SvgWriter(TransformWriteStrategy.CANONICAL_CONSERVATIVE)
+    assert writer.write_svg_string(d) == dedent("""\
+    <?xml version='1.0' encoding='UTF-8'?>
+    <svg>
+    <rect id="rectid" x="4" y="5" width="2" height="1" transform="translate(-10 12) rotate(90 0 0) skewX(45) scale(2 3)" unknown="unknown_value" />
+    </svg>
+    """)
+    assert writer.conservative_stats == (0, 1)
 
 def test_write_mode_canonical_aggressive():
     d = Document(

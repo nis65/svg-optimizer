@@ -86,6 +86,20 @@ def test_write_relative_canonical_base():
     </svg>
     """)
 # }}}
+# {{{ def test_write_keep_canonical_base():
+def test_write_keep_canonical_base():
+    writer = SvgWriter(path_coordinates = PathCoordinates.KEEP,
+                       path_compactness = PathCompactness.CANONICAL,
+                       path_command_set = PathCommandSet.BASE
+                      )
+    assert writer.write_svg_string(d) == dedent("""\
+    <?xml version='1.0' encoding='UTF-8'?>
+    <svg>
+    <path id="mypath" d="m 30 50 l 40 -20 l 0 10 l 10 0 z l 20 30 q 20 30 40 0 q 20 -30 40 0 l -80 70 c 40 20 -20 20 20 0 c 40 -20 -20 -20 20 0 l 40 20 a 50 40 135 0 0 40 -80" />
+    </svg>
+    """)
+# }}}
+
 # {{{ document "e" for PathCompactness
 e = Document(
     svg=Svg(
@@ -127,6 +141,19 @@ def test_write_absolute_compact_base():
     <?xml version='1.0' encoding='UTF-8'?>
     <svg>
     <path id="mypath" d="M 30 50 70 30 70 40 80 40 Z L 50 80 Q 70 110 90 80 110 50 130 80 L 50 150 C 90 170 30 170 70 150 110 130 50 130 90 150 L 130 170 A 50 40 135 0 0 170 90" />
+    </svg>
+    """)
+# }}}
+# {{{ def test_write_relative_compact_base():
+def test_write_relative_compact_base():
+    writer = SvgWriter(path_coordinates = PathCoordinates.RELATIVE,
+                       path_compactness = PathCompactness.COMPACT,
+                       path_command_set = PathCommandSet.BASE
+                      )
+    assert writer.write_svg_string(e) == dedent("""\
+    <?xml version='1.0' encoding='UTF-8'?>
+    <svg>
+    <path id="mypath" d="m 30 50 40 -20 0 10 10 0 z l 20 30 q 20 30 40 0 20 -30 40 0 l -80 70 c 40 20 -20 20 20 0 40 -20 -20 -20 20 0 l 40 20 a 50 40 135 0 0 40 -80" />
     </svg>
     """)
 # }}}

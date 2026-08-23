@@ -63,6 +63,16 @@ def test_lexer_exception():
     with pytest.raises(ValueError, match="Cannot lex this"):
         parse_path_string("a1 2c3+3-2 1e-e9 2")
 
+def test_parser_does_not_start_with_command():
+    with pytest.raises(ValueError, match="Expected a COMMAND, found Token"):
+        parse_path_string("1 2 3")
+
+def test_parser_not_enough_numbers():
+    with pytest.raises(ValueError, match="Not enough numbers"):
+        parse_path_string("M 1")
+    with pytest.raises(ValueError, match="Not enough numbers"):
+        parse_path_string("C 1")
+
 def test_parser_with_mM_and_warning(capsys):
     p = parse_path_string("M 1 2 3 4 m 5 6 7")
     assert p == Path(
