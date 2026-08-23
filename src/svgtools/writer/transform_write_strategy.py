@@ -1,5 +1,6 @@
 from enum import Enum, auto
 
+
 class TransformWriteStrategy(Enum):
     KEEP = auto()
     AGGREGATE = auto()
