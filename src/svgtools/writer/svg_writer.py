@@ -1,8 +1,6 @@
 from svgtools.geometry.circle import Circle
 from svgtools.geometry.ellipse import Ellipse
-from svgtools.geometry.isclose import geometry_isclose
 from svgtools.geometry.line import Line
-from svgtools.geometry.matrix3 import Matrix3
 from svgtools.geometry.path import Path
 from svgtools.geometry.path_elements.arc import Arc
 from svgtools.geometry.path_elements.closepath import ClosePath
@@ -15,11 +13,9 @@ from svgtools.geometry.polyline import Polyline
 from svgtools.geometry.rect import Rect
 from svgtools.svg.defs import Defs
 from svgtools.svg.document import Document
-from svgtools.svg.get_matrix import get_matrix, transforms_to_matrix
 from svgtools.svg.group import Group
 from svgtools.svg.shape import Shape
 from svgtools.svg.svg import Svg
-from svgtools.svg.transform import Affine, Rotate, Scale, SkewX, SkewY, Translate
 from svgtools.svg.use import Use
 
 from .path_write_options import (
@@ -29,7 +25,8 @@ from .path_write_options import (
     PathCoordinates,
     PathWriteState,
 )
-from .transform_write_strategy import TransformWriteStrategy
+from .transform_strategy import TransformStrategy, TransformWriteStrategy
+from .write_utils import number_to_string, numberlist_to_string
 
 
 class SvgWriter:
@@ -147,46 +144,50 @@ class SvgWriter:
         if geometry := getattr(element, "geometry", None):
             match geometry:
                 case Rect():
-                    self._parts.append(f' x="{self._number_to_string(geometry.top_left.x)}"'
-                                       f' y="{self._number_to_string(geometry.top_left.y)}"'
+                    self._parts.append(f' x="{number_to_string(geometry.top_left.x)}"'
+                                       f' y="{number_to_string(geometry.top_left.y)}"'
                                       )
-                    self._parts.append(f' width="{self._number_to_string(geometry.width)}"'
-                                       f' height="{self._number_to_string(geometry.height)}"'
+                    self._parts.append(f' width="{number_to_string(geometry.width)}"'
+                                       f' height="{number_to_string(geometry.height)}"'
                                       )
                 case Circle():
-                    self._parts.append(f' cx="{self._number_to_string(geometry.center.x)}"'
-                                       f' cy="{self._number_to_string(geometry.center.y)}"'
+                    self._parts.append(f' cx="{number_to_string(geometry.center.x)}"'
+                                       f' cy="{number_to_string(geometry.center.y)}"'
                                       )
-                    self._parts.append(f' r="{self._number_to_string(geometry.radius)}"')
+                    self._parts.append(f' r="{number_to_string(geometry.radius)}"')
                 case Ellipse():
-                    self._parts.append(f' cx="{self._number_to_string(geometry.center.x)}"'
-                                       f' cy="{self._number_to_string(geometry.center.y)}"'
+                    self._parts.append(f' cx="{number_to_string(geometry.center.x)}"'
+                                       f' cy="{number_to_string(geometry.center.y)}"'
                                       )
-                    self._parts.append(f' rx="{self._number_to_string(geometry.radiusx)}"'
-                                       f' ry="{self._number_to_string(geometry.radiusy)}"'
+                    self._parts.append(f' rx="{number_to_string(geometry.radiusx)}"'
+                                       f' ry="{number_to_string(geometry.radiusy)}"'
                                       )
                 case Path():
                     path_elements = geometry.children
                     self._parts.append(f' d="{self._path_elements_to_string(path_elements)}"')
                 case Line():
-                    self._parts.append(f' x1="{self._number_to_string(geometry.start.x)}"'
-                                       f' y1="{self._number_to_string(geometry.start.y)}"'
-                                       f' x2="{self._number_to_string(geometry.end.x)}"'
-                                       f' y2="{self._number_to_string(geometry.end.y)}"'
+                    self._parts.append(f' x1="{number_to_string(geometry.start.x)}"'
+                                       f' y1="{number_to_string(geometry.start.y)}"'
+                                       f' x2="{number_to_string(geometry.end.x)}"'
+                                       f' y2="{number_to_string(geometry.end.y)}"'
                                       )
                 case Polyline() | Polygon() :
                     self._parts.append(f' points="{self._polypoints_to_string(geometry.children)}"')
                 case _:      # pragma: no cover
                     raise NotImplementedError("I know nothing but Rects, Circles, Ellipses, Lines, Polylines, Polygons and Paths")
         if width := getattr(element, "width", None):
-            self._parts.append(f' width="{self._number_to_string(width)}"')
+            self._parts.append(f' width="{number_to_string(width)}"')
         if height := getattr(element, "height", None):
-            self._parts.append(f' height="{self._number_to_string(height)}"')
+            self._parts.append(f' height="{number_to_string(height)}"')
         if viewBox := getattr(element, "viewBox", None):
-            self._parts.append(f' viewBox="{self._numberlist_to_string(viewBox)}"')
+            self._parts.append(f' viewBox="{numberlist_to_string(viewBox)}"')
         if transformations := getattr(element, "transformations", None):
-            output_transformations = self._transformations_to_write(transformations)
-            self._parts.append(f' transform="{self._transforms_to_string(output_transformations)}"')
+            # output_transformations = self._transformations_to_write(transformations)
+            ts = TransformStrategy(self.transform_strategy)
+            output_transformations = ts.apply(transformations)
+            self.total_aggregated_chains += ts.total_aggregated_chains
+            self.total_aggressive_chains += ts.total_aggressive_chains
+            self._parts.append(f' transform="{ts.transforms_to_string(output_transformations)}"')
         for key, value in sorted(element.unknown_attributes.items()):
             self._parts.append(f' {key}="{value}"')
 
@@ -195,7 +196,7 @@ class SvgWriter:
         result = ""
         for point in polypoints:
             coords = ( point.x, point.y )
-            result += f'{SvgWriter._numberlist_to_string(coords)} '
+            result += f'{numberlist_to_string(coords)} '
         return result.strip()
 
     def _path_elements_to_string(self, path_elements):
@@ -295,7 +296,7 @@ class SvgWriter:
             new_y = moveto.target.y - current_state.current_point.y
         current_state.current_point = moveto.target
         current_state.current_subpath_start = current_state.current_point
-        number_string = self._numberlist_to_string((new_x, new_y))
+        number_string = numberlist_to_string((new_x, new_y))
         return current_state, PathCommand(command=new_command, parameters=number_string)
 
     def _build_path_command_lineto(self, current_state, lineto):
@@ -310,11 +311,11 @@ class SvgWriter:
         current_state.current_point = lineto.target
         match new_command:
             case 'L' | 'l':
-               number_string = self._numberlist_to_string((new_x, new_y))
+               number_string = numberlist_to_string((new_x, new_y))
             case 'H' | 'h':
-               number_string = self._numberlist_to_string((new_x,))
+               number_string = numberlist_to_string((new_x,))
             case 'V' | 'v':
-               number_string = self._numberlist_to_string((new_y,))
+               number_string = numberlist_to_string((new_y,))
         return current_state, PathCommand(command=new_command, parameters=number_string)
 
     def _build_path_command_closepath(self, current_state, closepath):
@@ -340,12 +341,12 @@ class SvgWriter:
         current_state.current_point = qbezier.end
         match new_command:
             case 'Q' | 'q':
-                number_string = self._numberlist_to_string(
+                number_string = numberlist_to_string(
                                       (new_control1_x, new_control1_y,
                                        new_end_x, new_end_y)
                                       )
             case 'T' | 't':
-                number_string = self._numberlist_to_string((new_end_x, new_end_y))
+                number_string = numberlist_to_string((new_end_x, new_end_y))
         return current_state, PathCommand(command=new_command, parameters=number_string)
 
     def _build_path_command_cbezier(self, current_state, cbezier):
@@ -367,13 +368,13 @@ class SvgWriter:
         current_state.current_point = cbezier.end
         match new_command:
             case 'C' | 'c':
-                number_string = self._numberlist_to_string(
+                number_string = numberlist_to_string(
                                       (new_control1_x, new_control1_y,
                                        new_control2_x, new_control2_y,
                                        new_end_x, new_end_y)
                                       )
             case 'S' | 's':
-                number_string = self._numberlist_to_string(
+                number_string = numberlist_to_string(
                                       (new_control2_x, new_control2_y,
                                        new_end_x, new_end_y)
                                       )
@@ -388,157 +389,8 @@ class SvgWriter:
             new_end_x = arc.end.x - current_state.current_point.x
             new_end_y = arc.end.y - current_state.current_point.y
         current_state.current_point = arc.end
-        number_string = self._numberlist_to_string(
+        number_string = numberlist_to_string(
             ( arc.rx, arc.ry, arc.phi, arc.large_arc_flag, arc.sweep_flag,
               new_end_x, new_end_y )
             )
         return current_state, PathCommand(command=new_command, parameters=number_string)
-
-    def _transformations_to_write(self, transformations):
-        match self.transform_strategy:
-            case TransformWriteStrategy.KEEP:
-                return transformations
-            case TransformWriteStrategy.AGGREGATE:
-                return self._transform_strategy_aggregate(transformations)
-            case TransformWriteStrategy.DECOMPOSE_MATRIX:
-                return self._transform_strategy_decompose_matrix(transformations)
-            case TransformWriteStrategy.DECOMPOSE_MATRIX_AND_AGGREGATE:
-                decomposed=self._transform_strategy_decompose_matrix(transformations)
-                return self._transform_strategy_aggregate(decomposed)
-            case TransformWriteStrategy.CANONICAL_CONSERVATIVE :
-                return self._transform_strategy_conservative(transformations)
-            case TransformWriteStrategy.CANONICAL_AGGRESSIVE:
-                return self._transform_strategy_aggressive(transformations)
-            case _:    # pragma: no cover
-                raise ValueError(f"transform_strategy {self.transform_strategy} not implemented")
-
-    @staticmethod
-    def _is_canonical(transformations) -> bool:
-        _CANONICAL_ORDER = (Translate, Rotate, SkewX, Scale)
-        reference = iter(_CANONICAL_ORDER)
-        for t in transformations:
-            if type(t) == Rotate and not (t.cx == 0 and t.cy == 0):
-                return False
-            for expected in reference:
-                if type(t) == expected:
-                    break
-            else:
-                return False
-        return True
-
-    @staticmethod
-    def _transform_strategy_aggregate(transformations):
-        if len(transformations) == 0:
-            raise ValueError("should not be called with 0 transformations")
-        t_list = []
-        agg_t = None
-        for t in transformations:
-            if agg_t is None:
-                agg_t = t
-            elif type(t) == type(agg_t):
-                match t:
-                    case Translate():
-                        agg_t = Translate(dx = agg_t.dx + t.dx, dy = agg_t.dy + t.dy)
-                    case Scale():
-                        agg_t = Scale(sx = agg_t.sx * t.sx, sy = agg_t.sy * t.sy)
-                    case Rotate():
-                        if agg_t.cx == t.cx and agg_t.cy == t.cy:
-                            agg_t = Rotate(theta = agg_t.theta + t.theta, cx = t.cx, cy = t.cy)
-                        else:
-                            # rotate can only be aggregated exactly with the same rotation center
-                            t_list.append(agg_t)
-                            agg_t = t
-                    case SkewX() | SkewY():
-                        # skew cannot be aggregated in an exact way
-                        t_list.append(agg_t)
-                        agg_t = t
-                    case Affine():
-                        agg_m = get_matrix(agg_t) * get_matrix(t)
-                        agg_t= Affine(a=agg_m.m11, b=agg_m.m21, c=agg_m.m12,
-                                      d=agg_m.m22, e=agg_m.m13, f=agg_m.m23)
-            else:
-                t_list.append(agg_t)
-                agg_t = t
-        t_list.append(agg_t)
-        return tuple(t_list)
-
-    @staticmethod
-    def _transform_strategy_decompose_matrix(transformations):
-        t_list = []
-        for t in transformations:
-            match t:
-                case Affine():
-                    md = Matrix3.TRHxS_decompose(
-                            Matrix3.affine(a=t.a, b=t.b, c=t.c,
-                                           d=t.d, e=t.e, f=t.f
-                        )
-                    )
-                    if not (md.tx == 0 and md.ty == 0):
-                        t_list.append(Translate(dx=md.tx, dy=md.ty))
-                    if not geometry_isclose(md.theta_rotate, 0):
-                        t_list.append(Rotate(theta=md.theta_rotate, cx=0, cy=0))
-                    if not geometry_isclose(md.theta_skew_x, 0):
-                        t_list.append(SkewX(theta=md.theta_skew_x))
-                    if not (md.sx == 1 and md.sy == 1):
-                        t_list.append(Scale(sx=md.sx, sy=md.sy))
-                case _:
-                    t_list.append(t)
-        return tuple(t_list)
-
-    def _transform_strategy_conservative(self, transformations):
-        # attempt aggregate
-        aggregated = self._transform_strategy_aggregate(transformations)
-        if self._is_canonical(aggregated):
-            self.total_aggregated_chains +=1
-            return aggregated
-        else:
-            self.total_aggressive_chains +=1
-            return self._transform_strategy_aggressive(transformations)
-
-    @staticmethod
-    def _transform_strategy_aggressive(transformations):
-        m = transforms_to_matrix(transformations)
-        return SvgWriter._transform_strategy_decompose_matrix((Affine(a=m.m11, b=m.m21, c=m.m12, d=m.m22, e=m.m13, f=m.m23),))
-
-    @staticmethod
-    def _number_to_string(number: float | str) -> str:
-        if isinstance(number, str):
-            return number
-        number = round(number, SvgWriter.PRECISION)
-        if number.is_integer():
-            return str(int(number))
-        return f"{number:.3f}"
-        #return f"{number:.3f}".rstrip("0").rstrip(".")
-
-    @staticmethod
-    def _numberlist_to_string(numbers) -> str:
-        str_numbers = []
-        for number in numbers:
-            str_numbers.append(SvgWriter._number_to_string(number))
-        return " ".join(str_numbers)
-
-    @staticmethod
-    def _transforms_to_string(transformations) -> str:
-        result = ""
-        for trans in transformations:
-            match trans:
-                case Translate():
-                    numberlist=(trans.dx, trans.dy, )
-                    result += f' translate({SvgWriter._numberlist_to_string(numberlist)})'
-                case Scale():
-                    numberlist=(trans.sx, trans.sy, )
-                    result += f' scale({SvgWriter._numberlist_to_string(numberlist)})'
-                case Rotate():
-                    numberlist=(trans.theta, trans.cx, trans.cy, )
-                    result += f' rotate({SvgWriter._numberlist_to_string(numberlist)})'
-                case SkewX():
-                    numberlist=(trans.theta, )
-                    result += f' skewX({SvgWriter._numberlist_to_string(numberlist)})'
-                case SkewY():
-                    numberlist=(trans.theta, )
-                    result += f' skewY({SvgWriter._numberlist_to_string(numberlist)})'
-                case Affine():
-                    numberlist=(trans.a, trans.b, trans.c, trans.d, trans.e, trans.f, )
-                    result += f' matrix({SvgWriter._numberlist_to_string(numberlist)})'
-
-        return result.strip()

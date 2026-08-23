@@ -9,12 +9,12 @@ from svgtools.svg.shape import Shape
 from svgtools.svg.svg import Svg
 from svgtools.svg.transform import Affine, Rotate, Scale, SkewX, Translate
 from svgtools.writer.svg_writer import SvgWriter
-from svgtools.writer.transform_write_strategy import TransformWriteStrategy
+from svgtools.writer.transform_strategy import TransformWriteStrategy, TransformStrategy
 
 
 def test_aggregate_with_0_transforms():
     with pytest.raises(ValueError, match="should not be called with 0 transformations"):
-        SvgWriter._transform_strategy_aggregate({})
+        TransformStrategy._transform_strategy_aggregate({})
 
 def test_write_mode_keep():
     d = Document(
