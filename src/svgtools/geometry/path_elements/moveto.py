@@ -17,7 +17,7 @@ class MoveTo(PathElement):
     representation: str
 
     def __post_init__(self) -> None:
-        if not (self.representation == 'm' or self.representation == 'M'):
+        if not self.representation in {'m', 'M'}:
             raise ValueError(
                 f"MoveTo can only be represented by one of 'mM', not {self.representation}"
             )

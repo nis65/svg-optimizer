@@ -21,9 +21,7 @@ class CubicBezier(PathElement):
     representation: str
 
     def __post_init__(self) -> None:
-        if not (self.representation == 'c' or self.representation == 'C'
-             or self.representation == 's' or self.representation == 'S'
-            ):
+        if not self.representation in {'c', 'C', 's', 'S'}:
             raise ValueError(
                 f"CubicBezier can only be represented by one of 'cCsS', not {self.representation}"
             )

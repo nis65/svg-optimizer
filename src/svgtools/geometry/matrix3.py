@@ -82,7 +82,7 @@ class Matrix3:
 
     @classmethod
     def skew_x(cls, theta_degree: float) -> "Matrix3":
-        if theta_degree % 180 == 90:
+        if theta_degree % 180 == 90:  # noqa: PLR2004
             raise ValueError(f"cannot skew by {theta_degree}, undefined")
         s = math.tan(math.radians(theta_degree))
         return Matrix3(
@@ -93,7 +93,7 @@ class Matrix3:
 
     @classmethod
     def skew_y(cls, theta_degree: float) -> "Matrix3":
-        if theta_degree % 180 == 90:
+        if theta_degree % 180 == 90:  # noqa: PLR2004
             raise ValueError(f"cannot skew by {theta_degree}, undefined")
         s = math.tan(math.radians(theta_degree))
         return Matrix3(
@@ -103,8 +103,8 @@ class Matrix3:
         )
 
     @classmethod
-    def affine(cls, a: float, b: float, c: float,
-                    d: float, e: float, f: float) -> "Matrix3":
+    def affine(cls, a: float, b: float, c: float,               # noqa: PLR0913 PLR0917
+                    d: float, e: float, f: float) -> "Matrix3": 
         return Matrix3(
             a, c, e,
             b, d, f,
