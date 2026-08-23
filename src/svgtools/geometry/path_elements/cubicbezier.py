@@ -1,13 +1,14 @@
-import math
-
 from dataclasses import dataclass
-from .path_element_abc import PathElement
+from typing import ClassVar
+
 from ..point import Point
+from .path_element_abc import PathElement
+
 
 @dataclass(frozen=True, slots=True)
 class CubicBezier(PathElement):
 
-    parameter_counts = {
+    parameter_counts: ClassVar[dict[str, int]] = {
             "C": 6,
             "c": 6,
             "S": 4,
@@ -42,7 +43,7 @@ class CubicBezier(PathElement):
 
     def points_for_bounding_box(self, start: Point, count: int) -> set[Point]:
         points = []
-        for i in range(0, count+1):
+        for i in range(count+1):
             t = i / count
             points.append(self._point_at(start, t))
         return set(points)

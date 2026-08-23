@@ -1,13 +1,14 @@
-import math
-
 from dataclasses import dataclass
-from .path_element_abc import PathElement
+from typing import ClassVar
+
 from ..point import Point
+from .path_element_abc import PathElement
+
 
 @dataclass(frozen=True, slots=True)
 class LineTo(PathElement):
 
-    parameter_counts = {
+    parameter_counts: ClassVar[dict[str, int]] = {
             "L": 2,
             "l": 2,
             "H": 1,
