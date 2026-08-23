@@ -1,8 +1,8 @@
 import math
 from dataclasses import dataclass
 
-from .isclose import geometry_isclose
 from .point import Point
+from .tolerance import GEOMETRY_ABS_TOL, GEOMETRY_REL_TOL
 
 
 @dataclass(frozen=True, slots=True)
@@ -21,11 +21,12 @@ class TRHxSDecomposition:
     def isclose(self, other):
         if not isinstance(other, TRHxSDecomposition):
             return False
-        return (geometry_isclose(self.tx, other.tx) and
-                geometry_isclose(self.ty, other.ty) and
-                geometry_isclose(self.theta_rotate, other.theta_rotate) and
-                geometry_isclose(self.theta_skew_x, other.theta_skew_x) and
-                geometry_isclose(self.sx, other.sx)
+        return (math.isclose(self.tx, other.tx, rel_tol=GEOMETRY_REL_TOL, abs_tol=GEOMETRY_ABS_TOL) and
+                math.isclose(self.ty, other.ty, rel_tol=GEOMETRY_REL_TOL, abs_tol=GEOMETRY_ABS_TOL) and
+                math.isclose(self.theta_rotate, other.theta_rotate, rel_tol=GEOMETRY_REL_TOL, abs_tol=GEOMETRY_ABS_TOL) and
+                math.isclose(self.h_skew_x, other.h_skew_x, rel_tol=GEOMETRY_REL_TOL, abs_tol=GEOMETRY_ABS_TOL) and
+                math.isclose(self.sx, other.sx, rel_tol=GEOMETRY_REL_TOL, abs_tol=GEOMETRY_ABS_TOL) and
+                math.isclose(self.sy, other.sy, rel_tol=GEOMETRY_REL_TOL, abs_tol=GEOMETRY_ABS_TOL)
         )
 
 @dataclass(frozen=True, slots=True)
@@ -119,13 +120,13 @@ class Matrix3:
 
         # rotation and scale_x from first colum
         scale_x = math.sqrt(a.m11*a.m11 + a.m21*a.m21)
-        if math.isclose(scale_x, 0, rel_tol=1e-9, abs_tol=1e-9):
+        if math.isclose(scale_x, 0, rel_tol=GEOMETRY_REL_TOL, abs_tol=GEOMETRY_ABS_TOL):
             raise ValueError(f"scale_x is close to 0 ({scale_x}), cannot decompose")
         theta_rotate = math.degrees(math.atan2(a.m21, a.m11))
 
         # scale_y from det and scale_x
         det = a.m11*a.m22 - a.m12*a.m21
-        if math.isclose(det, 0, rel_tol=1e-9, abs_tol=1e-9):
+        if math.isclose(det, 0, rel_tol=GEOMETRY_REL_TOL, abs_tol=GEOMETRY_ABS_TOL):
             raise ValueError(f"determinant is close to 0 ({det}), cannot decompose")
         scale_y = det / scale_x
 
@@ -170,13 +171,13 @@ class Matrix3:
     def isclose(self, other):
         if not isinstance(other, Matrix3):
             return False
-        return (geometry_isclose(self.m11, other.m11) and
-                geometry_isclose(self.m12, other.m12) and
-                geometry_isclose(self.m13, other.m13) and
-                geometry_isclose(self.m21, other.m21) and
-                geometry_isclose(self.m22, other.m22) and
-                geometry_isclose(self.m23, other.m23) and
-                geometry_isclose(self.m31, other.m31) and
-                geometry_isclose(self.m32, other.m32) and
-                geometry_isclose(self.m33, other.m33)
+        return (math.isclose(self.m11, other.m11, rel_tol=GEOMETRY_REL_TOL, abs_tol=GEOMETRY_ABS_TOL) and
+                math.isclose(self.m12, other.m12, rel_tol=GEOMETRY_REL_TOL, abs_tol=GEOMETRY_ABS_TOL) and
+                math.isclose(self.m13, other.m13, rel_tol=GEOMETRY_REL_TOL, abs_tol=GEOMETRY_ABS_TOL) and
+                math.isclose(self.m21, other.m21, rel_tol=GEOMETRY_REL_TOL, abs_tol=GEOMETRY_ABS_TOL) and
+                math.isclose(self.m22, other.m22, rel_tol=GEOMETRY_REL_TOL, abs_tol=GEOMETRY_ABS_TOL) and
+                math.isclose(self.m23, other.m23, rel_tol=GEOMETRY_REL_TOL, abs_tol=GEOMETRY_ABS_TOL) and
+                math.isclose(self.m31, other.m31, rel_tol=GEOMETRY_REL_TOL, abs_tol=GEOMETRY_ABS_TOL) and
+                math.isclose(self.m32, other.m32, rel_tol=GEOMETRY_REL_TOL, abs_tol=GEOMETRY_ABS_TOL) and
+                math.isclose(self.m33, other.m33, rel_tol=GEOMETRY_REL_TOL, abs_tol=GEOMETRY_ABS_TOL)
         )
