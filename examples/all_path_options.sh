@@ -1,12 +1,21 @@
 #!/bin/bash
 
-TARGETDIR=/tmp/path_options
+SVG_TEST_DEST_DIR=/tmp/svg
+
+CONFFILE="$(dirname $0)/all.conf"
+if [[ -r $CONFFILE ]]
+then
+  . $CONFFILE
+fi
+
+
+TARGETDIR=${SVG_TEST_DEST_DIR}/path_options
 
 if [[ -r $TARGETDIR && -w $TARGETDIR && -d $TARGETDIR ]]
 then
   true
 else
-  mkdir $TARGETDIR
+  mkdir -p $TARGETDIR
 fi
 rm -rf $TARGETDIR/*
 
