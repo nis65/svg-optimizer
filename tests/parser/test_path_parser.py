@@ -1,5 +1,6 @@
 import pytest
-from svgtools.parser.path_parser import parse_path_string, Token, TokenKind, TokenIterator
+from svgtools.parser.path_parser import parse_path_string
+from svgtools.parser.token_lexer import Token, TokenKind, TokenIterator
 from svgtools.geometry.point import Point
 from svgtools.geometry.path import Path
 from svgtools.geometry.path_elements.moveto import MoveTo

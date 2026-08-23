@@ -1,7 +1,8 @@
-from enum import Enum, auto
 import re
 import sys
 from dataclasses import dataclass
+from enum import Enum, auto
+
 
 class TokenKind(Enum):
     COMMAND = auto()

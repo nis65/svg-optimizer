@@ -1,21 +1,22 @@
-import sys
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
-from .token_lexer import TokenKind, Token, TokenIterator, token_lexer, print_stderr
 from svgtools.geometry.geometry_abc import Geometry
-from svgtools.geometry.point import Point
 from svgtools.geometry.path import Path
-from svgtools.geometry.path_elements.moveto import MoveTo
-from svgtools.geometry.path_elements.lineto import LineTo
-from svgtools.geometry.path_elements.closepath import ClosePath
-from svgtools.geometry.path_elements.quadraticbezier import QuadraticBezier
-from svgtools.geometry.path_elements.cubicbezier import CubicBezier
 from svgtools.geometry.path_elements.arc import Arc
+from svgtools.geometry.path_elements.closepath import ClosePath
+from svgtools.geometry.path_elements.cubicbezier import CubicBezier
+from svgtools.geometry.path_elements.lineto import LineTo
+from svgtools.geometry.path_elements.moveto import MoveTo
+from svgtools.geometry.path_elements.quadraticbezier import QuadraticBezier
+from svgtools.geometry.point import Point
+
+from .token_lexer import TokenIterator, TokenKind, print_stderr, token_lexer
+
 
 @dataclass
 class PathParseState:
-    current_point: Point = Point(0, 0)
-    current_subpath_start: Point = Point(0, 0)
+    current_point: Point = field(default_factory=lambda: Point(0, 0))
+    current_subpath_start: Point = field(default_factory=lambda: Point(0, 0))
     previous_command: str | None = None
     previous_quadratic_control: Point | None = None
     previous_cubic_control: Point | None = None
@@ -64,8 +65,7 @@ def parse_path_string(text: str) -> Geometry:
             case 'a'|'A':
                 current_state, parsed_elements = _parse_any_list(command, current_state, token_iterator,
                                                  Arc.parameter_counts[command], _parse_aA)
-        for element in parsed_elements:
-            path_element_list.append(element)
+        path_element_list.extend(parsed_elements)
     return Path(children = tuple(path_element_list))
                 
 def _parse_mM_list(command: str, current_state: PathParseState, iterator: TokenIterator) -> (PathParseState, tuple):
@@ -98,7 +98,7 @@ def _parse_any_list(command: str, current_state: PathParseState, iterator: Token
         current_state, parsed_element = parse_element_function(command, current_state, iterator)
         parsed_path_elements.append(parsed_element)
         while iterator.peek() is not None and iterator.peek().kind == TokenKind.NUMBER:
-            if iterator.has_numbers(expected_numbers) and not expected_numbers == 0:
+            if iterator.has_numbers(expected_numbers) and expected_numbers != 0:
                 current_state, parsed_element = parse_element_function(command, current_state, iterator)
                 parsed_path_elements.append(parsed_element)
             else:
