@@ -8,7 +8,7 @@ from svgtools.writer.path_write_options import (
     PathCoordinates,
 )
 from svgtools.writer.svg_writer import SvgWriter
-from svgtools.writer.transform_write_strategy import TransformWriteStrategy
+from svgtools.writer.transform_strategy import TransformWriteStrategy
 
 parser = argparse.ArgumentParser()
 
