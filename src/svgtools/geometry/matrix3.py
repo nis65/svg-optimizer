@@ -1,7 +1,9 @@
 import math
 from dataclasses import dataclass
-from .point import Point
+
 from .isclose import geometry_isclose
+from .point import Point
+
 
 @dataclass(frozen=True, slots=True)
 class TRHxSDecomposition:

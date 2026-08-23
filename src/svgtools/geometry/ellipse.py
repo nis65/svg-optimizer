@@ -1,9 +1,9 @@
 import math
-
 from dataclasses import dataclass
-from .point import Point
+
 from .geometry_abc import Geometry
-from .bounding_box import BoundingBox
+from .point import Point
+
 
 @dataclass(frozen=True, slots=True)
 class Ellipse(Geometry):
