@@ -2,9 +2,13 @@ import argparse
 import sys
 
 from svgtools.parser.svg_parser import parse_svg_string
+from svgtools.writer.path_write_options import (
+    PathCommandSet,
+    PathCompactness,
+    PathCoordinates,
+)
 from svgtools.writer.svg_writer import SvgWriter
 from svgtools.writer.transform_write_strategy import TransformWriteStrategy
-from svgtools.writer.path_write_options import PathCoordinates, PathCompactness, PathCommandSet
 
 parser = argparse.ArgumentParser()
 
@@ -45,23 +49,26 @@ parser.add_argument("--path-command-set",
 
 args = parser.parse_args()
 
-infile = open(args.input, encoding="utf-8") if args.input else sys.stdin
-outfile = open(args.output, "w", encoding="utf-8") if args.output else sys.stdout
+if args.input:
+    with open(args.input, encoding="utf-8") as infile:
+        svg_input_text = infile.read()
+else:
+    svg_input_text = sys.stdin.read()
 
-try:
-    svg_input_text = infile.read()
-    svg_doc = parse_svg_string(svg_input_text)
-    writer = SvgWriter(transform_strategy = args.transform_strategy,
-                       path_coordinates = args.path_coordinates,
-                       path_compactness = args.path_compactness,
-                       path_command_set = args.path_command_set,
-                      )
-    outfile.write(writer.write_svg_string(svg_doc))
-    if args.transform_strategy == TransformWriteStrategy.CANONICAL_CONSERVATIVE:
-       print(f"conservative stats (exact, forced): {writer.conservative_stats}", file=sys.stderr)
+svg_doc = parse_svg_string(svg_input_text)
 
-finally:
-    if infile is not sys.stdin:
-        infile.close()
-    if outfile is not sys.stdout:
-        outfile.close()
+writer = SvgWriter(transform_strategy = args.transform_strategy,
+                   path_coordinates = args.path_coordinates,
+                   path_compactness = args.path_compactness,
+                   path_command_set = args.path_command_set,
+                  )
+svg_output_text = writer.write_svg_string(svg_doc)
+
+if args.output:
+    with open(args.output, "w", encoding="utf-8") as outfile:
+        outfile.write(svg_output_text)
+else:
+    sys.stdout.write(svg_output_text)
+
+if args.transform_strategy == TransformWriteStrategy.CANONICAL_CONSERVATIVE:
+   print(f"conservative stats (exact, forced): {writer.conservative_stats}", file=sys.stderr)

@@ -10,18 +10,14 @@ parser.add_argument("--in", dest="input")
 
 args = parser.parse_args()
 
-infile = open(args.input, encoding="utf-8") if args.input else sys.stdin
+if args.input:
+    with open(args.input, encoding="utf-8") as infile:
+        svg_input_text = infile.read()
+else:
+    svg_input_text = sys.stdin.read()
 
-try:
-    svg_input_text = infile.read()
-    svg_doc = parse_svg_string(svg_input_text)
-    visitor = BoundingBoxVisitor()
-    visitor.visit(svg_doc)
-    print(f"Bounding Box min: {visitor.bounding_box.min.x}, {visitor.bounding_box.min.y}")
-    print(f"Bounding Box max: {visitor.bounding_box.max.x}, {visitor.bounding_box.max.y}")
-
-finally:
-    if infile is not sys.stdin:
-        infile.close()
-
-
+svg_doc = parse_svg_string(svg_input_text)
+visitor = BoundingBoxVisitor()
+visitor.visit(svg_doc)
+print(f"Bounding Box min: {visitor.bounding_box.min.x}, {visitor.bounding_box.min.y}")
+print(f"Bounding Box max: {visitor.bounding_box.max.x}, {visitor.bounding_box.max.y}")
