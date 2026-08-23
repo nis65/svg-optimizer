@@ -1,7 +1,9 @@
+from dataclasses import FrozenInstanceError
+
 import pytest
 
-from dataclasses import FrozenInstanceError
 from svgtools.svg.transform.translate import Translate
+
 
 def test_translate_construction():
     t = Translate(dx=3, dy=4)

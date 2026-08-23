@@ -1,18 +1,13 @@
 
 from textwrap import dedent
 
-from svgtools.writer.svg_writer import SvgWriter
-
-from svgtools.svg.document import Document
-from svgtools.svg.svg import Svg
-from svgtools.svg.defs import Defs
-from svgtools.svg.group import Group
-from svgtools.svg.use import Use
-from svgtools.svg.shape import Shape
-from svgtools.svg.transform import Translate, Scale, Rotate, SkewX, SkewY, Affine
-from svgtools.geometry.rect import Rect
 from svgtools.geometry.point import Point
-
+from svgtools.geometry.rect import Rect
+from svgtools.svg.document import Document
+from svgtools.svg.shape import Shape
+from svgtools.svg.svg import Svg
+from svgtools.svg.transform import Affine, Rotate, Scale, SkewX, Translate
+from svgtools.writer.svg_writer import SvgWriter
 from svgtools.writer.transform_write_strategy import TransformWriteStrategy
 
 

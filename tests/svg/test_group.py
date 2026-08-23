@@ -1,8 +1,11 @@
 
-import pytest
 from dataclasses import FrozenInstanceError
+
+import pytest
+
 from svgtools.svg.group import Group
-from svgtools.svg.transform import Translate, Scale
+from svgtools.svg.transform import Scale
+
 
 def test_group_construction():
     g = Group(id="gid", children=("x", 2))

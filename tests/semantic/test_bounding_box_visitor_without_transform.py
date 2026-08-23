@@ -1,16 +1,11 @@
-from svgtools.geometry.point import Point
-from svgtools.geometry.rect import Rect
+from svgtools.geometry.bounding_box import BoundingBox
 from svgtools.geometry.circle import Circle
 from svgtools.geometry.path import Path
-from svgtools.geometry.path_elements.moveto import MoveTo
 from svgtools.geometry.path_elements.lineto import LineTo
-from svgtools.geometry.path_elements.closepath import ClosePath
-from svgtools.geometry.path_elements.quadraticbezier import QuadraticBezier
-from svgtools.geometry.path_elements.cubicbezier import CubicBezier
-from svgtools.geometry.path_elements.arc import Arc
-
-from svgtools.geometry.bounding_box import BoundingBox
-
+from svgtools.geometry.path_elements.moveto import MoveTo
+from svgtools.geometry.point import Point
+from svgtools.geometry.rect import Rect
+from svgtools.semantic.bounding_box_visitor import BoundingBoxVisitor
 from svgtools.svg.defs import Defs
 from svgtools.svg.document import Document
 from svgtools.svg.group import Group
@@ -18,7 +13,6 @@ from svgtools.svg.shape import Shape
 from svgtools.svg.svg import Svg
 from svgtools.svg.use import Use
 
-from svgtools.semantic.bounding_box_visitor import BoundingBoxVisitor
 
 def test_use_is_followed_twice():
 

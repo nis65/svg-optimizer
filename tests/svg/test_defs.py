@@ -1,7 +1,10 @@
 
-import pytest
 from dataclasses import FrozenInstanceError
+
+import pytest
+
 from svgtools.svg.defs import Defs
+
 
 def test_defs_construction():
     d = Defs(id="defid", children=("x", 2))

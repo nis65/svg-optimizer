@@ -1,30 +1,30 @@
 
 from textwrap import dedent
 
-from svgtools.writer.svg_writer import SvgWriter
-
-from svgtools.svg.document import Document
-from svgtools.svg.svg import Svg
-from svgtools.svg.defs import Defs
-from svgtools.svg.group import Group
-from svgtools.svg.use import Use
-from svgtools.svg.shape import Shape
-from svgtools.svg.transform import Translate, Scale, Rotate, SkewX, SkewY, Affine
-from svgtools.geometry.rect import Rect
 from svgtools.geometry.circle import Circle
 from svgtools.geometry.ellipse import Ellipse
 from svgtools.geometry.line import Line
-from svgtools.geometry.polyline import Polyline
-from svgtools.geometry.polygon import Polygon
 from svgtools.geometry.path import Path
-from svgtools.geometry.path_elements.moveto import MoveTo
-from svgtools.geometry.path_elements.lineto import LineTo
-from svgtools.geometry.path_elements.closepath import ClosePath
-from svgtools.geometry.path_elements.quadraticbezier import QuadraticBezier
-from svgtools.geometry.path_elements.cubicbezier import CubicBezier
 from svgtools.geometry.path_elements.arc import Arc
-
+from svgtools.geometry.path_elements.closepath import ClosePath
+from svgtools.geometry.path_elements.cubicbezier import CubicBezier
+from svgtools.geometry.path_elements.lineto import LineTo
+from svgtools.geometry.path_elements.moveto import MoveTo
+from svgtools.geometry.path_elements.quadraticbezier import QuadraticBezier
 from svgtools.geometry.point import Point
+from svgtools.geometry.polygon import Polygon
+from svgtools.geometry.polyline import Polyline
+from svgtools.geometry.rect import Rect
+from svgtools.svg.defs import Defs
+from svgtools.svg.document import Document
+from svgtools.svg.group import Group
+from svgtools.svg.shape import Shape
+from svgtools.svg.svg import Svg
+from svgtools.svg.transform import Affine, Rotate, Scale, SkewX, SkewY, Translate
+from svgtools.svg.use import Use
+from svgtools.writer.svg_writer import SvgWriter
+
+
 # {{{ def test_write_empty_svg():
 def test_write_empty_svg():
     d = Document(

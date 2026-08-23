@@ -1,7 +1,9 @@
+from dataclasses import FrozenInstanceError
+
 import pytest
 
-from dataclasses import FrozenInstanceError
 from svgtools.svg.transform.affine import Affine
+
 
 def test_affine_construction():
     a = Affine(a=1, b=2, c=3, d=4, e=5, f=6)

@@ -1,7 +1,10 @@
-import pytest
 from dataclasses import FrozenInstanceError
+
+import pytest
+
 from svgtools.geometry.bounding_box import BoundingBox
 from svgtools.geometry.point import Point
+
 
 def test_bounding_box_construction():
     bbox = BoundingBox(

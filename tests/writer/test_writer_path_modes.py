@@ -1,20 +1,22 @@
 from textwrap import dedent
 
-from svgtools.writer.svg_writer import SvgWriter
-from svgtools.writer.path_write_options import PathCoordinates, PathCompactness, PathCommandSet
-
-from svgtools.svg.document import Document
-from svgtools.svg.svg import Svg
-from svgtools.svg.shape import Shape
 from svgtools.geometry.path import Path
-from svgtools.geometry.path_elements.moveto import MoveTo
-from svgtools.geometry.path_elements.lineto import LineTo
-from svgtools.geometry.path_elements.closepath import ClosePath
-from svgtools.geometry.path_elements.quadraticbezier import QuadraticBezier
-from svgtools.geometry.path_elements.cubicbezier import CubicBezier
 from svgtools.geometry.path_elements.arc import Arc
+from svgtools.geometry.path_elements.closepath import ClosePath
+from svgtools.geometry.path_elements.cubicbezier import CubicBezier
+from svgtools.geometry.path_elements.lineto import LineTo
+from svgtools.geometry.path_elements.moveto import MoveTo
+from svgtools.geometry.path_elements.quadraticbezier import QuadraticBezier
 from svgtools.geometry.point import Point
-
+from svgtools.svg.document import Document
+from svgtools.svg.shape import Shape
+from svgtools.svg.svg import Svg
+from svgtools.writer.path_write_options import (
+    PathCommandSet,
+    PathCompactness,
+    PathCoordinates,
+)
+from svgtools.writer.svg_writer import SvgWriter
 
 # {{{ document "d" for PathCoordinates / PathCommandSet
 d = Document(
@@ -72,7 +74,7 @@ def test_write_absolute_canonical_full():
     """)
 # }}}
 # {{{ def test_write_relative_canonical_base():
-def test_write_absolute_canonical_base():
+def test_write_relative_canonical_base():
     writer = SvgWriter(path_coordinates = PathCoordinates.RELATIVE,
                        path_compactness = PathCompactness.CANONICAL,
                        path_command_set = PathCommandSet.BASE
@@ -116,7 +118,7 @@ e = Document(
 
 # }}}
 # {{{ def test_write_absolute_compact_base():
-def test_write_absolute_canonical_base():
+def test_write_absolute_compact_base():
     writer = SvgWriter(path_coordinates = PathCoordinates.ABSOLUTE,
                        path_compactness = PathCompactness.COMPACT,
                        path_command_set = PathCommandSet.BASE

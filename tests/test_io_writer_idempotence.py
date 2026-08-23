@@ -1,6 +1,8 @@
 from pathlib import Path
+
 import pytest
-from svgtools.io import write_svg_file, parse_svg_file
+
+from svgtools.io import parse_svg_file, write_svg_file
 
 DATA = Path(__file__).parent / "testdata"
 

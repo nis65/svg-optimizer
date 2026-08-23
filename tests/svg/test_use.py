@@ -1,8 +1,11 @@
 
-import pytest
 from dataclasses import FrozenInstanceError
+
+import pytest
+
+from svgtools.svg.transform import Scale
 from svgtools.svg.use import Use
-from svgtools.svg.transform import Translate, Scale
+
 
 def test_use_construction():
     u = Use(id="useid", href="#abcde")
@@ -15,7 +18,7 @@ def test_use_transformations():
     assert u.transformations == ( Scale ( 2, 3) )
 
 def test_use_id_optional():
-    u = Use(href="#abcde")
+    u = Use(href="#abcde")  # noqa: F841
 
 def test_uses_are_equal():
     assert Use(id="useid", href="#abcd") == Use(id="useid", href='#abcd')
