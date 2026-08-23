@@ -1,17 +1,18 @@
 from enum import Enum
 
 from svgtools.geometry.bounding_box import BoundingBox
-from svgtools.geometry.point import Point
-from svgtools.geometry.matrix3 import Matrix3
-from svgtools.geometry.rect import Rect
 from svgtools.geometry.circle import Circle
-from svgtools.svg.document import Document
-from svgtools.svg.svg import Svg
+from svgtools.geometry.matrix3 import Matrix3
+from svgtools.geometry.point import Point
+from svgtools.geometry.rect import Rect
 from svgtools.svg.defs import Defs
+from svgtools.svg.document import Document
+from svgtools.svg.get_matrix import transforms_to_matrix
 from svgtools.svg.group import Group
-from svgtools.svg.use import Use
 from svgtools.svg.shape import Shape
-from svgtools.svg.get_matrix import get_matrix, transforms_to_matrix
+from svgtools.svg.svg import Svg
+from svgtools.svg.use import Use
+
 
 class _Phase(Enum):
     BUILD_DEFINITION_TABLE = 0
