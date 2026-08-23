@@ -25,7 +25,7 @@ class Arc(PathElement):
     representation: str
 
     def __post_init__(self) -> None:
-        if not (self.representation == 'a' or self.representation == 'A'):
+        if not self.representation in { 'a', 'A' }:
             raise ValueError(
                 f"Arc can only be represented by one of 'aA', not {self.representation}"
             )
@@ -35,10 +35,10 @@ class Arc(PathElement):
         return self.end
 
     @staticmethod
-    def _point_at(center: Point, 
+    def _point_at(center: Point,                            # noqa: PLR0913 PLR0917
                   lrx: float, lry: float,
                   theta_start: float, delta_theta: float,
-                  cos_rphi, sin_rphi,
+                  cos_rphi: float, sin_rphi: float,
                   t: float) -> Point:
 
         cos_param_phi = math.cos(theta_start + t * delta_theta)
@@ -52,7 +52,7 @@ class Arc(PathElement):
 
         return Point(x = new_x, y=new_y)
 
-    def points_for_bounding_box(self, start: Point, count: int) -> set[Point]:
+    def points_for_bounding_box(self, start: Point, count: int) -> set[Point]: # noqa: PLR0914
 
         rphi     = math.radians(self.phi)
         cos_rphi = math.cos(rphi)
@@ -124,9 +124,9 @@ class Arc(PathElement):
                             )
 
         if self.sweep_flag == 0 and delta_theta > 0:
-            delta_theta = delta_theta - 2 * math.pi
+            delta_theta -= 2 * math.pi
         if self.sweep_flag == 1 and delta_theta < 0:
-            delta_theta = delta_theta + 2 * math.pi
+            delta_theta += 2 * math.pi
 
         points = []
         for i in range(count+1):

@@ -21,10 +21,7 @@ class LineTo(PathElement):
     representation: str
 
     def __post_init__(self) -> None:
-        if not (self.representation == 'l' or self.representation == 'L'
-             or self.representation == 'h' or self.representation == 'H'
-             or self.representation == 'v' or self.representation == 'V'
-            ):
+        if not self.representation in {'l', 'L', 'h', 'H', 'v', 'V'}:
             raise ValueError(
                 f"LineTo can only be represented by one of 'lLhHvV', not {self.representation}"
             )

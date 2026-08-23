@@ -16,7 +16,7 @@ class ClosePath(PathElement):
     representation: str
 
     def __post_init__(self) -> None:
-        if not (self.representation == 'z' or self.representation == 'Z'):
+        if not self.representation in {'z', 'Z'}:
             raise ValueError(
                 f"ClosePath can only be represented by one of 'zZ', not {self.representation}"
             )
@@ -25,5 +25,5 @@ class ClosePath(PathElement):
     def endpoint(self) -> Point:
         raise ValueError("ClosePath has no internal endpoint")
 
-    def points_for_bounding_box(self, start: Point, number_of_points: int) -> set[Point]:
+    def points_for_bounding_box(self, start: Point, number_of_points: int) -> set[Point]:  # noqa: PLR6301
         raise ValueError("ClosePath has no points for bounding box")

@@ -20,9 +20,7 @@ class QuadraticBezier(PathElement):
     representation: str
 
     def __post_init__(self) -> None:
-        if not (self.representation == 'q' or self.representation == 'Q'
-             or self.representation == 't' or self.representation == 'T'
-            ):
+        if not self.representation in {'q', 'Q', 't', 'T'}:
             raise ValueError(
                 f"QuadraticBezier can only be represented by one of 'qQtT', not {self.representation}"
             )
