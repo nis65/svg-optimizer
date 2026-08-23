@@ -1,5 +1,6 @@
 from dataclasses import dataclass, field
 
+
 @dataclass(frozen=True, slots=True)
 class Defs:
     children: tuple
