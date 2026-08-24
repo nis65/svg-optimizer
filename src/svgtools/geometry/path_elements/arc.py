@@ -34,7 +34,7 @@ class Arc(PathElement):
         return self.end
 
     @staticmethod
-    def _point_at(       # noqa: PLR0913 PLR0917
+    def _point_at(  # noqa: PLR0913 PLR0917
         center: Point,
         lrx: float,
         lry: float,

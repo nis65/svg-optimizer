@@ -100,6 +100,12 @@ def test_matrix3_decomp_skewX():
 
 
 def test_matrix3_decomp_any():
+    # fmt: off
+    m = Matrix3(
+        1, 2, 3, 
+        4, 5, 6, 
+        0, 0, 1)
+    # fmt: on
     m = Matrix3(1, 2, 3, 4, 5, 6, 0, 0, 1)
     md = Matrix3.TRHxS_decompose(m)
     assert m.isclose(
