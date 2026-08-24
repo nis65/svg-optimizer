@@ -18,8 +18,8 @@ class _Phase(Enum):
     BUILD_DEFINITION_TABLE = 0
     VISIT = 1
 
-class BoundingBoxVisitor:
 
+class BoundingBoxVisitor:
     def __init__(self):
 
         self.bounding_box = None
@@ -50,14 +50,14 @@ class BoundingBoxVisitor:
 
         match element:
             case Defs():
-                self._walk_defs(element,phase)
+                self._walk_defs(element, phase)
             case Group():
-                self._walk_group(element,phase, current_matrix)
+                self._walk_group(element, phase, current_matrix)
             case Use():
-                self._walk_use(element,phase, current_matrix)
+                self._walk_use(element, phase, current_matrix)
             case Shape():
-                 self._walk_shape(element,phase, current_matrix)
-            case _:      # pragma: no cover
+                self._walk_shape(element, phase, current_matrix)
+            case _:  # pragma: no cover
                 raise NotImplementedError(type(element))
 
     def _walk_group(self, group: Group, phase: _Phase, current_matrix: Matrix3):
@@ -108,12 +108,18 @@ class BoundingBoxVisitor:
                         self.circles_visited += 1
                 current_matrix *= transforms_to_matrix(shape.transformations)
                 points = shape.geometry.points_for_bounding_box(128)
-                self._accumulate_bbox(self._transformed_points_bounding_box(points, current_matrix))
+                self._accumulate_bbox(
+                    self._transformed_points_bounding_box(points, current_matrix)
+                )
 
     @staticmethod
-    def _transformed_points_bounding_box(points: set[Point], matrix: Matrix3) -> BoundingBox:
+    def _transformed_points_bounding_box(
+        points: set[Point], matrix: Matrix3
+    ) -> BoundingBox:
         if len(points) < 1:
-            raise ValueError(f"need at least one point to create a BoundingBox, not {len(points)}")
+            raise ValueError(
+                f"need at least one point to create a BoundingBox, not {len(points)}"
+            )
         if len(points) == 1:
             moved_point = matrix * next(iter(points))
             bb = BoundingBox(moved_point, moved_point)
@@ -122,14 +128,8 @@ class BoundingBoxVisitor:
             first = matrix * next(points_iterator)
             second = matrix * next(points_iterator)
             bb = BoundingBox(
-                Point(
-                    min(first.x, second.x),
-                    min(first.y, second.y)
-                ),
-                Point(
-                    max(first.x, second.x),
-                    max(first.y, second.y)
-                )
+                Point(min(first.x, second.x), min(first.y, second.y)),
+                Point(max(first.x, second.x), max(first.y, second.y)),
             )
             for p in points_iterator:
                 bb = bb.include(matrix * p)

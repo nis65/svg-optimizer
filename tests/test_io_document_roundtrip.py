@@ -1,4 +1,3 @@
-
 from svgtools.io import parse_svg_file, write_svg_file
 from svgtools.svg.document import Document
 from svgtools.svg.svg import Svg
@@ -8,10 +7,10 @@ def test_io_document_roundtrip(tmp_path):
 
     filename = tmp_path / "test.svg"
     d_before = Document(
-            svg=Svg(
-                children=(),
-            )
+        svg=Svg(
+            children=(),
         )
+    )
     write_svg_file(d_before, filename)
     assert filename.exists()
     d_after = parse_svg_file(filename)

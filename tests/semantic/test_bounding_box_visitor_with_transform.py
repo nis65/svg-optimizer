@@ -35,10 +35,8 @@ def test_rect_svg_translate():
     visitor = BoundingBoxVisitor()
     visitor.visit(document)
 
-    assert visitor.bounding_box == BoundingBox(
-                                       min=Point(1,1),
-                                       max=Point(11,6)
-                                   )
+    assert visitor.bounding_box == BoundingBox(min=Point(1, 1), max=Point(11, 6))
+
 
 def test_rect_rect_translate():
     document = Document(
@@ -59,10 +57,8 @@ def test_rect_rect_translate():
     visitor = BoundingBoxVisitor()
     visitor.visit(document)
 
-    assert visitor.bounding_box == BoundingBox(
-                                       min=Point(1,1),
-                                       max=Point(11,6)
-                                   )
+    assert visitor.bounding_box == BoundingBox(min=Point(1, 1), max=Point(11, 6))
+
 
 def test_rect_group_translate():
     document = Document(
@@ -87,10 +83,9 @@ def test_rect_group_translate():
     visitor = BoundingBoxVisitor()
     visitor.visit(document)
 
-    assert visitor.bounding_box == BoundingBox(
-                                       min=Point(1,1),
-                                       max=Point(11,6)
-                                   )
+    assert visitor.bounding_box == BoundingBox(min=Point(1, 1), max=Point(11, 6))
+
+
 def test_rect_use_translate():
     document = Document(
         svg=Svg(
@@ -117,10 +112,8 @@ def test_rect_use_translate():
     visitor = BoundingBoxVisitor()
     visitor.visit(document)
 
-    assert visitor.bounding_box == BoundingBox(
-                                       min=Point(1,1),
-                                       max=Point(11,6)
-                                   )
+    assert visitor.bounding_box == BoundingBox(min=Point(1, 1), max=Point(11, 6))
+
 
 def test_rect_all_translate():
     document = Document(
@@ -156,11 +149,7 @@ def test_rect_all_translate():
     visitor = BoundingBoxVisitor()
     visitor.visit(document)
 
-    assert visitor.bounding_box == BoundingBox(
-                                       min=Point(10,-1),
-                                       max=Point(11,1)
-                                   )
-
+    assert visitor.bounding_box == BoundingBox(min=Point(10, -1), max=Point(11, 1))
 
 
 def test_circle_svg_scale():
@@ -183,12 +172,9 @@ def test_circle_svg_scale():
     visitor.visit(document)
 
     assert visitor.bounding_box.isclose(
-        BoundingBox(
-            min=Point(0,0),
-            max=Point(4,4)
-        ),
-        abs_tol=GEOMETRY_ABS_TOL
+        BoundingBox(min=Point(0, 0), max=Point(4, 4)), abs_tol=GEOMETRY_ABS_TOL
     )
+
 
 def test_circle_circle_scale():
     document = Document(
@@ -208,10 +194,8 @@ def test_circle_circle_scale():
     visitor = BoundingBoxVisitor()
     visitor.visit(document)
 
-    assert visitor.bounding_box == BoundingBox(
-                                       min=Point(0,0),
-                                       max=Point(4,4)
-                                   )
+    assert visitor.bounding_box == BoundingBox(min=Point(0, 0), max=Point(4, 4))
+
 
 def test_circle_circle_rotate():
     document = Document(
@@ -231,10 +215,10 @@ def test_circle_circle_rotate():
     visitor = BoundingBoxVisitor()
     visitor.visit(document)
 
-    assert visitor.bounding_box.isclose(BoundingBox(
-                                       min=Point(0,0),
-                                       max=Point(2,2)
-                                   ), abs_tol=1e-3)
+    assert visitor.bounding_box.isclose(
+        BoundingBox(min=Point(0, 0), max=Point(2, 2)), abs_tol=1e-3
+    )
+
 
 def test_rect_rect_rotate_1():
     document = Document(
@@ -254,11 +238,15 @@ def test_rect_rect_rotate_1():
     )
     visitor = BoundingBoxVisitor()
     visitor.visit(document)
-    sqrt2=math.sqrt(2)
-    assert visitor.bounding_box.isclose(BoundingBox(
-                                       min=Point(1-sqrt2,1-sqrt2),
-                                       max=Point(1+sqrt2,1+sqrt2),
-                                   ), abs_tol=GEOMETRY_ABS_TOL)
+    sqrt2 = math.sqrt(2)
+    assert visitor.bounding_box.isclose(
+        BoundingBox(
+            min=Point(1 - sqrt2, 1 - sqrt2),
+            max=Point(1 + sqrt2, 1 + sqrt2),
+        ),
+        abs_tol=GEOMETRY_ABS_TOL,
+    )
+
 
 def test_rect_rect_rotate_2():
     document = Document(
@@ -278,11 +266,15 @@ def test_rect_rect_rotate_2():
     )
     visitor = BoundingBoxVisitor()
     visitor.visit(document)
-    sqrt2=math.sqrt(2)
-    assert visitor.bounding_box.isclose(BoundingBox(
-                                       min=Point(1-sqrt2,1-sqrt2),
-                                       max=Point(1+sqrt2,1+sqrt2),
-                                   ), abs_tol=GEOMETRY_ABS_TOL)
+    sqrt2 = math.sqrt(2)
+    assert visitor.bounding_box.isclose(
+        BoundingBox(
+            min=Point(1 - sqrt2, 1 - sqrt2),
+            max=Point(1 + sqrt2, 1 + sqrt2),
+        ),
+        abs_tol=GEOMETRY_ABS_TOL,
+    )
+
 
 def test_rect_skew_y():
     document = Document(
@@ -302,7 +294,10 @@ def test_rect_skew_y():
     )
     visitor = BoundingBoxVisitor()
     visitor.visit(document)
-    assert visitor.bounding_box.isclose(BoundingBox(
-                                       min=Point(0,0),
-                                       max=Point(2,4),
-                                   ), abs_tol=GEOMETRY_ABS_TOL)
+    assert visitor.bounding_box.isclose(
+        BoundingBox(
+            min=Point(0, 0),
+            max=Point(2, 4),
+        ),
+        abs_tol=GEOMETRY_ABS_TOL,
+    )

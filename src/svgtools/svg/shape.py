@@ -6,7 +6,7 @@ from .transform import Rotate, Scale, Translate
 
 
 @dataclass(frozen=True, slots=True)
-class Shape: 
+class Shape:
     geometry: Geometry
     id: str | None = None
     transformations: tuple[Translate | Scale | Rotate, ...] = ()

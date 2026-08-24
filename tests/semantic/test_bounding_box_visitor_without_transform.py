@@ -46,6 +46,7 @@ def test_use_is_followed_twice():
 
     assert visitor.rectangles_visited == 2
 
+
 def test_use_references_unknown_tag():
 
     document = Document(
@@ -72,9 +73,15 @@ def test_use_references_unknown_tag():
     with pytest.raises(ValueError, match="Use references unknown label"):
         visitor.visit(document)
 
+
 def test_empty_set_for_bounding_box():
-    with pytest.raises(ValueError, match="need at least one point to create a BoundingBox"):
-        BoundingBoxVisitor._transformed_points_bounding_box({}, Matrix3.translation(1,1))
+    with pytest.raises(
+        ValueError, match="need at least one point to create a BoundingBox"
+    ):
+        BoundingBoxVisitor._transformed_points_bounding_box(
+            {}, Matrix3.translation(1, 1)
+        )
+
 
 def test_use_with_all_known_types():
 
@@ -118,6 +125,7 @@ def test_use_with_all_known_types():
     assert visitor.rectangles_visited == 2
     assert visitor.circles_visited == 1
 
+
 def test_bounding_box_rect():
     document = Document(
         svg=Svg(
@@ -136,10 +144,8 @@ def test_bounding_box_rect():
     visitor = BoundingBoxVisitor()
     visitor.visit(document)
 
-    assert visitor.bounding_box == BoundingBox(
-                                       min=Point(0,0),
-                                       max=Point(10,5)
-                                   )
+    assert visitor.bounding_box == BoundingBox(min=Point(0, 0), max=Point(10, 5))
+
 
 def test_bounding_box_circle():
     document = Document(
@@ -147,10 +153,7 @@ def test_bounding_box_circle():
             children=(
                 Shape(
                     id="circle",
-                    geometry=Circle(
-                        center=Point(4, 5),
-                        radius=2
-                    ),
+                    geometry=Circle(center=Point(4, 5), radius=2),
                 ),
             ),
         ),
@@ -158,32 +161,30 @@ def test_bounding_box_circle():
     visitor = BoundingBoxVisitor()
     visitor.visit(document)
 
-    assert visitor.bounding_box == BoundingBox(
-                                       min=Point(2,3),
-                                       max=Point(6,7)
-                                   )
+    assert visitor.bounding_box == BoundingBox(min=Point(2, 3), max=Point(6, 7))
+
 
 def test_bounding_box_path_ml():
     document = Document(
         svg=Svg(
             children=(
-                Shape (
+                Shape(
                     id="path",
-                    geometry = Path (
-                        children = (
+                    geometry=Path(
+                        children=(
                             MoveTo(
-                                target = Point(
-                                    x = 3,
-                                    y = 4,
+                                target=Point(
+                                    x=3,
+                                    y=4,
                                 ),
-                                representation = 'm',
+                                representation="m",
                             ),
                             LineTo(
-                                target = Point(
-                                    x = 4,
-                                    y = 5,
+                                target=Point(
+                                    x=4,
+                                    y=5,
                                 ),
-                                representation = 'L',
+                                representation="L",
                             ),
                         ),
                     ),
@@ -194,28 +195,26 @@ def test_bounding_box_path_ml():
     visitor = BoundingBoxVisitor()
     visitor.visit(document)
 
-    assert visitor.bounding_box == BoundingBox(
-                                       min=Point(3,4),
-                                       max=Point(4,5)
-                                   )
+    assert visitor.bounding_box == BoundingBox(min=Point(3, 4), max=Point(4, 5))
+
 
 def test_bounding_box_path_mz():
     document = Document(
         svg=Svg(
             children=(
-                Shape (
+                Shape(
                     id="path",
-                    geometry = Path (
-                        children = (
+                    geometry=Path(
+                        children=(
                             MoveTo(
-                                target = Point(
-                                    x = 3,
-                                    y = 4,
+                                target=Point(
+                                    x=3,
+                                    y=4,
                                 ),
-                                representation = 'm',
+                                representation="m",
                             ),
                             ClosePath(
-                                representation = 'z',
+                                representation="z",
                             ),
                         ),
                     ),
@@ -226,10 +225,7 @@ def test_bounding_box_path_mz():
     visitor = BoundingBoxVisitor()
     visitor.visit(document)
 
-    assert visitor.bounding_box == BoundingBox(
-                                       min=Point(3,4),
-                                       max=Point(3,4)
-                                   )
+    assert visitor.bounding_box == BoundingBox(min=Point(3, 4), max=Point(3, 4))
 
 
 def test_bounding_box_with_use():
@@ -241,7 +237,7 @@ def test_bounding_box_with_use():
                         Shape(
                             id="square",
                             geometry=Rect(
-                                top_left=Point(5,5),
+                                top_left=Point(5, 5),
                                 width=4,
                                 height=3,
                             ),
@@ -252,7 +248,7 @@ def test_bounding_box_with_use():
                                 Shape(
                                     id="circle",
                                     geometry=Circle(
-                                        center=Point(5,5),
+                                        center=Point(5, 5),
                                         radius=2,
                                     ),
                                 ),
@@ -269,7 +265,4 @@ def test_bounding_box_with_use():
     visitor = BoundingBoxVisitor()
     visitor.visit(document)
 
-    assert visitor.bounding_box == BoundingBox(
-                                       min=Point(3,3),
-                                       max=Point(9,8)
-                                   )
+    assert visitor.bounding_box == BoundingBox(min=Point(3, 3), max=Point(9, 8))

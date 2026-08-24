@@ -12,15 +12,13 @@ class Circle(Geometry):
 
     def __post_init__(self) -> None:
         if self.radius < 0:
-            raise ValueError(
-                f"radius ({self.radius}) must not be negative"
-            )
+            raise ValueError(f"radius ({self.radius}) must not be negative")
 
     def points_for_bounding_box(self, count: int) -> set[Point]:
         points = []
         for i in range(count):
-            theta = (2 * math.pi * i ) / count
+            theta = (2 * math.pi * i) / count
             x = self.center.x + self.radius * math.cos(theta)
             y = self.center.y + self.radius * math.sin(theta)
-            points.append(Point(x,y))
+            points.append(Point(x, y))
         return set(points)

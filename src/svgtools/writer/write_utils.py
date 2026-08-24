@@ -1,5 +1,5 @@
-
 WRITE_PRECISION = 3
+
 
 def number_to_string(number: float | str) -> str:
     if isinstance(number, str):
@@ -8,7 +8,8 @@ def number_to_string(number: float | str) -> str:
     if number.is_integer():
         return str(int(number))
     return f"{number:.{WRITE_PRECISION}f}"
-    #return f"{number:.3f}".rstrip("0").rstrip(".")
+    # return f"{number:.3f}".rstrip("0").rstrip(".")
+
 
 def numberlist_to_string(numbers) -> str:
     str_numbers = []

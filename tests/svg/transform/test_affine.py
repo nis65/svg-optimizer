@@ -14,10 +14,10 @@ def test_affine_construction():
     assert a.e == 5
     assert a.f == 6
 
+
 def test_affines_are_equal():
-    assert ( Affine(a=1, b=2, c=3, d=4, e=5, f=6) ==
-             Affine(a=1, b=2, c=3, d=4, e=5, f=6)
-           )
+    assert Affine(a=1, b=2, c=3, d=4, e=5, f=6) == Affine(a=1, b=2, c=3, d=4, e=5, f=6)
+
 
 def test_affine_is_immutable():
     a = Affine(a=1, b=2, c=3, d=4, e=5, f=6)

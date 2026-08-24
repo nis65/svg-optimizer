@@ -8,6 +8,7 @@ def transforms_to_matrix(transforms) -> Matrix3:
         matrix *= get_matrix(transform)
     return matrix
 
+
 def get_matrix(transform) -> Matrix3:
     match transform:
         case Translate():
@@ -21,5 +22,11 @@ def get_matrix(transform) -> Matrix3:
         case SkewY():
             return Matrix3.skew_y(transform.theta)
         case Affine():
-            return Matrix3.affine(transform.a, transform.b, transform.c,
-                                  transform.d, transform.e, transform.f)
+            return Matrix3.affine(
+                transform.a,
+                transform.b,
+                transform.c,
+                transform.d,
+                transform.e,
+                transform.f,
+            )

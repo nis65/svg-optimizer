@@ -13,7 +13,7 @@ class Path(Geometry):
     def points_for_bounding_box(self, count: int) -> set[Point]:
         points = []
         # a path does not need to start with an explicit MoveTo
-        current_point = Point(0,0)
+        current_point = Point(0, 0)
         current_subpath_start = current_point
 
         for child in self.children:
