@@ -42,10 +42,11 @@ do
         targetname=$THISTARGETDIR/${coord}_${compact}_${commandset}.svg
         ./run_rewrite.sh --path-coordinates ${coord} --path-compactness ${compact} --path-command-set ${commandset} \
 		         < $file > $targetname
-	echo "$targetname"
+	echo -n "."
       done
     done
   done
+  echo ""
 done
 )
 

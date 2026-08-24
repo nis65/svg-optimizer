@@ -27,7 +27,7 @@ do
   basename=$( basename $file )
   THISTARGETFILE="${basename%%.svg}_with_bb.svg"
   target=${TARGETDIR}/$THISTARGETFILE
-  echo "creating $target"
+  echo "===== creating $target"
   ./run_getbbox.sh < $file
   ./run_rewrite_with_bb.sh < $file > $target
 done

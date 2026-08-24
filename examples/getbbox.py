@@ -3,6 +3,7 @@ import sys
 
 from svgtools.parser.svg_parser import parse_svg_string
 from svgtools.semantic.bounding_box_visitor import BoundingBoxVisitor
+from svgtools.writer.write_utils import numberlist_to_string
 
 parser = argparse.ArgumentParser()
 
@@ -19,8 +20,10 @@ else:
 svg_doc = parse_svg_string(svg_input_text)
 visitor = BoundingBoxVisitor()
 visitor.visit(svg_doc)
-print(f"Bounding Box min: {visitor.bounding_box.min.x}, {visitor.bounding_box.min.y}")
-print(f"Bounding Box max: {visitor.bounding_box.max.x}, {visitor.bounding_box.max.y}")
 print(
-    f"Stats: ", ", ".join(f"{key}: {value}" for key, value in visitor.visited.items())
+    "Bounding Box"
+    f" min: {numberlist_to_string({visitor.bounding_box.min.x, visitor.bounding_box.min.y})}"
+    f" max: {numberlist_to_string({visitor.bounding_box.max.x, visitor.bounding_box.max.y})}"
+    f" Stats: ",
+    ", ".join(f"{key}: {value}" for key, value in visitor.visited.items()),
 )
