@@ -31,16 +31,22 @@ if args.input:
 else:
     svg_input_text = sys.stdin.read()
 
-# get original document and viewBox width and height
+# get original document
 svg_doc = parse_svg_string(svg_input_text)
-viewbox_width = svg_doc.svg.viewBox[2]
-viewbox_height = svg_doc.svg.viewBox[3]
 
 # get boundingbox width and height
 bbvisitor = BoundingBoxVisitor()
 bbvisitor.visit(svg_doc)
 bbwidth = bbvisitor.bounding_box.max.x - bbvisitor.bounding_box.min.x
 bbheight = bbvisitor.bounding_box.max.y - bbvisitor.bounding_box.min.y
+
+# get current_viewbox_width/height if defined
+if len(svg_doc.svg.viewBox) == 4:
+    viewbox_width = svg_doc.svg.viewBox[2]
+    viewbox_height = svg_doc.svg.viewBox[3]
+else:
+    viewbox_width = bbwidth
+    viewbox_height = bbheight
 
 # compute new viewbox width and height, keeping aspect ratio of old viewBox
 framefactor = 1 + ((2 * args.margin) / 100)
