@@ -28,12 +28,10 @@ The example is a simple logo that consist of four speakers:
 
 ## Example Picture
 
-![logo rendered](./logo.svg)
+![logo rendered](../tests/testdata/logo.svg)
 
-To see the source code, move to the [current directory](.) and click on `logo.svg` and then on *Code*. Sorry, Github doesn't offer a way to integrate a link into a `md` file that renders an `.svg` as code and not as picture.
-
-This file is also copied to the [testdata directory](/tests/testdata) and used for some of the automated tests.
+To see the source code, move to the [testdata directory](../tests/testdata) and click on `logo.svg` and then on *Code*. Sorry, Github doesn't offer a way to integrate a link into a `md` file that renders an `.svg` as code and not as picture.
 
 ## Example programs
 
-To see how to use this library, have a look at the [examples directory](/examples).
+To see how to use this library, have a look at the [examples directory](/examples). All example scripts are also run when you run [run-tests.sh](../run-tests.sh) in the root directory of this repo.
