@@ -24,7 +24,7 @@ class ClosePath(PathElement):
     def endpoint(self) -> Point:
         raise ValueError("ClosePath has no internal endpoint")
 
-    def points_for_bounding_box(    # noqa: PLR6301
+    def points_for_bounding_box(  # noqa: PLR6301
         self, start: Point, number_of_points: int
     ) -> set[Point]:
         raise ValueError("ClosePath has no points for bounding box")

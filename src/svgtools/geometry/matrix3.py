@@ -65,45 +65,33 @@ class Matrix3:
 
     @classmethod
     def identity(cls) -> "Matrix3":
+        # fmt: off
         return cls(
-            1,
-            0,
-            0,
-            0,
-            1,
-            0,
-            0,
-            0,
-            1,
+            1, 0, 0,
+            0, 1, 0,
+            0, 0, 1,
         )
+        # fmt: on
 
     @classmethod
     def translation(cls, dx: float, dy: float) -> "Matrix3":
+        # fmt: off
         return cls(
-            1,
-            0,
-            dx,
-            0,
-            1,
-            dy,
-            0,
-            0,
-            1,
+            1, 0, dx,
+            0, 1, dy,
+            0, 0, 1,
         )
+        # fmt: on
 
     @classmethod
     def scaling(cls, sx: float, sy: float) -> "Matrix3":
+        # fmt: off
         return cls(
-            sx,
-            0,
-            0,
-            0,
-            sy,
-            0,
-            0,
-            0,
-            1,
+            sx, 0, 0,
+            0, sy, 0,
+            0, 0, 1,
         )
+        # fmt: on
 
     @classmethod
     def rotation(cls, theta_degree: float, cx: float, cy: float) -> "Matrix3":
@@ -112,7 +100,12 @@ class Matrix3:
         theta = math.radians(theta_degree)
         c = math.cos(theta)
         s = math.sin(theta)
-        rotate = Matrix3(c, -s, 0, s, c, 0, 0, 0, 1)
+        # fmt: off
+        rotate = Matrix3(
+            c, -s, 0, 
+            s, c, 0, 
+            0, 0, 1)
+        # fmt: on
         return t_from_origin * rotate * t_to_origin
 
     @classmethod
@@ -120,16 +113,26 @@ class Matrix3:
         if theta_degree % 180 == 90:  # noqa: PLR2004
             raise ValueError(f"cannot skew by {theta_degree}, undefined")
         s = math.tan(math.radians(theta_degree))
-        return Matrix3(1, s, 0, 0, 1, 0, 0, 0, 1)
+        # fmt: off
+        return Matrix3(
+            1, s, 0, 
+            0, 1, 0, 
+            0, 0, 1)
+        # fmt: on
 
     @classmethod
     def skew_y(cls, theta_degree: float) -> "Matrix3":
         if theta_degree % 180 == 90:  # noqa: PLR2004
             raise ValueError(f"cannot skew by {theta_degree}, undefined")
         s = math.tan(math.radians(theta_degree))
-        return Matrix3(1, 0, 0, s, 1, 0, 0, 0, 1)
+        # fmt: off
+        return Matrix3(
+            1, 0, 0, 
+            s, 1, 0, 
+            0, 0, 1)
+        # fmt: on
 
-    @classmethod 
+    @classmethod
     def affine(  # noqa:  PLR0913 PLR0917
         cls,
         a: float,
@@ -139,7 +142,12 @@ class Matrix3:
         e: float,
         f: float,
     ) -> "Matrix3":
-        return Matrix3(a, c, e, b, d, f, 0, 0, 1)
+        # fmt: off
+        return Matrix3(
+            a, c, e, 
+            b, d, f, 
+            0, 0, 1)
+        # fmt: on
 
     @staticmethod
     def TRHxS_decompose(a: "Matrix3") -> TRHxSDecomposition:
@@ -184,9 +192,13 @@ class Matrix3:
             c2 = self._mul_column(other.m12, other.m22, other.m32)
             c3 = self._mul_column(other.m13, other.m23, other.m33)
 
+            # fmt: off
             return Matrix3(
-                c1[0], c2[0], c3[0], c1[1], c2[1], c3[1], c1[2], c2[2], c3[2]
+                c1[0], c2[0], c3[0], 
+                c1[1], c2[1], c3[1], 
+                c1[2], c2[2], c3[2]
             )
+            # fmt: on
         if isinstance(other, Point):
             x, y, w = self._mul_column(other.x, other.y, 1)
             return Point(x / w, y / w)
