@@ -20,8 +20,8 @@ class Ellipse(Geometry):
     def points_for_bounding_box(self, count: int) -> set[Point]:
         points = []
         for i in range(count):
-            theta = (2 * math.pi * i ) / count
+            theta = (2 * math.pi * i) / count
             x = self.center.x + self.radiusx * math.cos(theta)
             y = self.center.y + self.radiusy * math.sin(theta)
-            points.append(Point(x,y))
+            points.append(Point(x, y))
         return set(points)

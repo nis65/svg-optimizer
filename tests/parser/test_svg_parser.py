@@ -29,6 +29,7 @@ def test_parse_empty_svg():
         )
     )
 
+
 def test_parse_empty_svg_with_id():
     svg_text = """
     <svg id="svgid">
@@ -41,17 +42,16 @@ def test_parse_empty_svg_with_id():
         )
     )
 
+
 def test_parse_empty_svg_with_transform():
     svg_text = """
     <svg transform="translate(4 5)">
     </svg>
     """
     assert parse_svg_string(svg_text) == Document(
-        svg=Svg(
-            children=(),
-            transformations=( Translate(dx=4, dy=5),)
-        )
+        svg=Svg(children=(), transformations=(Translate(dx=4, dy=5),))
     )
+
 
 def test_parse_empty_svg_with_all_other_attrs():
     svg_text = """
@@ -65,12 +65,16 @@ def test_parse_empty_svg_with_all_other_attrs():
             xmlnamespace="http://www.w3.org/2000/svg",
             width="1024",
             height="1024",
-            viewBox=(0, 0, 1024, 1024,),
-            unknown_attributes = {
-                "xml:space": "preserve"
-            }
+            viewBox=(
+                0,
+                0,
+                1024,
+                1024,
+            ),
+            unknown_attributes={"xml:space": "preserve"},
         )
     )
+
 
 def test_parse_svg_with_unkown_name_space_attribute(capsys):
     svg_text = """
@@ -80,10 +84,13 @@ def test_parse_svg_with_unkown_name_space_attribute(capsys):
     """
     assert parse_svg_string(svg_text) == Document(
         svg=Svg(
-            children=( 
+            children=(
                 Shape(
                     geometry=Rect(
-                        top_left=Point(x=10, y=20,),
+                        top_left=Point(
+                            x=10,
+                            y=20,
+                        ),
                         width=100,
                         height=50,
                     ),
@@ -94,7 +101,10 @@ def test_parse_svg_with_unkown_name_space_attribute(capsys):
         )
     )
     captured = capsys.readouterr()
-    assert 'WARNING: dropping attribute with unsupported namespace: {http://i-dont-exist.com/}tag="hello"' in captured.err
+    assert (
+        'WARNING: dropping attribute with unsupported namespace: {http://i-dont-exist.com/}tag="hello"'
+        in captured.err
+    )
 
 
 def test_parse_svg_with_namespace_and_rect():
@@ -116,7 +126,6 @@ def test_parse_svg_with_namespace_and_rect():
                         height=3,
                     ),
                 ),
-
             ),
             transformations=(),
             xmlnamespace="http://www.w3.org/2000/svg",
@@ -128,6 +137,7 @@ def test_root_element_must_be_svg():
     with pytest.raises(ValueError, match="Root element must end with"):
         parse_svg_string("<circle/>")
 
+
 def test_parse_empty_svg_with_unknowns():
     svg_text = """
     <svg unknown="unknown_value" other="another_one">
@@ -137,11 +147,12 @@ def test_parse_empty_svg_with_unknowns():
         svg=Svg(
             children=(),
             unknown_attributes={
-                'unknown': 'unknown_value',
-                'other': 'another_one',
-            }
+                "unknown": "unknown_value",
+                "other": "another_one",
+            },
         )
     )
+
 
 def test_parse_svg_with_unknown_tag():
     svg_text = """
@@ -151,6 +162,7 @@ def test_parse_svg_with_unknown_tag():
     """
     with pytest.raises(NotImplementedError, match="can parse only defs, g, use, rect,"):
         parse_svg_string(svg_text)
+
 
 def test_parse_empty_defs():
     svg_text_one_tag = """
@@ -186,6 +198,7 @@ def test_parse_empty_defs():
     assert parse_svg_string(svg_text_one_tag) == d_one
     assert parse_svg_string(svg_text_two_tags) == d_two
 
+
 def test_parse_empty_defs_with_unknowns():
     svg_text = """
     <svg>
@@ -197,7 +210,7 @@ def test_parse_empty_defs_with_unknowns():
             children=(
                 Defs(
                     children=(),
-                    unknown_attributes = {
+                    unknown_attributes={
                         "unknown": "unknown_value",
                     },
                 ),
@@ -205,6 +218,7 @@ def test_parse_empty_defs_with_unknowns():
         ),
     )
     assert parse_svg_string(svg_text) == d
+
 
 def test_parse_defs_with_empty_group():
     svg_text_one_tag = """
@@ -254,6 +268,7 @@ def test_parse_defs_with_empty_group():
     assert parse_svg_string(svg_text_one_tag) == d_one
     assert parse_svg_string(svg_text_two_tags) == d_two
 
+
 def test_parse_empty_group_with_unknowns():
     svg_text = """
     <svg>
@@ -266,13 +281,14 @@ def test_parse_empty_group_with_unknowns():
                 Group(
                     children=(),
                     unknown_attributes={
-                        'unknown': 'unknown_value',
+                        "unknown": "unknown_value",
                     },
                 ),
             ),
         )
     )
     assert parse_svg_string(svg_text) == d
+
 
 def test_parse_group_with_elements_and_transform():
     svg_text = """
@@ -312,11 +328,12 @@ def test_parse_group_with_elements_and_transform():
                             ),
                         ),
                     ),
-                    transformations=(Scale (sx=3, sy=3),),
+                    transformations=(Scale(sx=3, sy=3),),
                 ),
             ),
         ),
     )
+
 
 def test_parse_use():
     svg_text = """
@@ -327,15 +344,12 @@ def test_parse_use():
     d = Document(
         svg=Svg(
             children=(
-                Use(
-                    id="useid",
-                    href="#arrow",
-                    transformations=(Scale (sx=3, sy=3),)
-                ),
+                Use(id="useid", href="#arrow", transformations=(Scale(sx=3, sy=3),)),
             ),
         ),
     )
     assert parse_svg_string(svg_text) == d
+
 
 def test_parse_use_with_unkonwns():
     svg_text = """
@@ -349,14 +363,15 @@ def test_parse_use_with_unkonwns():
                 Use(
                     id="useid",
                     href="#arrow",
-                    unknown_attributes = {
+                    unknown_attributes={
                         "unknown": "unknown_value",
-                    }
+                    },
                 ),
             ),
         ),
     )
     assert parse_svg_string(svg_text) == d
+
 
 def test_parse_use_without_href():
     svg_text = """
@@ -366,6 +381,7 @@ def test_parse_use_without_href():
     """
     with pytest.raises(ValueError, match="<use> requires a href attribute"):
         parse_svg_string(svg_text)
+
 
 def test_rect():
     svg_text = """
@@ -386,11 +402,12 @@ def test_rect():
                         width=3.5,
                         height=4,
                     ),
-                    transformations=(Scale(sx=2,sy=2),)
+                    transformations=(Scale(sx=2, sy=2),),
                 ),
             ),
         ),
     )
+
 
 def test_rect_with_defaults_and_unknowns():
     svg_text = """
@@ -411,14 +428,15 @@ def test_rect_with_defaults_and_unknowns():
                         width=3.5,
                         height=4,
                     ),
-                    transformations=(Scale(sx=2,sy=2),),
-                    unknown_attributes = {
+                    transformations=(Scale(sx=2, sy=2),),
+                    unknown_attributes={
                         "unknown": "unknown_value",
-                    }
+                    },
                 ),
             ),
         ),
     )
+
 
 def test_circle():
 
@@ -439,11 +457,12 @@ def test_circle():
                         ),
                         radius=3.5,
                     ),
-                    transformations=(Scale(sx=13, sy=10),)
+                    transformations=(Scale(sx=13, sy=10),),
                 ),
             ),
         ),
     )
+
 
 def test_circle_with_default_and_unknowns():
 
@@ -466,14 +485,16 @@ def test_circle_with_default_and_unknowns():
                     ),
                     transformations=(
                         Rotate(theta=30, cx=0, cy=0),
-                        Scale(sx=13, sy=13),),
-                    unknown_attributes = {
+                        Scale(sx=13, sy=13),
+                    ),
+                    unknown_attributes={
                         "unknown": "unknown_value",
-                    }
+                    },
                 ),
             ),
         ),
     )
+
 
 def test_ellipse():
 
@@ -495,11 +516,12 @@ def test_ellipse():
                         radiusx=3.5,
                         radiusy=2.5,
                     ),
-                    transformations=(Scale(sx=13, sy=10),)
+                    transformations=(Scale(sx=13, sy=10),),
                 ),
             ),
         ),
     )
+
 
 def test_path():
     svg_text = """
@@ -512,34 +534,36 @@ def test_path():
             children=(
                 Shape(
                     id="mypath",
-                    geometry = Path (
-                        children = (
+                    geometry=Path(
+                        children=(
                             MoveTo(
-                                target = Point(
-                                    x = 3,
-                                    y = 4,
+                                target=Point(
+                                    x=3,
+                                    y=4,
                                 ),
-                                representation = 'm',
+                                representation="m",
                             ),
                             LineTo(
-                                target = Point(
-                                    x = 8,
-                                    y = 10,
+                                target=Point(
+                                    x=8,
+                                    y=10,
                                 ),
-                                representation = 'l',
+                                representation="l",
                             ),
                         )
                     ),
                     transformations=(
                         Rotate(theta=30, cx=0, cy=0),
-                        Scale(sx=13, sy=13),),
-                    unknown_attributes = {
+                        Scale(sx=13, sy=13),
+                    ),
+                    unknown_attributes={
                         "unknown": "unknown_value",
-                    }
+                    },
                 ),
             ),
         ),
     )
+
 
 def test_line():
 
@@ -553,26 +577,28 @@ def test_line():
             children=(
                 Shape(
                     id="myline",
-                    geometry = Line(
-                        start = Point(
-                            x = 4,
-                            y = 5,
+                    geometry=Line(
+                        start=Point(
+                            x=4,
+                            y=5,
                         ),
-                        end = Point(
-                            x = 7,
-                            y = 8,
+                        end=Point(
+                            x=7,
+                            y=8,
                         ),
                     ),
                     transformations=(
                         Rotate(theta=30, cx=0, cy=0),
-                        Scale(sx=13, sy=13),),
-                    unknown_attributes = {
+                        Scale(sx=13, sy=13),
+                    ),
+                    unknown_attributes={
                         "unknown": "unknown_value",
-                    }
+                    },
                 ),
             ),
         ),
     )
+
 
 def test_polyline():
 
@@ -586,32 +612,34 @@ def test_polyline():
             children=(
                 Shape(
                     id="mypoly",
-                    geometry = Polyline(
-                        children = (
+                    geometry=Polyline(
+                        children=(
                             Point(
-                                x = 1,
-                                y = 2,
+                                x=1,
+                                y=2,
                             ),
                             Point(
-                                x = 3,
-                                y = 4,
+                                x=3,
+                                y=4,
                             ),
                             Point(
-                                x = 5,
-                                y = 6,
+                                x=5,
+                                y=6,
                             ),
                         ),
                     ),
                     transformations=(
                         Rotate(theta=30, cx=0, cy=0),
-                        Scale(sx=13, sy=13),),
-                    unknown_attributes = {
+                        Scale(sx=13, sy=13),
+                    ),
+                    unknown_attributes={
                         "unknown": "unknown_value",
-                    }
+                    },
                 ),
             ),
         ),
     )
+
 
 def test_polygon():
 
@@ -625,28 +653,29 @@ def test_polygon():
             children=(
                 Shape(
                     id="mypoly",
-                    geometry = Polygon(
-                        children = (
+                    geometry=Polygon(
+                        children=(
                             Point(
-                                x = 1,
-                                y = 2,
+                                x=1,
+                                y=2,
                             ),
                             Point(
-                                x = 3,
-                                y = 4,
+                                x=3,
+                                y=4,
                             ),
                             Point(
-                                x = 5,
-                                y = 6,
+                                x=5,
+                                y=6,
                             ),
                         ),
                     ),
                     transformations=(
                         Rotate(theta=30, cx=0, cy=0),
-                        Scale(sx=13, sy=13),),
-                    unknown_attributes = {
+                        Scale(sx=13, sy=13),
+                    ),
+                    unknown_attributes={
                         "unknown": "unknown_value",
-                    }
+                    },
                 ),
             ),
         ),

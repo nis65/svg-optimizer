@@ -6,8 +6,8 @@ from svgtools.io import parse_svg_file, write_svg_file
 
 DATA = Path(__file__).parent / "testdata"
 
-@pytest.mark.parametrize("start", DATA.glob("*.svg"), ids=lambda p: p.name)
 
+@pytest.mark.parametrize("start", DATA.glob("*.svg"), ids=lambda p: p.name)
 def test_io_writer_idempotence(start, tmp_path):
 
     gen1 = tmp_path / "gen1.svg"

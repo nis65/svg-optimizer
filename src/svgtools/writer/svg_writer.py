@@ -23,17 +23,16 @@ from .write_utils import number_to_string, numberlist_to_string
 
 
 class SvgWriter:
-
     XML_HEADER = "<?xml version='1.0' encoding='UTF-8'?>\n"
     INDENT = "  "
 
     def __init__(
-            self,
-            transform_strategy: TransformWriteStrategy = TransformWriteStrategy.KEEP,
-            path_coordinates: PathCoordinates = PathCoordinates.ABSOLUTE,
-            path_compactness: PathCompactness = PathCompactness.CANONICAL,
-            path_command_set: PathCommandSet = PathCommandSet.BASE
-            ):
+        self,
+        transform_strategy: TransformWriteStrategy = TransformWriteStrategy.KEEP,
+        path_coordinates: PathCoordinates = PathCoordinates.ABSOLUTE,
+        path_compactness: PathCompactness = PathCompactness.CANONICAL,
+        path_command_set: PathCommandSet = PathCommandSet.BASE,
+    ):
         self._parts: list[str] = []
         self.transform_strategy = transform_strategy
         self.path_coordinates = path_coordinates
@@ -77,7 +76,7 @@ class SvgWriter:
                 self._walk_use(element, indent)
             case Shape():
                 self._walk_shape(element, indent)
-            case _:     # pragma: no cover
+            case _:  # pragma: no cover
                 raise NotImplementedError(type(element))
 
     def _walk_group(self, group: Group, indent: str):
@@ -107,7 +106,7 @@ class SvgWriter:
         self._append_attributes(use)
         self._parts.append(" />\n")
 
-    def _walk_shape(self, shape: Shape, indent:str):
+    def _walk_shape(self, shape: Shape, indent: str):
         match shape.geometry:
             case Rect():
                 self._parts.append(indent + "<rect")
@@ -126,7 +125,7 @@ class SvgWriter:
         self._append_attributes(shape)
         self._parts.append(" />\n")
 
-    def _append_attributes(self, element) -> None:    # noqa: PLR0912
+    def _append_attributes(self, element) -> None:  # noqa: PLR0912
         if xmlnamespace := getattr(element, "xmlnamespace", None):
             self._parts.append(f' xmlns="{xmlnamespace}"')
         if element_id := getattr(element, "id", None):
@@ -136,40 +135,54 @@ class SvgWriter:
         if geometry := getattr(element, "geometry", None):
             match geometry:
                 case Rect():
-                    self._parts.append(f' x="{number_to_string(geometry.top_left.x)}"'
-                                       f' y="{number_to_string(geometry.top_left.y)}"'
-                                      )
-                    self._parts.append(f' width="{number_to_string(geometry.width)}"'
-                                       f' height="{number_to_string(geometry.height)}"'
-                                      )
+                    self._parts.append(
+                        f' x="{number_to_string(geometry.top_left.x)}"'
+                        f' y="{number_to_string(geometry.top_left.y)}"'
+                    )
+                    self._parts.append(
+                        f' width="{number_to_string(geometry.width)}"'
+                        f' height="{number_to_string(geometry.height)}"'
+                    )
                 case Circle():
-                    self._parts.append(f' cx="{number_to_string(geometry.center.x)}"'
-                                       f' cy="{number_to_string(geometry.center.y)}"'
-                                      )
+                    self._parts.append(
+                        f' cx="{number_to_string(geometry.center.x)}"'
+                        f' cy="{number_to_string(geometry.center.y)}"'
+                    )
                     self._parts.append(f' r="{number_to_string(geometry.radius)}"')
                 case Ellipse():
-                    self._parts.append(f' cx="{number_to_string(geometry.center.x)}"'
-                                       f' cy="{number_to_string(geometry.center.y)}"'
-                                      )
-                    self._parts.append(f' rx="{number_to_string(geometry.radiusx)}"'
-                                       f' ry="{number_to_string(geometry.radiusy)}"'
-                                      )
+                    self._parts.append(
+                        f' cx="{number_to_string(geometry.center.x)}"'
+                        f' cy="{number_to_string(geometry.center.y)}"'
+                    )
+                    self._parts.append(
+                        f' rx="{number_to_string(geometry.radiusx)}"'
+                        f' ry="{number_to_string(geometry.radiusy)}"'
+                    )
                 case Path():
                     path_elements = geometry.children
-                    pw = PathWriter(path_coordinates = self.path_coordinates,
-                                    path_compactness = self.path_compactness,
-                                    path_command_set = self.path_command_set)
-                    self._parts.append(f' d="{pw.path_elements_to_string(path_elements)}"')
+                    pw = PathWriter(
+                        path_coordinates=self.path_coordinates,
+                        path_compactness=self.path_compactness,
+                        path_command_set=self.path_command_set,
+                    )
+                    self._parts.append(
+                        f' d="{pw.path_elements_to_string(path_elements)}"'
+                    )
                 case Line():
-                    self._parts.append(f' x1="{number_to_string(geometry.start.x)}"'
-                                       f' y1="{number_to_string(geometry.start.y)}"'
-                                       f' x2="{number_to_string(geometry.end.x)}"'
-                                       f' y2="{number_to_string(geometry.end.y)}"'
-                                      )
-                case Polyline() | Polygon() :
-                    self._parts.append(f' points="{self._polypoints_to_string(geometry.children)}"')
-                case _:      # pragma: no cover
-                    raise NotImplementedError("I know nothing but Rects, Circles, Ellipses, Lines, Polylines, Polygons and Paths")
+                    self._parts.append(
+                        f' x1="{number_to_string(geometry.start.x)}"'
+                        f' y1="{number_to_string(geometry.start.y)}"'
+                        f' x2="{number_to_string(geometry.end.x)}"'
+                        f' y2="{number_to_string(geometry.end.y)}"'
+                    )
+                case Polyline() | Polygon():
+                    self._parts.append(
+                        f' points="{self._polypoints_to_string(geometry.children)}"'
+                    )
+                case _:  # pragma: no cover
+                    raise NotImplementedError(
+                        "I know nothing but Rects, Circles, Ellipses, Lines, Polylines, Polygons and Paths"
+                    )
         if width := getattr(element, "width", None):
             self._parts.append(f' width="{number_to_string(width)}"')
         if height := getattr(element, "height", None):
@@ -182,7 +195,9 @@ class SvgWriter:
             output_transformations = ts.apply(transformations)
             self.total_aggregated_chains += ts.total_aggregated_chains
             self.total_aggressive_chains += ts.total_aggressive_chains
-            self._parts.append(f' transform="{ts.transforms_to_string(output_transformations)}"')
+            self._parts.append(
+                f' transform="{ts.transforms_to_string(output_transformations)}"'
+            )
         for key, value in sorted(element.unknown_attributes.items()):
             self._parts.append(f' {key}="{value}"')
 
@@ -190,6 +205,6 @@ class SvgWriter:
     def _polypoints_to_string(polypoints):
         result = ""
         for point in polypoints:
-            coords = ( point.x, point.y )
-            result += f'{numberlist_to_string(coords)} '
+            coords = (point.x, point.y)
+            result += f"{numberlist_to_string(coords)} "
         return result.strip()

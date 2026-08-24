@@ -11,9 +11,9 @@ class PathElement(ABC):
 
     @property
     @abstractmethod
-    def endpoint(self) -> Point:
-        ...         # pragma: no cover
+    def endpoint(self) -> Point: ...  # pragma: no cover
 
     @abstractmethod
-    def points_for_bounding_box(self, start: Point, number_of_points: int) -> set[Point]:
-        ...         # pragma: no cover
+    def points_for_bounding_box(
+        self, start: Point, number_of_points: int
+    ) -> set[Point]: ...  # pragma: no cover

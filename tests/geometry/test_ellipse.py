@@ -8,7 +8,6 @@ from svgtools.geometry.point import Point
 from svgtools.geometry.tolerance import GEOMETRY_REL_TOL, GEOMETRY_ABS_TOL
 
 
-
 def test_ellipse_construction():
     e = Ellipse(center=Point(1.5, -2.0), radiusx=23, radiusy=10)
 
@@ -17,41 +16,49 @@ def test_ellipse_construction():
     assert e.radiusx == 23
     assert e.radiusy == 10
 
+
 def test_ellipses():
-    assert (Ellipse(center=Point(1, 2), radiusx=3, radiusy=2) ==
-            Ellipse(center=Point(1, 2), radiusx=3, radiusy=2)
+    assert Ellipse(center=Point(1, 2), radiusx=3, radiusy=2) == Ellipse(
+        center=Point(1, 2), radiusx=3, radiusy=2
     )
+
 
 def test_ellipse_is_immutable():
     e = Ellipse(center=Point(1.5, -2.0), radiusx=23, radiusy=22)
     with pytest.raises(FrozenInstanceError):
         e.radiusx = 3
 
-def test_ellipse_radiuses_not_negative ():
+
+def test_ellipse_radiuses_not_negative():
     with pytest.raises(ValueError):
         Ellipse(center=Point(1.5, -2.0), radiusx=-0.1, radiusy=1)
     with pytest.raises(ValueError):
         Ellipse(center=Point(1.5, -2.0), radiusx=1, radiusy=-0.1)
 
+
 def test_ellipse_transformed_bounding_box():
-    e = Ellipse(center=Point(0,0), radiusx=2, radiusy=1)
+    e = Ellipse(center=Point(0, 0), radiusx=2, radiusy=1)
     expected = {
-        Point(2,0),
-        Point(0,-1),
-        Point(-2,0),
-        Point(0,1),
+        Point(2, 0),
+        Point(0, -1),
+        Point(-2, 0),
+        Point(0, 1),
     }
-    assert Point.points_are_close(expected, e.points_for_bounding_box(4), abs_tol=GEOMETRY_ABS_TOL)
+    assert Point.points_are_close(
+        expected, e.points_for_bounding_box(4), abs_tol=GEOMETRY_ABS_TOL
+    )
 
     sqrt2 = math.sqrt(2)
     expected = {
-        Point(2,0),
-        Point(0,-1),
-        Point(-2,0),
-        Point(0,1),
-        Point(sqrt2, sqrt2/2),
-        Point(sqrt2, -sqrt2/2),
-        Point(-sqrt2, sqrt2/2),
-        Point(-sqrt2, -sqrt2/2),
+        Point(2, 0),
+        Point(0, -1),
+        Point(-2, 0),
+        Point(0, 1),
+        Point(sqrt2, sqrt2 / 2),
+        Point(sqrt2, -sqrt2 / 2),
+        Point(-sqrt2, sqrt2 / 2),
+        Point(-sqrt2, -sqrt2 / 2),
     }
-    assert Point.points_are_close(expected, e.points_for_bounding_box(8), abs_tol=GEOMETRY_ABS_TOL)
+    assert Point.points_are_close(
+        expected, e.points_for_bounding_box(8), abs_tol=GEOMETRY_ABS_TOL
+    )

@@ -11,8 +11,10 @@ def test_rotate_construction():
     assert r.cx == 3
     assert r.cy == 4
 
+
 def test_rotates_are_equal():
     assert Rotate(theta=60, cx=3, cy=4) == Rotate(theta=60, cx=3, cy=4)
+
 
 def test_rotate_is_immutable():
     r = Rotate(theta=60, cx=3, cy=4)

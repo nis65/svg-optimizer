@@ -51,93 +51,84 @@ def parse_transform_string(tstring: str) -> tuple:
         rest = _skip_spaces(rest)
     return tuple(transformation_list)
 
+
 def _skip_spaces(text: str) -> str:
     return text.lstrip()
 
+
 def _parse_translate(text: str):
     numbers, rest = _parse_parentheses(text)
-    if len(numbers) == 2:   # noqa: PLR2004
-        t = Translate(
-                dx=numbers[0],
-                dy=numbers[1]
-            )
+    if len(numbers) == 2:  # noqa: PLR2004
+        t = Translate(dx=numbers[0], dy=numbers[1])
     else:
         raise ValueError(f"translate needs exactly 2 parameters, not {len(numbers)}")
     return rest, t
+
 
 def _parse_scale(text: str):
     numbers, rest = _parse_parentheses(text)
     match len(numbers):
         case 1:
-            t = Scale(
-                    sx=numbers[0],
-                    sy=numbers[0]
-                )
+            t = Scale(sx=numbers[0], sy=numbers[0])
         case 2:
-            t = Scale(
-                    sx=numbers[0],
-                    sy=numbers[1]
-                )
+            t = Scale(sx=numbers[0], sy=numbers[1])
         case _:
             raise ValueError(f"scale needs 1 or 2 parameters, not {len(numbers)}")
     return rest, t
 
-def _parse_rotate(text:str):
+
+def _parse_rotate(text: str):
     numbers, rest = _parse_parentheses(text)
     match len(numbers):
         case 1:
-            r = Rotate(
-                    theta=numbers[0],
-                    cx=0,
-                    cy=0
-                )
+            r = Rotate(theta=numbers[0], cx=0, cy=0)
         case 3:
-            r = Rotate(
-                    theta=numbers[0],
-                    cx=numbers[1],
-                    cy=numbers[2]
-                )
+            r = Rotate(theta=numbers[0], cx=numbers[1], cy=numbers[2])
         case _:
             raise ValueError(f"rotate needs 1 or 3 parameters, not {len(numbers)}")
     return rest, r
 
-def _parse_skew_x(text:str):
+
+def _parse_skew_x(text: str):
     numbers, rest = _parse_parentheses(text)
     match len(numbers):
         case 1:
             s = SkewX(
-                    theta=numbers[0],
-                )
+                theta=numbers[0],
+            )
         case _:
             raise ValueError(f"skewX needs exactly 1 parameter, not {len(numbers)}")
     return rest, s
 
-def _parse_skew_y(text:str):
+
+def _parse_skew_y(text: str):
     numbers, rest = _parse_parentheses(text)
     match len(numbers):
         case 1:
             s = SkewY(
-                    theta=numbers[0],
-                )
+                theta=numbers[0],
+            )
         case _:
             raise ValueError(f"skewY needs exactly 1 parameter, not {len(numbers)}")
     return rest, s
 
-def _parse_affine(text:str):
+
+def _parse_affine(text: str):
     numbers, rest = _parse_parentheses(text)
     match len(numbers):
         case 6:
             m = Affine(
-                    a=numbers[0],
-                    b=numbers[1],
-                    c=numbers[2],
-                    d=numbers[3],
-                    e=numbers[4],
-                    f=numbers[5],
-                )
+                a=numbers[0],
+                b=numbers[1],
+                c=numbers[2],
+                d=numbers[3],
+                e=numbers[4],
+                f=numbers[5],
+            )
         case _:
             raise ValueError(f"matrix needs exactly 6 parameters, not {len(numbers)}")
     return rest, m
+
 
 def _parse_parentheses(text: str) -> tuple[tuple[float, ...], str]:
     rest = _skip_spaces(text)
@@ -149,5 +140,5 @@ def _parse_parentheses(text: str) -> tuple[tuple[float, ...], str]:
     if end_pos == -1:
         raise ValueError(f"expected ')' - found {rest}")
     inside = rest[:end_pos]
-    rest = rest[end_pos+1:]
+    rest = rest[end_pos + 1 :]
     return parse_float_list(inside), rest

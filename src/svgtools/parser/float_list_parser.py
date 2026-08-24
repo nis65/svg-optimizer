@@ -7,6 +7,7 @@ a simple parser for lists of numbers a used in an svg. All these are valid numbe
 
 """
 
+
 def parse_float_list(text: str) -> tuple[float, ...]:
 
     numbers = []
@@ -17,7 +18,5 @@ def parse_float_list(text: str) -> tuple[float, ...]:
             try:
                 numbers.append(float(token))
             except ValueError:
-                raise ValueError(
-                    f"Expected number, found {token}" 
-                )
+                raise ValueError(f"Expected number, found {token}")
     return tuple(numbers)

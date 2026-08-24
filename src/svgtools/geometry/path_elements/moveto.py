@@ -7,17 +7,16 @@ from .path_element_abc import PathElement
 
 @dataclass(frozen=True, slots=True)
 class MoveTo(PathElement):
-
     parameter_counts: ClassVar[dict[str, int]] = {
-            "M": 2,
-            "m": 2,
+        "M": 2,
+        "m": 2,
     }
 
     target: Point
     representation: str
 
     def __post_init__(self) -> None:
-        if not self.representation in {'m', 'M'}:
+        if not self.representation in {"m", "M"}:
             raise ValueError(
                 f"MoveTo can only be represented by one of 'mM', not {self.representation}"
             )

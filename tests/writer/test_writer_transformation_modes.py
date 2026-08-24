@@ -16,32 +16,33 @@ def test_aggregate_with_0_transforms():
     with pytest.raises(ValueError, match="should not be called with 0 transformations"):
         TransformStrategy._transform_strategy_aggregate({})
 
+
 def test_write_mode_keep():
     d = Document(
-            svg=Svg(
-                children=(
-                    Shape(
-                        id="rectid",
-                        transformations=(
-                             Scale(sx=4, sy=5),
-                             Translate(dx=1, dy=2),
-                             Rotate(theta=45, cx=1, cy=3),
-                        ),
-                        geometry=Rect(
-                            top_left=Point(
-                                x=4,
-                                y=5,
-                            ),
-                            width=2,
-                            height=1,
-                        ),
-                        unknown_attributes={
-                            "unknown": "unknown_value",
-                        }
+        svg=Svg(
+            children=(
+                Shape(
+                    id="rectid",
+                    transformations=(
+                        Scale(sx=4, sy=5),
+                        Translate(dx=1, dy=2),
+                        Rotate(theta=45, cx=1, cy=3),
                     ),
-                )
+                    geometry=Rect(
+                        top_left=Point(
+                            x=4,
+                            y=5,
+                        ),
+                        width=2,
+                        height=1,
+                    ),
+                    unknown_attributes={
+                        "unknown": "unknown_value",
+                    },
+                ),
             )
         )
+    )
     writer = SvgWriter(TransformWriteStrategy.KEEP)
     assert writer.write_svg_string(d) == dedent("""\
     <?xml version='1.0' encoding='UTF-8'?>
@@ -50,40 +51,41 @@ def test_write_mode_keep():
     </svg>
     """)
 
+
 def test_write_mode_aggregate():
     d = Document(
-            svg=Svg(
-                children=(
-                    Shape(
-                        id="rectid",
-                        transformations=(
-                             Translate(dx=2, dy=10),
-                             Translate(dx=-1, dy=2),
-                             Rotate(theta=30, cx=0, cy=0),
-                             Rotate(theta=30, cx=0, cy=0),
-                             Rotate(theta=-10, cx=1, cy=1),
-                             SkewX(theta=5),
-                             SkewX(theta=10),
-                             Scale(sx=2, sy=3),
-                             Scale(sx=4, sy=2),
-                             Affine(a=1, b=2, c=3, d=4, e=5, f=6),
-                             Affine(a=6, b=5, c=4, d=3, e=2, f=1),
-                        ),
-                        geometry=Rect(
-                            top_left=Point(
-                                x=4,
-                                y=5,
-                            ),
-                            width=2,
-                            height=1,
-                        ),
-                        unknown_attributes={
-                            "unknown": "unknown_value",
-                        }
+        svg=Svg(
+            children=(
+                Shape(
+                    id="rectid",
+                    transformations=(
+                        Translate(dx=2, dy=10),
+                        Translate(dx=-1, dy=2),
+                        Rotate(theta=30, cx=0, cy=0),
+                        Rotate(theta=30, cx=0, cy=0),
+                        Rotate(theta=-10, cx=1, cy=1),
+                        SkewX(theta=5),
+                        SkewX(theta=10),
+                        Scale(sx=2, sy=3),
+                        Scale(sx=4, sy=2),
+                        Affine(a=1, b=2, c=3, d=4, e=5, f=6),
+                        Affine(a=6, b=5, c=4, d=3, e=2, f=1),
                     ),
-                )
+                    geometry=Rect(
+                        top_left=Point(
+                            x=4,
+                            y=5,
+                        ),
+                        width=2,
+                        height=1,
+                    ),
+                    unknown_attributes={
+                        "unknown": "unknown_value",
+                    },
+                ),
             )
         )
+    )
     writer = SvgWriter(TransformWriteStrategy.AGGREGATE)
     assert writer.write_svg_string(d) == dedent("""\
     <?xml version='1.0' encoding='UTF-8'?>
@@ -92,30 +94,29 @@ def test_write_mode_aggregate():
     </svg>
     """)
 
+
 def test_write_mode_decompose_matrix():
     d = Document(
-            svg=Svg(
-                children=(
-                    Shape(
-                        id="rectid",
-                        transformations=(
-                             Affine(a=0, b=2, c=-3, d=3, e=2, f=10),
+        svg=Svg(
+            children=(
+                Shape(
+                    id="rectid",
+                    transformations=(Affine(a=0, b=2, c=-3, d=3, e=2, f=10),),
+                    geometry=Rect(
+                        top_left=Point(
+                            x=4,
+                            y=5,
                         ),
-                        geometry=Rect(
-                            top_left=Point(
-                                x=4,
-                                y=5,
-                            ),
-                            width=2,
-                            height=1,
-                        ),
-                        unknown_attributes={
-                            "unknown": "unknown_value",
-                        }
+                        width=2,
+                        height=1,
                     ),
-                )
+                    unknown_attributes={
+                        "unknown": "unknown_value",
+                    },
+                ),
             )
         )
+    )
     writer = SvgWriter(TransformWriteStrategy.DECOMPOSE_MATRIX)
     assert writer.write_svg_string(d) == dedent("""\
     <?xml version='1.0' encoding='UTF-8'?>
@@ -124,32 +125,33 @@ def test_write_mode_decompose_matrix():
     </svg>
     """)
 
+
 def test_write_mode_decompose_matrix_and_aggregate():
     d = Document(
-            svg=Svg(
-                children=(
-                    Shape(
-                        id="rectid",
-                        transformations=(
-                             Translate(dx=3, dy=1),
-                             Affine(a=0, b=2, c=-3, d=3, e=2, f=10),
-                             Scale(1,2)
-                        ),
-                        geometry=Rect(
-                            top_left=Point(
-                                x=4,
-                                y=5,
-                            ),
-                            width=2,
-                            height=1,
-                        ),
-                        unknown_attributes={
-                            "unknown": "unknown_value",
-                        }
+        svg=Svg(
+            children=(
+                Shape(
+                    id="rectid",
+                    transformations=(
+                        Translate(dx=3, dy=1),
+                        Affine(a=0, b=2, c=-3, d=3, e=2, f=10),
+                        Scale(1, 2),
                     ),
-                )
+                    geometry=Rect(
+                        top_left=Point(
+                            x=4,
+                            y=5,
+                        ),
+                        width=2,
+                        height=1,
+                    ),
+                    unknown_attributes={
+                        "unknown": "unknown_value",
+                    },
+                ),
             )
         )
+    )
     writer = SvgWriter(TransformWriteStrategy.DECOMPOSE_MATRIX_AND_AGGREGATE)
     assert writer.write_svg_string(d) == dedent("""\
     <?xml version='1.0' encoding='UTF-8'?>
@@ -158,50 +160,49 @@ def test_write_mode_decompose_matrix_and_aggregate():
     </svg>
     """)
 
+
 def test_write_mode_canonical_conservative_with_rotate_around_non_zero():
     d = Document(
-            svg=Svg(
-                children=(
-                    Shape(
-                        id="rectid",
-                        transformations=(
-                             Translate(dx=2, dy=10),
-                             Rotate(theta=90, cx=0, cy=0),
-                             SkewX(theta=45),
-                             Scale(sx=2, sy=3),
-                        ),
-                        geometry=Rect(
-                            top_left=Point(
-                                x=4,
-                                y=5,
-                            ),
-                            width=2,
-                            height=1,
-                        ),
-                        unknown_attributes={
-                            "unknown": "unknown_value",
-                        },
+        svg=Svg(
+            children=(
+                Shape(
+                    id="rectid",
+                    transformations=(
+                        Translate(dx=2, dy=10),
+                        Rotate(theta=90, cx=0, cy=0),
+                        SkewX(theta=45),
+                        Scale(sx=2, sy=3),
                     ),
-                    Shape(
-                        id="rectid",
-                        transformations=(
-                             Rotate(theta=90, cx=1, cy=1),
+                    geometry=Rect(
+                        top_left=Point(
+                            x=4,
+                            y=5,
                         ),
-                        geometry=Rect(
-                            top_left=Point(
-                                x=4,
-                                y=5,
-                            ),
-                            width=2,
-                            height=1,
-                        ),
-                        unknown_attributes={
-                            "unknown": "unknown_value",
-                        }
+                        width=2,
+                        height=1,
                     ),
-                )
+                    unknown_attributes={
+                        "unknown": "unknown_value",
+                    },
+                ),
+                Shape(
+                    id="rectid",
+                    transformations=(Rotate(theta=90, cx=1, cy=1),),
+                    geometry=Rect(
+                        top_left=Point(
+                            x=4,
+                            y=5,
+                        ),
+                        width=2,
+                        height=1,
+                    ),
+                    unknown_attributes={
+                        "unknown": "unknown_value",
+                    },
+                ),
             )
         )
+    )
     writer = SvgWriter(TransformWriteStrategy.CANONICAL_CONSERVATIVE)
     assert writer.write_svg_string(d) == dedent("""\
     <?xml version='1.0' encoding='UTF-8'?>
@@ -212,33 +213,34 @@ def test_write_mode_canonical_conservative_with_rotate_around_non_zero():
     """)
     assert writer.conservative_stats == (1, 1)
 
+
 def test_write_mode_canonical_conservative_wrong_order():
     d = Document(
-            svg=Svg(
-                children=(
-                    Shape(
-                        id="rectid",
-                        transformations=(
-                             Rotate(theta=90, cx=0, cy=0),
-                             SkewX(theta=45),
-                             Translate(dx=2, dy=10),
-                             Scale(sx=2, sy=3),
-                        ),
-                        geometry=Rect(
-                            top_left=Point(
-                                x=4,
-                                y=5,
-                            ),
-                            width=2,
-                            height=1,
-                        ),
-                        unknown_attributes={
-                            "unknown": "unknown_value",
-                        },
+        svg=Svg(
+            children=(
+                Shape(
+                    id="rectid",
+                    transformations=(
+                        Rotate(theta=90, cx=0, cy=0),
+                        SkewX(theta=45),
+                        Translate(dx=2, dy=10),
+                        Scale(sx=2, sy=3),
                     ),
-                )
+                    geometry=Rect(
+                        top_left=Point(
+                            x=4,
+                            y=5,
+                        ),
+                        width=2,
+                        height=1,
+                    ),
+                    unknown_attributes={
+                        "unknown": "unknown_value",
+                    },
+                ),
             )
         )
+    )
     writer = SvgWriter(TransformWriteStrategy.CANONICAL_CONSERVATIVE)
     assert writer.write_svg_string(d) == dedent("""\
     <?xml version='1.0' encoding='UTF-8'?>
@@ -248,33 +250,34 @@ def test_write_mode_canonical_conservative_wrong_order():
     """)
     assert writer.conservative_stats == (0, 1)
 
+
 def test_write_mode_canonical_aggressive():
     d = Document(
-            svg=Svg(
-                children=(
-                    Shape(
-                        id="rectid",
-                        transformations=(
-                             Translate(dx=2, dy=10),
-                             Rotate(theta=90, cx=0, cy=0),
-                             SkewX(theta=45),
-                             Scale(sx=2, sy=3),
-                        ),
-                        geometry=Rect(
-                            top_left=Point(
-                                x=4,
-                                y=5,
-                            ),
-                            width=2,
-                            height=1,
-                        ),
-                        unknown_attributes={
-                            "unknown": "unknown_value",
-                        }
+        svg=Svg(
+            children=(
+                Shape(
+                    id="rectid",
+                    transformations=(
+                        Translate(dx=2, dy=10),
+                        Rotate(theta=90, cx=0, cy=0),
+                        SkewX(theta=45),
+                        Scale(sx=2, sy=3),
                     ),
-                )
+                    geometry=Rect(
+                        top_left=Point(
+                            x=4,
+                            y=5,
+                        ),
+                        width=2,
+                        height=1,
+                    ),
+                    unknown_attributes={
+                        "unknown": "unknown_value",
+                    },
+                ),
             )
         )
+    )
     writer = SvgWriter(TransformWriteStrategy.CANONICAL_AGGRESSIVE)
     assert writer.write_svg_string(d) == dedent("""\
     <?xml version='1.0' encoding='UTF-8'?>
@@ -282,6 +285,7 @@ def test_write_mode_canonical_aggressive():
     <rect id="rectid" x="4" y="5" width="2" height="1" transform="translate(2 10) rotate(90 0 0) skewX(45) scale(2 3)" unknown="unknown_value" />
     </svg>
     """)
+
 
 # Translate(dx=2, dy=10), Rotate(theta=90, cx=0, cy=0), SkewX(theta=45), Scale(sx=2, sy=3),
 # <rect id="rectid" x="4" y="5" width="2" height="1" transform="matrix(0 2 -3 3 2 10)" unknown="unknown_value" />

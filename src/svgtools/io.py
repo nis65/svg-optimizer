@@ -10,9 +10,9 @@ def parse_svg_file(path: str | Path) -> Document:
     with path.open("r", encoding="utf-8") as f:
         return parse_svg_string(f.read())
 
-def write_svg_file(document: Document, path: str | Path ) -> None:
+
+def write_svg_file(document: Document, path: str | Path) -> None:
     path = Path(path)
     writer = SvgWriter()
     with open(path, "w", encoding="utf-8", newline="\n") as f:
         f.write(writer.write_svg_string(document))
-

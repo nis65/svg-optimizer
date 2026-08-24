@@ -22,17 +22,19 @@ class BoundingBox:
     def include(self, point: Point) -> "BoundingBox":
         return BoundingBox(
             min=Point(min(self.min.x, point.x), min(self.min.y, point.y)),
-            max=Point(max(self.max.x, point.x), max(self.max.y, point.y))
+            max=Point(max(self.max.x, point.x), max(self.max.y, point.y)),
         )
 
     def union(self, other) -> "BoundingBox":
         return BoundingBox(
             min=Point(min(self.min.x, other.min.x), min(self.min.y, other.min.y)),
-            max=Point(max(self.max.x, other.max.x), max(self.max.y, other.max.y))
+            max=Point(max(self.max.x, other.max.x), max(self.max.y, other.max.y)),
         )
 
     def __add__(self, other) -> "BoundingBox":
         return self.union(other)
 
     def isclose(self, other, abs_tol) -> bool:
-        return Point.points_are_close({self.min, self.max}, {other.min, other.max}, abs_tol=abs_tol)
+        return Point.points_are_close(
+            {self.min, self.max}, {other.min, other.max}, abs_tol=abs_tol
+        )
