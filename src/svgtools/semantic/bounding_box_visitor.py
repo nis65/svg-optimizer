@@ -5,6 +5,7 @@ from svgtools.geometry.circle import Circle
 from svgtools.geometry.matrix3 import Matrix3
 from svgtools.geometry.point import Point
 from svgtools.geometry.rect import Rect
+from svgtools.geometry.tolerance import GEOMETRY_NUMBER_OF_SAMPLES
 from svgtools.svg.defs import Defs
 from svgtools.svg.document import Document
 from svgtools.svg.get_matrix import transforms_to_matrix
@@ -107,7 +108,9 @@ class BoundingBoxVisitor:
                     case Circle():
                         self.circles_visited += 1
                 current_matrix *= transforms_to_matrix(shape.transformations)
-                points = shape.geometry.points_for_bounding_box(128)
+                points = shape.geometry.points_for_bounding_box(
+                    GEOMETRY_NUMBER_OF_SAMPLES
+                )
                 self._accumulate_bbox(
                     self._transformed_points_bounding_box(points, current_matrix)
                 )
