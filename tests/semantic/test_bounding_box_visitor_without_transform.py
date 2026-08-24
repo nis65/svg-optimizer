@@ -44,7 +44,7 @@ def test_use_is_followed_twice():
     visitor = BoundingBoxVisitor()
     visitor.visit(document)
 
-    assert visitor.rectangles_visited == 2
+    assert visitor.visited["Rect"] == 2
 
 
 def test_use_references_unknown_tag():
@@ -122,8 +122,8 @@ def test_use_with_all_known_types():
     visitor = BoundingBoxVisitor()
     visitor.visit(document)
 
-    assert visitor.rectangles_visited == 2
-    assert visitor.circles_visited == 1
+    assert visitor.visited["Rect"] == 2
+    assert visitor.visited["Circle"] == 1
 
 
 def test_bounding_box_rect():
