@@ -1,10 +1,9 @@
+from collections import Counter
 from enum import Enum
 
 from svgtools.geometry.bounding_box import BoundingBox
-from svgtools.geometry.circle import Circle
 from svgtools.geometry.matrix3 import Matrix3
 from svgtools.geometry.point import Point
-from svgtools.geometry.rect import Rect
 from svgtools.geometry.tolerance import GEOMETRY_NUMBER_OF_SAMPLES
 from svgtools.svg.defs import Defs
 from svgtools.svg.document import Document
@@ -25,8 +24,7 @@ class BoundingBoxVisitor:
 
         self.bounding_box = None
         self.definition_table = {}  # Maps object ids to reusable svg elements.
-        self.rectangles_visited = 0
-        self.circles_visited = 0
+        self.visited = Counter()
 
     def visit(self, document: Document):
 
@@ -102,11 +100,7 @@ class BoundingBoxVisitor:
                 if shape.id:
                     self.definition_table[shape.id] = shape
             case _Phase.VISIT:
-                match shape.geometry:
-                    case Rect():
-                        self.rectangles_visited += 1
-                    case Circle():
-                        self.circles_visited += 1
+                self.visited[type(shape.geometry).__name__] += 1
                 current_matrix *= transforms_to_matrix(shape.transformations)
                 points = shape.geometry.points_for_bounding_box(
                     GEOMETRY_NUMBER_OF_SAMPLES

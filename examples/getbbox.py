@@ -21,3 +21,6 @@ visitor = BoundingBoxVisitor()
 visitor.visit(svg_doc)
 print(f"Bounding Box min: {visitor.bounding_box.min.x}, {visitor.bounding_box.min.y}")
 print(f"Bounding Box max: {visitor.bounding_box.max.x}, {visitor.bounding_box.max.y}")
+print(
+    f"Stats: ", ", ".join(f"{key}: {value}" for key, value in visitor.visited.items())
+)
