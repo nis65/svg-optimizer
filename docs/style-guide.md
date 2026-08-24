@@ -10,8 +10,8 @@
 ## Code style
 
 * [x] Python ≥ 3.12
-* [ ] `ruff format`
-* [ ] `ruff check`
+* [x] `ruff format`
+* [x] `ruff check`
 * [x] `pytest`
 * [ ] `pyright --strict`
 
@@ -35,4 +35,3 @@
 * Minimal dependencies
 * Use inheritance only for true "is-a" relationships. Prefer composition for reusable behavior and properties.
 * Make invalid states unrepresentable (i.e. don't allow a circle with a negative radius). All value objects check their invariants `__post_init__()`.
-
