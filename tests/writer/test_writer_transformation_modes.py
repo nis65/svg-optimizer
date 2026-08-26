@@ -9,12 +9,12 @@ from svgtools.svg.shape import Shape
 from svgtools.svg.svg import Svg
 from svgtools.svg.transform import Affine, Rotate, Scale, SkewX, Translate
 from svgtools.writer.svg_writer import SvgWriter
-from svgtools.writer.transform_strategy import TransformWriteStrategy, TransformStrategy
+from svgtools.writer.transform_writer import TransformStrategy, TransformWriter
 
 
 def test_aggregate_with_0_transforms():
     with pytest.raises(ValueError, match="should not be called with 0 transformations"):
-        TransformStrategy._transform_strategy_aggregate({})
+        TransformWriter._transform_strategy_aggregate({})
 
 
 def test_write_mode_keep():
@@ -43,7 +43,7 @@ def test_write_mode_keep():
             )
         )
     )
-    writer = SvgWriter(TransformWriteStrategy.KEEP)
+    writer = SvgWriter(TransformStrategy.KEEP)
     assert writer.write_svg_string(d) == dedent("""\
     <?xml version='1.0' encoding='UTF-8'?>
     <svg>
@@ -86,7 +86,7 @@ def test_write_mode_aggregate():
             )
         )
     )
-    writer = SvgWriter(TransformWriteStrategy.AGGREGATE)
+    writer = SvgWriter(TransformStrategy.AGGREGATE)
     assert writer.write_svg_string(d) == dedent("""\
     <?xml version='1.0' encoding='UTF-8'?>
     <svg>
@@ -117,7 +117,7 @@ def test_write_mode_decompose_matrix():
             )
         )
     )
-    writer = SvgWriter(TransformWriteStrategy.DECOMPOSE_MATRIX)
+    writer = SvgWriter(TransformStrategy.DECOMPOSE_MATRIX)
     assert writer.write_svg_string(d) == dedent("""\
     <?xml version='1.0' encoding='UTF-8'?>
     <svg>
@@ -152,7 +152,7 @@ def test_write_mode_decompose_matrix_and_aggregate():
             )
         )
     )
-    writer = SvgWriter(TransformWriteStrategy.DECOMPOSE_MATRIX_AND_AGGREGATE)
+    writer = SvgWriter(TransformStrategy.DECOMPOSE_MATRIX_AND_AGGREGATE)
     assert writer.write_svg_string(d) == dedent("""\
     <?xml version='1.0' encoding='UTF-8'?>
     <svg>
@@ -203,7 +203,7 @@ def test_write_mode_canonical_conservative_with_rotate_around_non_zero():
             )
         )
     )
-    writer = SvgWriter(TransformWriteStrategy.CANONICAL_CONSERVATIVE)
+    writer = SvgWriter(TransformStrategy.CANONICAL_CONSERVATIVE)
     assert writer.write_svg_string(d) == dedent("""\
     <?xml version='1.0' encoding='UTF-8'?>
     <svg>
@@ -241,7 +241,7 @@ def test_write_mode_canonical_conservative_wrong_order():
             )
         )
     )
-    writer = SvgWriter(TransformWriteStrategy.CANONICAL_CONSERVATIVE)
+    writer = SvgWriter(TransformStrategy.CANONICAL_CONSERVATIVE)
     assert writer.write_svg_string(d) == dedent("""\
     <?xml version='1.0' encoding='UTF-8'?>
     <svg>
@@ -278,7 +278,7 @@ def test_write_mode_canonical_aggressive():
             )
         )
     )
-    writer = SvgWriter(TransformWriteStrategy.CANONICAL_AGGRESSIVE)
+    writer = SvgWriter(TransformStrategy.CANONICAL_AGGRESSIVE)
     assert writer.write_svg_string(d) == dedent("""\
     <?xml version='1.0' encoding='UTF-8'?>
     <svg>
