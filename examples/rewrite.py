@@ -8,7 +8,7 @@ from svgtools.writer.path_writer import (
     PathCoordinates,
 )
 from svgtools.writer.svg_writer import SvgWriter
-from svgtools.writer.transform_strategy import TransformWriteStrategy
+from svgtools.writer.transform_writer import TransformStrategy
 
 parser = argparse.ArgumentParser()
 
@@ -17,10 +17,10 @@ parser.add_argument("--out", dest="output")
 parser.add_argument(
     "--transform-strategy",
     dest="transform_strategy",
-    type=TransformWriteStrategy.__getitem__,
-    choices=TransformWriteStrategy,
-    metavar="{" + ",".join(e.name for e in TransformWriteStrategy) + "}",
-    default=TransformWriteStrategy.KEEP,
+    type=TransformStrategy.__getitem__,
+    choices=TransformStrategy,
+    metavar="{" + ",".join(e.name for e in TransformStrategy) + "}",
+    default=TransformStrategy.KEEP,
     help="transformation conversion strategy (default: KEEP)",
 )
 parser.add_argument(
@@ -75,7 +75,7 @@ if args.output:
 else:
     sys.stdout.write(svg_output_text)
 
-if args.transform_strategy == TransformWriteStrategy.CANONICAL_CONSERVATIVE:
+if args.transform_strategy == TransformStrategy.CANONICAL_CONSERVATIVE:
     print(
         f"conservative stats (exact, forced): {writer.conservative_stats}",
         file=sys.stderr,

@@ -18,7 +18,7 @@ from .path_writer import (
     PathCoordinates,
     PathWriter,
 )
-from .transform_strategy import TransformStrategy, TransformWriteStrategy
+from .transform_writer import TransformStrategy, TransformWriter
 from .write_utils import number_to_string, numberlist_to_string
 
 
@@ -28,7 +28,7 @@ class SvgWriter:
 
     def __init__(
         self,
-        transform_strategy: TransformWriteStrategy = TransformWriteStrategy.KEEP,
+        transform_strategy: TransformStrategy = TransformStrategy.KEEP,
         path_coordinates: PathCoordinates = PathCoordinates.ABSOLUTE,
         path_compactness: PathCompactness = PathCompactness.CANONICAL,
         path_command_set: PathCommandSet = PathCommandSet.BASE,
@@ -191,12 +191,12 @@ class SvgWriter:
             self._parts.append(f' viewBox="{numberlist_to_string(viewBox)}"')
         if transformations := getattr(element, "transformations", None):
             # output_transformations = self._transformations_to_write(transformations)
-            ts = TransformStrategy(self.transform_strategy)
-            output_transformations = ts.apply(transformations)
-            self.total_aggregated_chains += ts.total_aggregated_chains
-            self.total_aggressive_chains += ts.total_aggressive_chains
+            tw = TransformWriter(self.transform_strategy)
+            output_transformations = tw.apply(transformations)
+            self.total_aggregated_chains += tw.total_aggregated_chains
+            self.total_aggressive_chains += tw.total_aggressive_chains
             self._parts.append(
-                f' transform="{ts.transforms_to_string(output_transformations)}"'
+                f' transform="{tw.transforms_to_string(output_transformations)}"'
             )
         for key, value in sorted(element.unknown_attributes.items()):
             self._parts.append(f' {key}="{value}"')

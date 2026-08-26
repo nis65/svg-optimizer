@@ -9,7 +9,7 @@ from svgtools.svg.transform import Affine, Rotate, Scale, SkewX, SkewY, Translat
 from .write_utils import numberlist_to_string
 
 
-class TransformWriteStrategy(Enum):
+class TransformStrategy(Enum):
     KEEP = auto()
     AGGREGATE = auto()
     DECOMPOSE_MATRIX = auto()
@@ -18,26 +18,26 @@ class TransformWriteStrategy(Enum):
     CANONICAL_AGGRESSIVE = auto()
 
 
-class TransformStrategy:
-    def __init__(self, strategy: TransformWriteStrategy):
+class TransformWriter:
+    def __init__(self, strategy: TransformStrategy):
         self.strategy = strategy
         self.total_aggregated_chains = 0
         self.total_aggressive_chains = 0
 
     def apply(self, transformations):
         match self.strategy:
-            case TransformWriteStrategy.KEEP:
+            case TransformStrategy.KEEP:
                 return transformations
-            case TransformWriteStrategy.AGGREGATE:
+            case TransformStrategy.AGGREGATE:
                 return self._transform_strategy_aggregate(transformations)
-            case TransformWriteStrategy.DECOMPOSE_MATRIX:
+            case TransformStrategy.DECOMPOSE_MATRIX:
                 return self._transform_strategy_decompose_matrix(transformations)
-            case TransformWriteStrategy.DECOMPOSE_MATRIX_AND_AGGREGATE:
+            case TransformStrategy.DECOMPOSE_MATRIX_AND_AGGREGATE:
                 decomposed = self._transform_strategy_decompose_matrix(transformations)
                 return self._transform_strategy_aggregate(decomposed)
-            case TransformWriteStrategy.CANONICAL_CONSERVATIVE:
+            case TransformStrategy.CANONICAL_CONSERVATIVE:
                 return self._transform_strategy_conservative(transformations)
-            case TransformWriteStrategy.CANONICAL_AGGRESSIVE:
+            case TransformStrategy.CANONICAL_AGGRESSIVE:
                 return self._transform_strategy_aggressive(transformations)
             case _:  # pragma: no cover
                 raise ValueError(f"transform_strategy {self.strategy} not implemented")
