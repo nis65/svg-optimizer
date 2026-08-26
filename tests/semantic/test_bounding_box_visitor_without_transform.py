@@ -226,6 +226,8 @@ def test_bounding_box_path_mz():
     visitor.visit(document)
 
     assert visitor.bounding_box == BoundingBox(min=Point(3, 4), max=Point(3, 4))
+    assert visitor.visited["path_MoveTo"] == 1
+    assert visitor.visited["path_ClosePath"] == 1
 
 
 def test_bounding_box_with_use():
