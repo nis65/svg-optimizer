@@ -4,20 +4,20 @@ See also the [Style Guide](./style-guide.md)
 
 ## Separation of concern
 
-* simple internal representation of a vector image consisting of multiple potentially reused and transformed objects.
-* the **parser** converts an `.svg` file into an *internal representation*. 
-   * For the `<path>` tag, the internal representation uses **absolute** coordinates and only the basic representations (i.e. the same `LineTo` object is used to represent a `L`, `H` or `V` path element).
-* a **semantic** function reads that *internal representation* and build the global bounding box by combining all bounding boxes of the individual elements.
-* the **writer** creates an `.svg` file from the *internal representation*. There are two degrees of freedom that that can be specified via a a parameter:
-   * the representation of geometric affine **transformations** in the `.svg` file.
-   * the representation of the contents of the `d` attribute in a **path** tag.
+* the core data structure is the *internal representation*. This representation is close to the `.svg` structure, focuses on the geometric aspects but still carries enough information to generate a valid `.svg` file that renders the same picture as the original input file.
+* the **parser** converts an `.svg` file into this *internal representation*. 
+   * For the `<path>` tag, this representation uses **absolute** coordinates and only the basic path element type (i.e. the same `LineTo` object is used to represent a `L`, `H` or `V` path element). The original element representation letter is stored along the geometric data. This allows to use (and convert the coordinates accordingly) when writing back that representation to an `.svg` file.
+* a **semantic** function interprets that *internal representation* and builds the global bounding box by combining all bounding boxes of the individual elements.
+* the **writer** creates an `.svg` file from the *internal representation*. There are two degrees of freedom that that change only the `.svg` representation, but not the rendered image. These can be specified via parameters:
+   * the representation of geometric affine **transformations** in the `.svg` file. See [transform_writer](/src/svgtools/writer/transform_writer.py) for details.
+   * the representation of the contents of the `d` attribute in a **path** tag. See [path_writer](/src/svgtools/writer/path_writer.py) for details.
 
 ## Internal geometric representation
 
 The representation is split in two parts:
 
 * The **geometry** part of the model represents the mathematical geometry. Its objects have a geometric extent and can participate in geometric computations.
-* The **svg** part of the model represents the hierarchical composition. Its objects organize, reference or group geometry and are mostly linked to svg tags. One notable exception: Drawable objects are `Shape` objects where the geometry only defines whether it is e.g. a circle or rect.
+* The **svg** part of the model represents the hierarchical composition. Its objects organize, reference or group geometry and are mostly linked to svg tags. One notable exception: Drawable objects are modelled as `Shape` objects where their `geometry` only defines whether it is e.g. a circle or rect.
 
 Note that packages (i.e. directories) group types by responsibility, not by inheritance.
 
@@ -27,12 +27,12 @@ Note that packages (i.e. directories) group types by responsibility, not by inhe
    * Drawables: Circle, Ellipse, Line, Path, Polygon, Polyline, Rect 
    * Transformations: Matrix3, TRHxSDecomposition
    * Helpers: BoundingBox, Point
-* Numeric value objects provide exact equality (==) and approximate comparison via `isclose()`. Approximate comparison following the semantics of math.isclose(). The tolerance for isclose is defined "globally" in [tolerance.py](/src/svgtools/geometry/tolerance.py)
+* Numeric value objects provide exact equality (`==`) and approximate comparison via `isclose()`. Approximate comparison follows the semantics of `math.isclose()`. The tolerances for `isclose` are defined "globally", see below.
 * Use [3x3 matrices](https://en.wikipedia.org/wiki/Homogeneous_coordinates) to describe transformations like *scale* or *rotate* so that applying multiple transformations is equivalent to (non-commutative) matrix multiplication.
 * The 3x3 matrix is interpreted to be row-major, a point is therefore a column vector.
 * The library uses column vectors and **left matrix multiplication**. Therefore, the product A * B represents the composition *first apply B, then apply A*, **(A * B) * p == A * (B * p)**. This follows the standard convention from linear algebra.
-* Drawable objects inherit from an abstract base class `Geometry` that enforces that each drawable object has a function `points_for_bounding_box`. This function returns a set of `n` points that are part of the object when drawn. These can be used to determine the bounding box. Drawable objects that are fully defined by some discrete points (like a *Rect* or a *Polyline*), return those points only. "Smooth" objects like a *Circle* or a path *Bezier*-Element, are sampled.
-* The motivation for this project was to rearrange an existing `.svg` picture so that the *bounding box* of the object is horizontally and vertically *centered* and the *minimal distance* from the bounding box to the edges of the canvas can be parametrized. Therefore, every geometric object needs to have `.bounding_box`.
+* Drawable objects inherit from an abstract base class `Geometry` that enforces that each drawable object has a function `points_for_bounding_box`. Drawable objects whose bounding box is fully defined by some discrete points (like a *Rect* or a *Polyline*), return just those points. "Smooth" objects like a *Circle* or a path *Bezier*-Element, are sampled. The number of points per sampled object (or path element) is defined by `GEOMETRY_NUMBER_OF_SAMPLES` in [tolerance.py](/src/svgtools/geometry/tolerance.py). The more samples, the more exact the bounding box is calculated, but the more cpu time is used for computing the bounding box. The other two constants in this file are `GEOMETRY_REL_TOL` and `GEOMETRY_ABS_TOL`. The latter is important when float numbers are near zero, see the python doc of [math.isclose](https://docs.python.org/3/library/math.html#math.isclose) for more details.
+* The initial motivation for this project was to rearrange an existing `.svg` picture so that the *bounding box* of the object is horizontally and vertically *centered* and the *minimal distance* from the bounding box to the edges of the canvas can be parametrized. This is demonstrated in [adjust_viewbox.py](/examples/adjust_viewbox.py).
 
 ### Svg
 
@@ -58,10 +58,10 @@ The objects defined above allow to support only very basic `.svg` files. Especia
 
 ## Preserving structure
 
-The parser/writer preserve document structure as far as possible. The following changes are applied in any case:
+The parser/writer combo preserve document structure as far as possible. The following changes are applied when writing unconditionally:
 * the indendetation is "fixed" to reflect the structural depth
-* number lists are always written space separated (and not comma separated)
-* the attributes (not the children) of an xml tag are ordered as follows:
+* number lists are written space separated (and not comma separated)
+* the attributes (not the children) of an xml tag are (re-) ordered as follows:
    * `xmlns` (only on `svg` element)
    * `id`
    * `href`
@@ -83,7 +83,7 @@ The writer has 6 modes to optimize the transformations
    * Affine matrices can be merged via matrix multiplication
 * `DECOMPOSE_MATRIX`: Any `matrix` occurred is decomposed into **TRHxS**, i.e. a Translate, Rotate (around 0), SkewX and Scale. This allows to have a more visual idea of an arbitrary transformation matrix in the original `.svg`
 * `DECOMPOSE_MATRIX_AND_AGGREGATE`: Do first a decompose and then an aggregation.
-* `CANONICAL_CONSERVATIVE and CANONICAL_AGGRESSIVE`: The canonical representation of an arbitrary sequence of transformations is considered to be (reading from right to left) a Scaling, followed by a SkewX, followed by Rotation and finall a Translation. The first option first attempts an AGGREGATE and if this already produces an TRHxS order, it is left like this and if not, all transformations are first multiplied and then the resulting matrix is decomposed. Both should deliver the same list of tranformations, but CONSERVATIVE minimizes the risk of numerical edge cases (e.g. 0.999 instead of 1). After a CONSERVATIVE write, you can ask the writer object for stats: how many transform lists could be handled by aggregation and how many needed a matrix decomposition.
+* `CANONICAL_CONSERVATIVE and CANONICAL_AGGRESSIVE`: The canonical representation of an arbitrary sequence of transformations is considered to be (reading from right to left) a Scaling, followed by a SkewX, followed by Rotation and finally a Translation. The first option first attempts an AGGREGATE and if this already produces an TRHxS order, it is left like this and if not, all transformations are first multiplied and then the resulting matrix is decomposed. Both should deliver the same list of tranformations, but CONSERVATIVE minimizes the risk of numerical edge cases (e.g. 0.999 instead of 1). After a CONSERVATIVE write, you can ask the writer object for stats: how many transform lists could be handled by aggregation and how many needed a matrix decomposition.
 
 ## Optimizing path rendering
 
