@@ -24,6 +24,6 @@ print(
     "Bounding Box"
     f" min: {numberlist_to_string({visitor.bounding_box.min.x, visitor.bounding_box.min.y})}"
     f" max: {numberlist_to_string({visitor.bounding_box.max.x, visitor.bounding_box.max.y})}"
-    f" Stats: ",
+    f"\nStats: ",
     ", ".join(f"{key}: {value}" for key, value in visitor.visited.items()),
 )

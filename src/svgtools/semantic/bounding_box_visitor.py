@@ -3,6 +3,7 @@ from enum import Enum
 
 from svgtools.geometry.bounding_box import BoundingBox
 from svgtools.geometry.matrix3 import Matrix3
+from svgtools.geometry.path import Path
 from svgtools.geometry.point import Point
 from svgtools.geometry.tolerance import GEOMETRY_NUMBER_OF_SAMPLES
 from svgtools.svg.defs import Defs
@@ -102,9 +103,19 @@ class BoundingBoxVisitor:
             case _Phase.VISIT:
                 self.visited[type(shape.geometry).__name__] += 1
                 current_matrix *= transforms_to_matrix(shape.transformations)
-                points = shape.geometry.points_for_bounding_box(
-                    GEOMETRY_NUMBER_OF_SAMPLES
-                )
+                if type(shape.geometry) is Path:
+                    pathstats, points = (
+                        shape.geometry.points_for_bounding_box_with_stats(
+                            GEOMETRY_NUMBER_OF_SAMPLES
+                        )
+                    )
+                    self.visited.update(
+                        {f"path_{key}": value for key, value in pathstats.items()}
+                    )
+                else:
+                    points = shape.geometry.points_for_bounding_box(
+                        GEOMETRY_NUMBER_OF_SAMPLES
+                    )
                 self._accumulate_bbox(
                     self._transformed_points_bounding_box(points, current_matrix)
                 )
