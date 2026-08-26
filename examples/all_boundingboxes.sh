@@ -24,12 +24,17 @@ cd $(dirname $0)
 
 for file in ../tests/testdata/*svg
 do
+  echo "===== bounding box for  $target"
   basename=$( basename $file )
-  THISTARGETFILE="${basename%%.svg}_with_bb.svg"
-  target=${TARGETDIR}/$THISTARGETFILE
-  echo "===== creating $target"
   ./run_getbbox.sh < $file
+
+  THISTARGETFILE="${basename%%.svg}_bounding_box_drawed.svg"
+  target=${TARGETDIR}/$THISTARGETFILE
   ./run_rewrite_with_bb.sh < $file > $target
+
+  THISTARGETFILE="${basename%%.svg}_viewbox_adjusted.svg"
+  target=${TARGETDIR}/$THISTARGETFILE
+  ./run_adjust_viewbox.sh < $file > $target
 done
 
 )
