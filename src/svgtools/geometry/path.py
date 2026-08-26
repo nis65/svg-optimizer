@@ -1,3 +1,4 @@
+from collections import Counter
 from dataclasses import dataclass
 
 from .geometry_abc import Geometry
@@ -11,6 +12,11 @@ class Path(Geometry):
     children: tuple = ()
 
     def points_for_bounding_box(self, count: int) -> set[Point]:
+        _dummy, points = self.points_for_bounding_box_with_stats(count)
+        return points
+
+    def points_for_bounding_box_with_stats(self, count: int) -> (Counter, set[Point]):
+        path_elements_visited = Counter()
         points = []
         # a path does not need to start with an explicit MoveTo
         current_point = Point(0, 0)
@@ -27,4 +33,5 @@ class Path(Geometry):
             else:
                 points.extend(child.points_for_bounding_box(current_point, count))
                 current_point = child.endpoint
-        return set(points)
+            path_elements_visited[type(child).__name__] += 1
+        return path_elements_visited, set(points)
