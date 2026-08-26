@@ -24,7 +24,7 @@ cd $(dirname $0)
 
 for file in ../tests/testdata/*svg
 do
-  echo "===== bounding box for  $target"
+  echo "===== bounding box for $file"
   basename=$( basename $file )
   ./run_getbbox.sh < $file
 
