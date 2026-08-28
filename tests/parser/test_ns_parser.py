@@ -25,12 +25,14 @@ def test_parse_tag():
     # assert ("href", None) == parse_tag("{" + XLINK_NAMESPACE + "}" + "href")
     assert (None, "othernamespace") == parse_tag("{othernamespace}anytag")
 
+
 def test_parse_attr():
     assert ("testattr", "") == parse_attr("testattr")
     assert ("xml:testattr", XML_NAMESPACE) == parse_attr(
         "{" + XML_NAMESPACE + "}" + "testattr"
     )
     assert ("href", None) == parse_attr("{" + XLINK_NAMESPACE + "}" + "href")
+
 
 def test_parse_attr_error():
     with pytest.raises(ValueError):
