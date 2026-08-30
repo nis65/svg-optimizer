@@ -101,7 +101,7 @@ def test_parse_svg_with_unknown_name_space_attribute(capsys):
         )
     )
     captured = capsys.readouterr()
-    assert "WARNING: dropping {http://i-dont-exist.com/}attr" in captured.err
+    assert "WARNING: dropping attribute {http://i-dont-exist.com/}attr" in captured.err
 
 
 def test_parse_svg_with_namespace_and_rect():

@@ -41,8 +41,8 @@ def parse_attr(raw_attr: str) -> str:
         if attr == "href":
             return attr
         else:
-            print_stderr(f"WARNING: dropping {raw_attr}")
+            print_stderr(f"WARNING: dropping xlink attribute {raw_attr}")
             return None
     else:
-        print_stderr(f"WARNING: dropping {raw_attr}")
+        print_stderr(f"WARNING: dropping attribute {raw_attr}")
         return None
