@@ -1,4 +1,3 @@
-import re
 from collections.abc import Collection
 from xml.etree import ElementTree as ET
 
@@ -17,8 +16,15 @@ from svgtools.svg.svg import Svg
 from svgtools.svg.use import Use
 
 from .float_list_parser import parse_float_list
+from .ns_parser import (
+    SVG_NAMESPACE,
+    XLINK_NAMESPACE,
+    parse_attr,
+    parse_tag,
+)
+from .parse_utils import print_stderr
 from .path_parser import parse_path_string
-from .token_lexer import TokenIterator, print_stderr, token_lexer
+from .token_lexer import TokenIterator, token_lexer
 from .transform_parser import parse_transform_string
 
 
@@ -27,19 +33,13 @@ def parse_svg_string(svg_text: str) -> Document:
     xml_root = ET.fromstring(svg_text)
 
     # namespace needs special handling
-    namespace = None
-    if xml_root.tag == "svg":
+    root_tag, namespace = parse_tag(xml_root.tag)
+    if (namespace == SVG_NAMESPACE or namespace is None) and root_tag == "svg":
         pass
     else:
-        match = re.match(r"^\{([^}]+)\}svg", xml_root.tag)
-        if match:
-            namespace = match.group(1)
-        else:
-            raise ValueError(f"Root element must end with 'svg', not '{xml_root.tag}'")
-    if namespace:
-        namespace_str = f"{{{namespace}}}"
-    else:
-        namespace_str = ""
+        raise ValueError(
+            f"Root element must be 'svg', not '{root_tag}' in namespace {namespace}"
+        )
 
     return Document(
         svg=Svg(
@@ -48,7 +48,7 @@ def parse_svg_string(svg_text: str) -> Document:
             width=xml_root.get("width"),
             height=xml_root.get("height"),
             viewBox=parse_float_list(xml_root.get("viewBox")),
-            children=_parse_xml_children(xml_root, namespace_str),
+            children=_parse_xml_children(xml_root),
             transformations=parse_transform_string(xml_root.get("transform")),
             unknown_attributes=_collect_unknown_attributes(
                 xml_root, {"id", "width", "height", "viewBox", "transform"}
@@ -57,24 +57,27 @@ def parse_svg_string(svg_text: str) -> Document:
     )
 
 
-def _parse_xml_element(xml_element: ET.Element, namespace_str: str):  # noqa: PLR0911 PLR0914
+def _parse_xml_element(xml_element: ET.Element):  # noqa: PLR0911 PLR0912 PLR0914 PLR0915
 
-    tag = xml_element.tag.removeprefix(namespace_str)
+    tag, namespace = parse_tag(xml_element.tag)
+    if namespace == SVG_NAMESPACE or namespace is None:
+        pass
+    else:
+        raise ValueError(f"invalid namespace {namespace} for tag {tag}")
 
     match tag:
         case "defs":
             defs_id = xml_element.get("id")
             return Defs(
                 id=defs_id,
-                children=_parse_xml_children(xml_element, namespace_str),
+                children=_parse_xml_children(xml_element),
                 unknown_attributes=_collect_unknown_attributes(xml_element, {"id"}),
             )
-
         case "g":
             g_id = xml_element.get("id")
             return Group(
                 id=g_id,
-                children=_parse_xml_children(xml_element, namespace_str),
+                children=_parse_xml_children(xml_element),
                 transformations=parse_transform_string(xml_element.get("transform")),
                 unknown_attributes=_collect_unknown_attributes(
                     xml_element, {"id", "transform"}
@@ -83,6 +86,8 @@ def _parse_xml_element(xml_element: ET.Element, namespace_str: str):  # noqa: PL
         case "use":
             use_id = xml_element.get("id")
             xml_href = xml_element.get("href")
+            if xml_href is None:
+                xml_href = xml_element.get("{" + XLINK_NAMESPACE + "}href")
             if xml_href is None:
                 raise ValueError("<use> requires a href attribute")
             return Use(
@@ -111,7 +116,8 @@ def _parse_xml_element(xml_element: ET.Element, namespace_str: str):  # noqa: PL
                 ),
                 transformations=parse_transform_string(xml_element.get("transform")),
                 unknown_attributes=_collect_unknown_attributes(
-                    xml_element, {"id", "x", "y", "width", "height", "transform"}
+                    xml_element,
+                    {"id", "x", "y", "width", "height", "transform"},
                 ),
             )
         case "circle":
@@ -211,7 +217,7 @@ def _parse_xml_element(xml_element: ET.Element, namespace_str: str):  # noqa: PL
             )
 
     raise NotImplementedError(
-        f"can parse only defs, g, use, rect, circle, path, line and polyline yet, not '{tag}' in namespace '{namespace_str}'"
+        f"can parse only defs, g, use, rect, circle, path, line and polyline yet, not '{tag}'"
     )
 
 
@@ -233,12 +239,12 @@ def _parse_poly_points(points_string: str, name: str):
     return tuple(points)
 
 
-def _parse_xml_children(xml_element: ET.Element, namespace_str: str) -> tuple:
+def _parse_xml_children(xml_element: ET.Element) -> tuple:
 
     children = []
 
     for xml_child in xml_element:
-        children.append(_parse_xml_element(xml_child, namespace_str))
+        children.append(_parse_xml_element(xml_child))
 
     return tuple(children)
 
@@ -247,20 +253,11 @@ def _collect_unknown_attributes(
     xml_element: ET.Element, known_list: Collection[str]
 ) -> dict[str, str]:
 
-    XML_NAMESPACE = "http://www.w3.org/XML/1998/namespace"
-    xml_namespace_prefix = "{" + XML_NAMESPACE + "}"
-
     unknown_attributes = {}
     for key, value in xml_element.attrib.items():
-        if key in known_list:
+        attr = parse_attr(key)
+        if attr in known_list:
             continue
-        if key.startswith("{"):
-            if key.startswith(xml_namespace_prefix):
-                key = "xml:" + key.removeprefix(xml_namespace_prefix)
-            else:
-                print_stderr(
-                    f'WARNING: dropping attribute with unsupported namespace: {key}="{value}"'
-                )
-                continue
-        unknown_attributes[key] = value
+        if attr:
+            unknown_attributes[attr] = value
     return unknown_attributes

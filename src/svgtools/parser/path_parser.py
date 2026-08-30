@@ -10,7 +10,8 @@ from svgtools.geometry.path_elements.moveto import MoveTo
 from svgtools.geometry.path_elements.quadraticbezier import QuadraticBezier
 from svgtools.geometry.point import Point
 
-from .token_lexer import TokenIterator, TokenKind, print_stderr, token_lexer
+from .parse_utils import print_stderr
+from .token_lexer import TokenIterator, TokenKind, token_lexer
 
 
 @dataclass

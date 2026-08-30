@@ -76,10 +76,10 @@ def test_parse_empty_svg_with_all_other_attrs():
     )
 
 
-def test_parse_svg_with_unkown_name_space_attribute(capsys):
+def test_parse_svg_with_unknown_name_space_attribute(capsys):
     svg_text = """
     <svg xmlns="http://www.w3.org/2000/svg" xmlns:foo="http://i-dont-exist.com/">
-       <rect foo:tag="hello" x="10" y="20" width="100" height="50" />
+       <rect foo:attr="hello" x="10" y="20" width="100" height="50" />
     </svg>
     """
     assert parse_svg_string(svg_text) == Document(
@@ -101,10 +101,7 @@ def test_parse_svg_with_unkown_name_space_attribute(capsys):
         )
     )
     captured = capsys.readouterr()
-    assert (
-        'WARNING: dropping attribute with unsupported namespace: {http://i-dont-exist.com/}tag="hello"'
-        in captured.err
-    )
+    assert "WARNING: dropping {http://i-dont-exist.com/}attr" in captured.err
 
 
 def test_parse_svg_with_namespace_and_rect():
@@ -134,7 +131,7 @@ def test_parse_svg_with_namespace_and_rect():
 
 
 def test_root_element_must_be_svg():
-    with pytest.raises(ValueError, match="Root element must end with"):
+    with pytest.raises(ValueError, match="Root element must be 'svg'"):
         parse_svg_string("<circle/>")
 
 
@@ -366,6 +363,25 @@ def test_parse_use_with_unkonwns():
                     unknown_attributes={
                         "unknown": "unknown_value",
                     },
+                ),
+            ),
+        ),
+    )
+    assert parse_svg_string(svg_text) == d
+
+
+def test_parse_use_with_xlink_href():
+    svg_text = """
+    <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+        <use xlink:href="#myref"/>
+    </svg>
+    """
+    d = Document(
+        svg=Svg(
+            xmlnamespace="http://www.w3.org/2000/svg",
+            children=(
+                Use(
+                    href="#myref",
                 ),
             ),
         ),
