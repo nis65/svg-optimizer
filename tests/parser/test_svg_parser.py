@@ -76,6 +76,28 @@ def test_parse_empty_svg_with_all_other_attrs():
     )
 
 
+def test_parse_svg_with_unknown_name_space_tag(capsys):
+    svg_text = """
+    <svg xmlns="http://www.w3.org/2000/svg"
+         xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+         >
+    <sodipodi:foobar test="123" />
+    </svg>
+    """
+    assert parse_svg_string(svg_text) == Document(
+        svg=Svg(
+            children=(),
+            transformations=(),
+            xmlnamespace="http://www.w3.org/2000/svg",
+        )
+    )
+    captured = capsys.readouterr()
+    assert (
+        "WARNING: dropping tag {http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd}foobar"
+        in captured.err
+    )
+
+
 def test_parse_svg_with_unknown_name_space_attribute(capsys):
     svg_text = """
     <svg xmlns="http://www.w3.org/2000/svg" xmlns:foo="http://i-dont-exist.com/">
