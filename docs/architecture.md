@@ -52,9 +52,13 @@ The toplevel element is a `Document` that lies outside of the `.svg` content. Th
 
 The objects defined above allow to support only very basic `.svg` files. Especially,
 
-* only the standard namespace `http://www.w3.org/2000/svg` at the toplevel is supported, no changing namespaces within the `.svg`.
+* there is very limited support for namespaces:
+  * the standard SVG namespace `http://www.w3.org/2000/svg` is supported at the toplevel only, adding namespaces deeper down in the svg are unlikely to work properly
+  * In the XLINK namespace `http://www.w3.org/1999/xlink`, only `href` is supported by conversion to an SVG `href`, output files never contain that namespace. 
+  * There is limited support for the XML namespace `http://www.w3.org/XML/1998/namespace`, such attributes remain uninterpreted, but are stored and rewritten with an `xml:` prefix.
+  * All other namespaces are ignored and data belonging to them is dropped
 * only a very limited set of svg tags is supported:
-   * `svg` (at the toplevel only), 
+   * `svg` (at the toplevel only, no nesting) 
    * `defs`, `g`, `use` (organizational)
    * `circle`, `ellipse`, `line`, `path`, `polygon`, `polyline ` and `rect` (drawable)
 * all geometric transformations (on all tags above except `defs`) are supported: `translate`, `scale`, `rotate`, `skewX`, `skewY`, `matrix`
