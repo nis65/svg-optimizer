@@ -17,7 +17,9 @@ See also the [Style Guide](./style-guide.md)
 The representation is split in two parts:
 
 * The **geometry** part of the model represents the mathematical geometry. Its objects have a geometric extent and can participate in geometric computations.
-* The **svg** part of the model represents the hierarchical composition. Its objects organize, reference or group geometry and are mostly linked to svg tags. One notable exception: Drawable objects are modelled as [Shape](/src/svgtools/svg/shape.py) objects and their `geometry` only defines whether a shape is e.g. a circle or a rect.
+* The **svg** part of the model represents the hierarchical composition. Its objects organize, reference or group geometry and are mostly linked to svg tags. Exceptions: 
+   * Drawable objects are modelled as [Shape](/src/svgtools/svg/shape.py) objects and their `geometry` only defines whether a shape is e.g. a circle or a rect.
+   * Both a `g` and an `a` tag are modelled as [Group](/src/svgtools/svg/group.py). Geometrically, there is no difference. But when a `Group` element has a `href` attribute, it is written as `<a>`, when not as `<g>`.
 
 Note that packages (i.e. directories) group types by responsibility, not by inheritance.
 
@@ -59,7 +61,7 @@ The objects defined above allow to support only very basic `.svg` files. Especia
   * All other namespaces are ignored and data belonging to them is dropped
 * only a very limited set of svg tags is supported:
    * `svg` (at the toplevel only, no nesting) 
-   * `defs`, `g`, `use` (organizational)
+   * `defs`, `g`, `a`, `use` (organizational)
    * `circle`, `ellipse`, `line`, `path`, `polygon`, `polyline ` and `rect` (drawable)
 * all geometric transformations (on all tags above except `defs`) are supported: `translate`, `scale`, `rotate`, `skewX`, `skewY`, `matrix`
 * all geometric path elements are supported: 
@@ -70,7 +72,7 @@ The objects defined above allow to support only very basic `.svg` files. Especia
 ### Preserving structure
 
 The parser/writer combo preserve document structure as far as possible. The following changes are applied when writing unconditionally:
-* the indendetation is "fixed" to reflect the structural depth
+* the indendetation reflects the structural depth
 * number lists are written space separated (and not comma separated)
 * the attributes (not the children) of an xml tag are (re-) ordered as follows:
    * `xmlns` (only on `svg` element)
