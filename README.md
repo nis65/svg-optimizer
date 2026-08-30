@@ -20,7 +20,7 @@ It turned out that this is a very nice python exercise. As I am not experienced 
 
 ## Other documentation
 
-* see the [architecture](docs/architecture.md) and the [style-guide](docs/style-guide.md) documents to understand **how** we wanto develop
+* see the [architecture](docs/architecture.md) and the [style-guide](docs/style-guide.md) documents to understand **how** we want to develop
 * see the [roadmap](docs/roadmap.md) to see **when** we want to develop **what**.
 * see the [development](docs/development.md) to see what tools you need to install to run all tests.
 
