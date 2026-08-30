@@ -7,5 +7,6 @@ from .transform import Rotate, Scale, Translate
 class Group:
     children: tuple
     id: str | None = None
+    href: str | None = None
     transformations: tuple[Translate | Scale | Rotate, ...] = ()
     unknown_attributes: dict[str, str] = field(default_factory=dict)
