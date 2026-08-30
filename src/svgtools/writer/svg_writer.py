@@ -80,7 +80,11 @@ class SvgWriter:
                 raise NotImplementedError(type(element))
 
     def _walk_group(self, group: Group, indent: str):
-        self._parts.append(indent + "<g")
+        if group.href is None:
+            tagname = "g"
+        else:
+            tagname = "a"
+        self._parts.append(indent + "<" + tagname)
         self._append_attributes(group)
         if group.children == ():
             self._parts.append(" />\n")
@@ -88,7 +92,7 @@ class SvgWriter:
             self._parts.append(">\n")
             for child in group.children:
                 self._walk_element(child, self.INDENT + indent)
-            self._parts.append(indent + "</g>\n")
+            self._parts.append(indent + "</" + tagname + ">\n")
 
     def _walk_defs(self, defs: Defs, indent: str):
         self._parts.append(indent + "<defs")

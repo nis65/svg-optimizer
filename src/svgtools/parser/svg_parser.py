@@ -74,21 +74,21 @@ def _parse_xml_element(xml_element: ET.Element):  # noqa: PLR0911 PLR0912 PLR091
                 children=_parse_xml_children(xml_element),
                 unknown_attributes=_collect_unknown_attributes(xml_element, {"id"}),
             )
-        case "g":
+        case "g" | "a":
             g_id = xml_element.get("id")
+            a_href = _get_convert_href(xml_element)
             return Group(
                 id=g_id,
+                href=a_href,
                 children=_parse_xml_children(xml_element),
                 transformations=parse_transform_string(xml_element.get("transform")),
                 unknown_attributes=_collect_unknown_attributes(
-                    xml_element, {"id", "transform"}
+                    xml_element, {"id", "href", "transform"}
                 ),
             )
         case "use":
             use_id = xml_element.get("id")
-            xml_href = xml_element.get("href")
-            if xml_href is None:
-                xml_href = xml_element.get("{" + XLINK_NAMESPACE + "}href")
+            xml_href = _get_convert_href(xml_element)
             if xml_href is None:
                 raise ValueError("<use> requires a href attribute")
             xml_x = xml_element.get("x", "0")
@@ -254,6 +254,13 @@ def _parse_xml_children(xml_element: ET.Element) -> tuple:
             children.append(child)
 
     return tuple(children)
+
+
+def _get_convert_href(xml_element: ET.Element) -> str:
+    xml_href = xml_element.get("href")
+    if xml_href is None:
+        xml_href = xml_element.get("{" + XLINK_NAMESPACE + "}href")
+    return xml_href
 
 
 def _collect_unknown_attributes(
