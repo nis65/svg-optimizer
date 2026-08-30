@@ -95,8 +95,8 @@ def _parse_xml_element(xml_element: ET.Element):  # noqa: PLR0911 PLR0912 PLR091
             return Use(
                 id=use_id,
                 href=xml_href,
-                x = float(xml_x),
-                y = float(xml_y),
+                x=float(xml_x),
+                y=float(xml_y),
                 transformations=parse_transform_string(xml_element.get("transform")),
                 unknown_attributes=_collect_unknown_attributes(
                     xml_element, {"id", "href", "x", "y", "transform"}

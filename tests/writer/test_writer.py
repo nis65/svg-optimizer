@@ -621,6 +621,8 @@ def test_write_use():
                             dy=1,
                         ),
                     ),
+                    x=4,
+                    y=5,
                     unknown_attributes={
                         "unknown": "unknown_value",
                     },
@@ -635,7 +637,7 @@ def test_write_use():
     <defs>
       <rect id="rectid" x="0" y="0" width="2" height="1" />
     </defs>
-    <use href="#rectid" transform="translate(1 1)" unknown="unknown_value" />
+    <use href="#rectid" x="4" y="5" transform="translate(1 1)" unknown="unknown_value" />
     </svg>
     """)
 

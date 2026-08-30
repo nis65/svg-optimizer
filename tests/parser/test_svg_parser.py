@@ -343,7 +343,13 @@ def test_parse_use():
     d = Document(
         svg=Svg(
             children=(
-                Use(id="useid", href="#arrow", x=3, y=4, transformations=(Scale(sx=3, sy=3),)),
+                Use(
+                    id="useid",
+                    href="#arrow",
+                    x=3,
+                    y=4,
+                    transformations=(Scale(sx=3, sy=3),),
+                ),
             ),
         ),
     )

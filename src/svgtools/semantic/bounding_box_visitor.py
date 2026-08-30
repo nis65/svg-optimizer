@@ -92,6 +92,8 @@ class BoundingBoxVisitor:
                 if label not in self.definition_table:
                     raise ValueError(f"Use references unknown label {label}")
                 current_matrix *= transforms_to_matrix(use.transformations)
+                # apply translation from use
+                current_matrix *= Matrix3.translation(use.x, use.y)
                 self._walk_element(self.definition_table[label], phase, current_matrix)
 
     def _walk_shape(self, shape: Shape, phase: _Phase, current_matrix: Matrix3):

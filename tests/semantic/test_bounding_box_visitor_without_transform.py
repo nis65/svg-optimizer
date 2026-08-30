@@ -35,8 +35,8 @@ def test_use_is_followed_twice():
                         ),
                     ),
                 ),
-                Use(href="#square"),
-                Use(href="#square"),
+                Use(href="#square", x=0, y=0),
+                Use(href="#square", x=0, y=0),
             ),
         ),
     )
@@ -64,7 +64,7 @@ def test_use_references_unknown_tag():
                         ),
                     ),
                 ),
-                Use(href="#circle"),
+                Use(href="#circle", x=0, y=0),
             ),
         ),
     )
@@ -112,9 +112,9 @@ def test_use_with_all_known_types():
                         ),
                     ),
                 ),
-                Use(href="#square"),
-                Use(href="#square"),
-                Use(href="#groupid"),
+                Use(href="#square", x=0, y=0),
+                Use(href="#square", x=0, y=0),
+                Use(href="#groupid", x=0, y=0),
             ),
         ),
     )
@@ -258,8 +258,8 @@ def test_bounding_box_with_use():
                         ),
                     ),
                 ),
-                Use(href="#square"),
-                Use(href="#groupid"),
+                Use(href="#square", x=0, y=0),
+                Use(href="#groupid", x=0, y=0),
             ),
         ),
     )
