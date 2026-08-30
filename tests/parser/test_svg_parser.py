@@ -313,6 +313,8 @@ def test_parse_group_with_elements_and_transform():
                         ),
                         Use(
                             href="#arrow",
+                            x=0,
+                            y=0,
                         ),
                         Shape(
                             geometry=Rect(
@@ -335,13 +337,13 @@ def test_parse_group_with_elements_and_transform():
 def test_parse_use():
     svg_text = """
     <svg>
-        <use id="useid" href="#arrow" transform="scale(3)"/>
+        <use id="useid" href="#arrow" x="3" y="4" transform="scale(3)"/>
     </svg>
     """
     d = Document(
         svg=Svg(
             children=(
-                Use(id="useid", href="#arrow", transformations=(Scale(sx=3, sy=3),)),
+                Use(id="useid", href="#arrow", x=3, y=4, transformations=(Scale(sx=3, sy=3),)),
             ),
         ),
     )
@@ -360,6 +362,8 @@ def test_parse_use_with_unkonwns():
                 Use(
                     id="useid",
                     href="#arrow",
+                    x=0,
+                    y=0,
                     unknown_attributes={
                         "unknown": "unknown_value",
                     },
@@ -382,6 +386,8 @@ def test_parse_use_with_xlink_href():
             children=(
                 Use(
                     href="#myref",
+                    x=0,
+                    y=0,
                 ),
             ),
         ),

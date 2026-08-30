@@ -90,12 +90,16 @@ def _parse_xml_element(xml_element: ET.Element):  # noqa: PLR0911 PLR0912 PLR091
                 xml_href = xml_element.get("{" + XLINK_NAMESPACE + "}href")
             if xml_href is None:
                 raise ValueError("<use> requires a href attribute")
+            xml_x = xml_element.get("x", "0")
+            xml_y = xml_element.get("y", "0")
             return Use(
                 id=use_id,
                 href=xml_href,
+                x = float(xml_x),
+                y = float(xml_y),
                 transformations=parse_transform_string(xml_element.get("transform")),
                 unknown_attributes=_collect_unknown_attributes(
-                    xml_element, {"id", "href", "transform"}
+                    xml_element, {"id", "href", "x", "y", "transform"}
                 ),
             )
         case "rect":
