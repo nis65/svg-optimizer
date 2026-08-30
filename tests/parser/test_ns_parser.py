@@ -15,27 +15,31 @@ def test_ns_parser():
 
 
 def test_parse_tag():
-    assert ("testtag", "") == parse_tag("testtag")
+    assert ("testtag", None) == parse_tag("testtag")
     assert ("testtag", SVG_NAMESPACE) == parse_tag(
         "{" + SVG_NAMESPACE + "}" + "testtag"
     )
     assert ("xml:testtag", XML_NAMESPACE) == parse_tag(
         "{" + XML_NAMESPACE + "}" + "testtag"
     )
-    # assert ("href", None) == parse_tag("{" + XLINK_NAMESPACE + "}" + "href")
     assert (None, "othernamespace") == parse_tag("{othernamespace}anytag")
 
 
 def test_parse_attr():
-    assert ("testattr", "") == parse_attr("testattr")
-    assert ("xml:testattr", XML_NAMESPACE) == parse_attr(
-        "{" + XML_NAMESPACE + "}" + "testattr"
-    )
-    assert ("href", None) == parse_attr("{" + XLINK_NAMESPACE + "}" + "href")
+    assert "testattr" == parse_attr("testattr")
+    assert "xml:testattr" == parse_attr("{" + XML_NAMESPACE + "}" + "testattr")
+    assert "href" == parse_attr("{" + XLINK_NAMESPACE + "}" + "href")
 
 
-def test_parse_attr_error():
+def test_parse_attr_warnings(capsys):
+    assert None == parse_attr("{unknown_ns}any")
+    captured = capsys.readouterr()
+    assert "WARNING: dropping {unknown_ns}any" in captured.err
+    assert None == parse_attr("{" + XLINK_NAMESPACE + "}" + "anything")
+    captured = capsys.readouterr()
+    assert "WARNING: dropping {http://www.w3.org/1999/xlink}anything" in captured.err
+
+
+def test_parse_attr_raises():
     with pytest.raises(ValueError):
         parse_attr("{" + SVG_NAMESPACE + "}" + "sthelse")
-    with pytest.raises(ValueError):
-        parse_attr("{" + XLINK_NAMESPACE + "}" + "sthelse")

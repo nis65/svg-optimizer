@@ -1,5 +1,4 @@
 import re
-import sys
 from dataclasses import dataclass
 from enum import Enum, auto
 
@@ -82,7 +81,3 @@ def token_lexer(text: str, commands: str) -> tuple:
             i = match.end()
 
     return tuple(tokens)
-
-
-def print_stderr(text: str):
-    print(f"{text}", file=sys.stderr)
