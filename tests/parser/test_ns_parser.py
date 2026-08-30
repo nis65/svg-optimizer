@@ -34,10 +34,13 @@ def test_parse_attr():
 def test_parse_attr_warnings(capsys):
     assert None == parse_attr("{unknown_ns}any")
     captured = capsys.readouterr()
-    assert "WARNING: dropping {unknown_ns}any" in captured.err
+    assert "WARNING: dropping attribute {unknown_ns}any" in captured.err
     assert None == parse_attr("{" + XLINK_NAMESPACE + "}" + "anything")
     captured = capsys.readouterr()
-    assert "WARNING: dropping {http://www.w3.org/1999/xlink}anything" in captured.err
+    assert (
+        "WARNING: dropping xlink attribute {http://www.w3.org/1999/xlink}anything"
+        in captured.err
+    )
 
 
 def test_parse_attr_raises():

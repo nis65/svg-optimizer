@@ -63,7 +63,8 @@ def _parse_xml_element(xml_element: ET.Element):  # noqa: PLR0911 PLR0912 PLR091
     if namespace == SVG_NAMESPACE or namespace is None:
         pass
     else:
-        raise ValueError(f"invalid namespace {namespace} for tag {tag}")
+        print_stderr(f"WARNING: dropping tag {xml_element.tag}")
+        return None
 
     match tag:
         case "defs":
@@ -248,7 +249,9 @@ def _parse_xml_children(xml_element: ET.Element) -> tuple:
     children = []
 
     for xml_child in xml_element:
-        children.append(_parse_xml_element(xml_child))
+        child = _parse_xml_element(xml_child)
+        if child:
+            children.append(child)
 
     return tuple(children)
 
