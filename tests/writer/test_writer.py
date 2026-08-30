@@ -150,6 +150,29 @@ def test_write_empty_group_with_attributes():
 
 
 # }}}
+# {{{ def test_write_empty_a():
+def test_write_empty_a():
+    d = Document(
+        svg=Svg(
+            children=(
+                Group(
+                    children=(),
+                    id="grpid",
+                    href="https://external.link/",
+                ),
+            )
+        )
+    )
+    writer = SvgWriter()
+    assert writer.write_svg_string(d) == dedent("""\
+    <?xml version='1.0' encoding='UTF-8'?>
+    <svg>
+    <a id="grpid" href="https://external.link/" />
+    </svg>
+    """)
+
+
+# }}}
 # {{{ def test_write_group_with_children():
 def test_write_group_with_children():
     d = Document(
