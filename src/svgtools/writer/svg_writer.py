@@ -183,6 +183,10 @@ class SvgWriter:
                     raise NotImplementedError(
                         "I know nothing but Rects, Circles, Ellipses, Lines, Polylines, Polygons and Paths"
                     )
+        if x := getattr(element, "x", None):
+            self._parts.append(f' x="{number_to_string(x)}"')
+        if y := getattr(element, "y", None):
+            self._parts.append(f' y="{number_to_string(y)}"')
         if width := getattr(element, "width", None):
             self._parts.append(f' width="{number_to_string(width)}"')
         if height := getattr(element, "height", None):

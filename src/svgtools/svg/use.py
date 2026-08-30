@@ -7,5 +7,7 @@ from .transform import Rotate, Scale, Translate
 class Use:
     href: str
     id: str | None = None
+    x: str | None = None
+    y: str | None = None
     transformations: tuple[Translate | Scale | Rotate, ...] = ()
     unknown_attributes: dict[str, str] = field(default_factory=dict)
