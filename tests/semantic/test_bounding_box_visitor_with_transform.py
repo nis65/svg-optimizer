@@ -105,6 +105,8 @@ def test_rect_use_translate():
                 Use(
                     href="#square",
                     transformations=(Translate(dx=1, dy=1),),
+                    x=0,
+                    y=0,
                 ),
             ),
         ),
@@ -142,6 +144,8 @@ def test_rect_all_translate():
                 Use(
                     transformations=(Translate(dx=4, dy=1),),
                     href="#group",
+                    x=0,
+                    y=0,
                 ),
             ),
         ),

@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" 
+     xmlns:xlink="http://www.w3.org/1999/xlink" 
+     width="300" height="200" viewBox="0 0 300 200">
+  
+  <!-- Define a reusable rectangle shape -->
+  <defs>
+    <rect id="my-box" width="80" height="40" fill="#007acc" />
+  </defs>
+
+  <!-- Use the defined shape with legacy xlink:href -->
+  <use xlink:href="#my-box" x="20" y="20" transform="translate (30 20) rotate(30)"/>
+</svg>
