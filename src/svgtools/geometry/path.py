@@ -11,11 +11,13 @@ from .point import Point
 class Path(Geometry):
     children: tuple = ()
 
-    def points_for_bounding_box(self, count: int) -> set[Point]:
-        _dummy, points = self.points_for_bounding_box_with_stats(count)
+    def points_for_bounding_box(self, number_of_points: int) -> set[Point]:
+        _dummy, points = self.points_for_bounding_box_with_stats(number_of_points)
         return points
 
-    def points_for_bounding_box_with_stats(self, count: int) -> (Counter, set[Point]):
+    def points_for_bounding_box_with_stats(
+        self, number_of_points: int
+    ) -> tuple[Counter[str], set[Point]]:
         path_elements_visited = Counter()
         points = []
         # a path does not need to start with an explicit MoveTo
@@ -31,7 +33,9 @@ class Path(Geometry):
                 points.append(current_subpath_start)
                 current_point = current_subpath_start
             else:
-                points.extend(child.points_for_bounding_box(current_point, count))
+                points.extend(
+                    child.points_for_bounding_box(current_point, number_of_points)
+                )
                 current_point = child.endpoint
             path_elements_visited[type(child).__name__] += 1
         return path_elements_visited, set(points)
