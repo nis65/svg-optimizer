@@ -8,7 +8,7 @@ from .point import Point
 class Polygon(Geometry):
     children: tuple = ()
 
-    def points_for_bounding_box(self, count: int) -> set[Point]:
-        # count is ignored, as the n points fully define the bounding box
+    def points_for_bounding_box(self, number_of_points: int) -> set[Point]:
+        # number_of_points is ignored, as the n points fully define the bounding box
         points = list(self.children)
         return set(points)

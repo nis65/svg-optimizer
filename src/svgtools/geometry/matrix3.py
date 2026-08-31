@@ -1,5 +1,8 @@
+from __future__ import annotations
+
 import math
 from dataclasses import dataclass
+from typing import overload
 
 from .point import Point
 from .tolerance import GEOMETRY_ABS_TOL, GEOMETRY_REL_TOL
@@ -64,7 +67,7 @@ class Matrix3:
     m33: float
 
     @classmethod
-    def identity(cls) -> "Matrix3":
+    def identity(cls) -> Matrix3:
         # fmt: off
         return cls(
             1, 0, 0,
@@ -74,7 +77,7 @@ class Matrix3:
         # fmt: on
 
     @classmethod
-    def translation(cls, dx: float, dy: float) -> "Matrix3":
+    def translation(cls, dx: float, dy: float) -> Matrix3:
         # fmt: off
         return cls(
             1, 0, dx,
@@ -84,7 +87,7 @@ class Matrix3:
         # fmt: on
 
     @classmethod
-    def scaling(cls, sx: float, sy: float) -> "Matrix3":
+    def scaling(cls, sx: float, sy: float) -> Matrix3:
         # fmt: off
         return cls(
             sx, 0, 0,
@@ -94,7 +97,7 @@ class Matrix3:
         # fmt: on
 
     @classmethod
-    def rotation(cls, theta_degree: float, cx: float, cy: float) -> "Matrix3":
+    def rotation(cls, theta_degree: float, cx: float, cy: float) -> Matrix3:
         t_to_origin = cls.translation(-cx, -cy)
         t_from_origin = cls.translation(cx, cy)
         theta = math.radians(theta_degree)
@@ -109,7 +112,7 @@ class Matrix3:
         return t_from_origin * rotate * t_to_origin
 
     @classmethod
-    def skew_x(cls, theta_degree: float) -> "Matrix3":
+    def skew_x(cls, theta_degree: float) -> Matrix3:
         if theta_degree % 180 == 90:  # noqa: PLR2004
             raise ValueError(f"cannot skew by {theta_degree}, undefined")
         s = math.tan(math.radians(theta_degree))
@@ -121,7 +124,7 @@ class Matrix3:
         # fmt: on
 
     @classmethod
-    def skew_y(cls, theta_degree: float) -> "Matrix3":
+    def skew_y(cls, theta_degree: float) -> Matrix3:
         if theta_degree % 180 == 90:  # noqa: PLR2004
             raise ValueError(f"cannot skew by {theta_degree}, undefined")
         s = math.tan(math.radians(theta_degree))
@@ -141,7 +144,7 @@ class Matrix3:
         d: float,
         e: float,
         f: float,
-    ) -> "Matrix3":
+    ) -> Matrix3:
         # fmt: off
         return Matrix3(
             a, c, e, 
@@ -150,7 +153,7 @@ class Matrix3:
         # fmt: on
 
     @staticmethod
-    def TRHxS_decompose(a: "Matrix3") -> TRHxSDecomposition:
+    def TRHxS_decompose(a: Matrix3) -> TRHxSDecomposition:
 
         # first, extract translation
         tx, ty = a.m13, a.m23
@@ -186,7 +189,13 @@ class Matrix3:
             self.m31 * x + self.m32 * y + self.m33 * w,
         )
 
-    def __mul__(self, other):
+    @overload
+    def __mul__(self, other: Point) -> Point: ...
+
+    @overload
+    def __mul__(self, other: Matrix3) -> Matrix3: ...
+
+    def __mul__(self, other: Point | Matrix3) -> Point | Matrix3:
         if isinstance(other, Matrix3):
             c1 = self._mul_column(other.m11, other.m21, other.m31)
             c2 = self._mul_column(other.m12, other.m22, other.m32)

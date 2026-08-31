@@ -16,8 +16,8 @@ class Rect(Geometry):
         if self.height < 0:
             raise ValueError(f"height ({self.height}) must not be negative")
 
-    def points_for_bounding_box(self, count: int) -> set[Point]:
-        # count is ignored, as 4 points fully define the bounding box
+    def points_for_bounding_box(self, number_of_points: int) -> set[Point]:
+        # number_of_points is ignored, as 4 points fully define the bounding box
         return {
             self.top_left,
             Point(self.top_left.x, self.top_left.y + self.height),
