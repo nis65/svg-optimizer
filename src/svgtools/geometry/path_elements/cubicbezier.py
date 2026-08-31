@@ -46,7 +46,7 @@ class CubicBezier(PathElement):
     def points_for_bounding_box(
         self, start: Point, number_of_points: int
     ) -> set[Point]:
-        points = []
+        points: list[Point] = []
         for i in range(number_of_points + 1):
             t = i / number_of_points
             points.append(self._point_at(start, t))

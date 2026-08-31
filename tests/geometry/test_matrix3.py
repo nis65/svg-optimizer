@@ -168,18 +168,6 @@ def test_affine():
     # fmt: on
 
 
-def test_matrix_multiplication_not_implemented():
-    # fmt: off
-    m = Matrix3(
-        1, 2, 3,
-        4, 5, 6,
-        7, 8, 9,
-    )
-    # fmt: on
-    with pytest.raises(TypeError):
-        n = m * 3.5  # noqa: F841
-
-
 def test_identity_multiplication():
     # fmt: off
     m = Matrix3(

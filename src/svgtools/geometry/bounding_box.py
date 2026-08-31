@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from dataclasses import dataclass
 
 from .point import Point
@@ -19,22 +21,22 @@ class BoundingBox:
                 f"min.y ({self.min.y}) must not be greater than max.y ({self.max.y})"
             )
 
-    def include(self, point: Point) -> "BoundingBox":
+    def include(self, point: Point) -> BoundingBox:
         return BoundingBox(
             min=Point(min(self.min.x, point.x), min(self.min.y, point.y)),
             max=Point(max(self.max.x, point.x), max(self.max.y, point.y)),
         )
 
-    def union(self, other) -> "BoundingBox":
+    def union(self, other: BoundingBox) -> BoundingBox:
         return BoundingBox(
             min=Point(min(self.min.x, other.min.x), min(self.min.y, other.min.y)),
             max=Point(max(self.max.x, other.max.x), max(self.max.y, other.max.y)),
         )
 
-    def __add__(self, other) -> "BoundingBox":
+    def __add__(self, other: BoundingBox) -> BoundingBox:
         return self.union(other)
 
-    def isclose(self, other, abs_tol) -> bool:
+    def isclose(self, other: BoundingBox, abs_tol: float) -> bool:
         return Point.points_are_close(
             {self.min, self.max}, {other.min, other.max}, abs_tol=abs_tol
         )

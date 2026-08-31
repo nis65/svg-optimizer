@@ -4,12 +4,13 @@ from dataclasses import dataclass
 from .geometry_abc import Geometry
 from .path_elements.closepath import ClosePath
 from .path_elements.moveto import MoveTo
+from .path_elements.path_element_abc import PathElement
 from .point import Point
 
 
 @dataclass(frozen=True, slots=True)
 class Path(Geometry):
-    children: tuple = ()
+    children: tuple[PathElement, ...] = ()
 
     def points_for_bounding_box(self, number_of_points: int) -> set[Point]:
         _dummy, points = self.points_for_bounding_box_with_stats(number_of_points)
@@ -18,8 +19,10 @@ class Path(Geometry):
     def points_for_bounding_box_with_stats(
         self, number_of_points: int
     ) -> tuple[Counter[str], set[Point]]:
-        path_elements_visited = Counter()
-        points = []
+
+        path_elements_visited = Counter[str]()
+        points: list[Point] = []
+
         # a path does not need to start with an explicit MoveTo
         current_point = Point(0, 0)
         current_subpath_start = current_point

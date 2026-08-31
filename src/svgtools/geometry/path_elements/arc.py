@@ -136,7 +136,7 @@ class Arc(PathElement):
         if self.sweep_flag == 1 and delta_theta < 0:
             delta_theta += 2 * math.pi
 
-        points = []
+        points: list[Point] = []
         for i in range(number_of_points + 1):
             t = i / number_of_points
             points.append(
