@@ -56,7 +56,9 @@ class Arc(PathElement):
 
         return Point(x=new_x, y=new_y)
 
-    def points_for_bounding_box(self, start: Point, count: int) -> set[Point]:  # noqa: PLR0914
+    def points_for_bounding_box(  # noqa: PLR0914
+        self, start: Point, number_of_points: int
+    ) -> set[Point]:
 
         rphi = math.radians(self.phi)
         cos_rphi = math.cos(rphi)
@@ -135,8 +137,8 @@ class Arc(PathElement):
             delta_theta += 2 * math.pi
 
         points = []
-        for i in range(count + 1):
-            t = i / count
+        for i in range(number_of_points + 1):
+            t = i / number_of_points
             points.append(
                 self._point_at(
                     center, lrx, lry, theta_start, delta_theta, cos_rphi, sin_rphi, t

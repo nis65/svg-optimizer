@@ -114,7 +114,7 @@ def test_endpoint_but_no_bb_moveto():
     )
     assert m.endpoint == target_point
     with pytest.raises(ValueError, match="MoveTo has no points for bounding box"):
-        m.points_for_bounding_box(200)
+        m.points_for_bounding_box(Point(0, 0), 200)
 
 
 def test_path_construction():

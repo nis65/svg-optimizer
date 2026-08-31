@@ -25,5 +25,7 @@ class MoveTo(PathElement):
     def endpoint(self) -> Point:
         return self.target
 
-    def points_for_bounding_box(start: Point, number_of_points: int) -> set[Point]:
+    def points_for_bounding_box(  # noqa: PLR6301
+        self, start: Point, number_of_points: int
+    ) -> set[Point]:
         raise ValueError("MoveTo has no points for bounding box")

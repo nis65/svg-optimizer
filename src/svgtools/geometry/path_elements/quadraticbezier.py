@@ -37,9 +37,11 @@ class QuadraticBezier(PathElement):
         new_y = self._qb(start.y, self.control1.y, self.end.y, t)
         return Point(x=new_x, y=new_y)
 
-    def points_for_bounding_box(self, start: Point, count: int) -> set[Point]:
+    def points_for_bounding_box(
+        self, start: Point, number_of_points: int
+    ) -> set[Point]:
         points = []
-        for i in range(count + 1):
-            t = i / count
+        for i in range(number_of_points + 1):
+            t = i / number_of_points
             points.append(self._point_at(start, t))
         return set(points)
