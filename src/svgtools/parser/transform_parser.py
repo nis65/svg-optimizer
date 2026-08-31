@@ -17,9 +17,11 @@ from svgtools.svg.transform import Affine, Rotate, Scale, SkewX, SkewY, Translat
 from .float_list_parser import parse_float_list
 
 
-def parse_transform_string(tstring: str | None) -> tuple:
+def parse_transform_string(
+    tstring: str | None,
+) -> tuple[Affine | Rotate | Scale | SkewX | SkewY | Translate, ...]:
 
-    transformation_list = []
+    transformation_list: list[Affine | Rotate | Scale | SkewX | SkewY | Translate] = []
 
     if tstring is None:
         rest = ""
