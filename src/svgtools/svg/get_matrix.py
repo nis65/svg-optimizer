@@ -2,7 +2,9 @@ from svgtools.geometry.matrix3 import Matrix3
 from svgtools.svg.transform import Affine, Rotate, Scale, SkewX, SkewY, Translate
 
 
-def transforms_to_matrix(transforms) -> Matrix3:
+def transforms_to_matrix(
+    transforms: tuple[Affine | Rotate | Scale | SkewX | SkewY | Translate, ...],
+) -> Matrix3:
     matrix = Matrix3.identity()
     for transform in transforms:
         matrix *= get_matrix(transform)

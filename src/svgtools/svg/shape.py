@@ -12,4 +12,4 @@ class Shape:
     transformations: tuple[
         Affine | Rotate | Scale | SkewX | SkewY | Translate, ...
     ] = ()
-    unknown_attributes: dict[str, str] = field(default_factory=dict)
+    unknown_attributes: dict[str, str] = field(default_factory=lambda: dict[str, str]())
