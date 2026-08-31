@@ -24,7 +24,12 @@ class TransformWriter:
         self.total_aggregated_chains = 0
         self.total_aggressive_chains = 0
 
-    def apply(self, transformations):
+    def apply(
+        self,
+        transformations: tuple[
+            Affine | Rotate | Scale | SkewX | SkewY | Translate, ...
+        ],
+    ) -> tuple[Affine | Rotate | Scale | SkewX | SkewY | Translate, ...]:
         match self.strategy:
             case TransformStrategy.KEEP:
                 return transformations
@@ -43,7 +48,11 @@ class TransformWriter:
                 raise ValueError(f"transform_strategy {self.strategy} not implemented")
 
     @staticmethod
-    def transforms_to_string(transformations) -> str:
+    def transforms_to_string(
+        transformations: tuple[
+            Affine | Rotate | Scale | SkewX | SkewY | Translate, ...
+        ],
+    ) -> str:
         result = ""
         for trans in transformations:
             match trans:
@@ -100,7 +109,11 @@ class TransformWriter:
         return True
 
     @staticmethod
-    def _transform_strategy_aggregate(transformations):
+    def _transform_strategy_aggregate(
+        transformations: tuple[
+            Affine | Rotate | Scale | SkewX | SkewY | Translate, ...
+        ],
+    ) -> tuple[Affine | Rotate | Scale | SkewX | SkewY | Translate, ...]:
         if len(transformations) == 0:
             raise ValueError("should not be called with 0 transformations")
         t_list = []
@@ -111,10 +124,13 @@ class TransformWriter:
             elif type(t) == type(agg_t):
                 match t:
                     case Translate():
+                        assert type(agg_t) == Translate
                         agg_t = Translate(dx=agg_t.dx + t.dx, dy=agg_t.dy + t.dy)
                     case Scale():
+                        assert type(agg_t) == Scale
                         agg_t = Scale(sx=agg_t.sx * t.sx, sy=agg_t.sy * t.sy)
                     case Rotate():
+                        assert type(agg_t) == Rotate
                         if agg_t.cx == t.cx and agg_t.cy == t.cy:
                             agg_t = Rotate(
                                 theta=agg_t.theta + t.theta, cx=t.cx, cy=t.cy
@@ -144,7 +160,11 @@ class TransformWriter:
         return tuple(t_list)
 
     @staticmethod
-    def _transform_strategy_decompose_matrix(transformations):
+    def _transform_strategy_decompose_matrix(
+        transformations: tuple[
+            Affine | Rotate | Scale | SkewX | SkewY | Translate, ...
+        ],
+    ) -> tuple[Affine | Rotate | Scale | SkewX | SkewY | Translate, ...]:
         t_list = []
         for t in transformations:
             match t:
@@ -174,7 +194,12 @@ class TransformWriter:
                     t_list.append(t)
         return tuple(t_list)
 
-    def _transform_strategy_conservative(self, transformations):
+    def _transform_strategy_conservative(
+        self,
+        transformations: tuple[
+            Affine | Rotate | Scale | SkewX | SkewY | Translate, ...
+        ],
+    ) -> tuple[Affine | Rotate | Scale | SkewX | SkewY | Translate, ...]:
         # attempt aggregate
         aggregated = self._transform_strategy_aggregate(transformations)
         if self._is_canonical(aggregated):
@@ -184,7 +209,12 @@ class TransformWriter:
             self.total_aggressive_chains += 1
             return self._transform_strategy_aggressive(transformations)
 
-    def _transform_strategy_aggressive(self, transformations):
+    def _transform_strategy_aggressive(
+        self,
+        transformations: tuple[
+            Affine | Rotate | Scale | SkewX | SkewY | Translate, ...
+        ],
+    ) -> tuple[Affine | Rotate | Scale | SkewX | SkewY | Translate, ...]:
         m = transforms_to_matrix(transformations)
         return self._transform_strategy_decompose_matrix(
             (Affine(a=m.m11, b=m.m21, c=m.m12, d=m.m22, e=m.m13, f=m.m23),)
