@@ -1,11 +1,16 @@
 from dataclasses import dataclass, field
 
+from .defs import Defs
+from .group import Group
+from .shape import Shape
+from .use import Use
+
 from .transform import Affine, Rotate, Scale, SkewX, SkewY, Translate
 
 
 @dataclass(frozen=True, slots=True)
 class Svg:
-    children: tuple
+    children: tuple[Defs | Group | Shape | Use]
     id: str | None = None
     xmlnamespace: str | None = None
     width: str | None = None
@@ -14,4 +19,4 @@ class Svg:
     transformations: tuple[
         Affine | Rotate | Scale | SkewX | SkewY | Translate, ...
     ] = ()
-    unknown_attributes: dict[str, str] = field(default_factory=dict)
+    unknown_attributes: dict[str, str] = field(default_factory=lambda: dict[str, str]())
