@@ -109,6 +109,8 @@ def _parse_xml_element(xml_element: ET.Element):  # noqa: PLR0911 PLR0912 PLR091
             xml_y = xml_element.get("y", "0")
             xml_width = xml_element.get("width")
             xml_height = xml_element.get("height")
+            assert xml_width is not None
+            assert xml_height is not None
             return Shape(
                 id=rect_id,
                 geometry=Rect(
@@ -130,6 +132,7 @@ def _parse_xml_element(xml_element: ET.Element):  # noqa: PLR0911 PLR0912 PLR091
             xml_cx = xml_element.get("cx", "0")
             xml_cy = xml_element.get("cy", "0")
             xml_r = xml_element.get("r")
+            assert xml_r is not None
             return Shape(
                 id=circle_id,
                 geometry=Circle(
@@ -150,6 +153,8 @@ def _parse_xml_element(xml_element: ET.Element):  # noqa: PLR0911 PLR0912 PLR091
             xml_cy = xml_element.get("cy", "0")
             xml_rx = xml_element.get("rx")
             xml_ry = xml_element.get("ry")
+            assert xml_rx is not None
+            assert xml_ry is not None
             return Shape(
                 id=ellipse_id,
                 geometry=Ellipse(
@@ -183,6 +188,10 @@ def _parse_xml_element(xml_element: ET.Element):  # noqa: PLR0911 PLR0912 PLR091
             line_y1 = xml_element.get("y1")
             line_x2 = xml_element.get("x2")
             line_y2 = xml_element.get("y2")
+            assert line_x1 is not None
+            assert line_y1 is not None
+            assert line_x2 is not None
+            assert line_y2 is not None
             return Shape(
                 id=line_id,
                 geometry=Line(
@@ -226,20 +235,20 @@ def _parse_xml_element(xml_element: ET.Element):  # noqa: PLR0911 PLR0912 PLR091
     )
 
 
-def _parse_poly_points(points_string: str, name: str):
+def _parse_poly_points(points_string: str | None, name: str) -> tuple[Point, ...]:
     tokens = token_lexer(points_string, commands="")
     token_iterator = TokenIterator(tokens)
     points = []
     while token_iterator.has_numbers(2):
         points.append(
             Point(
-                x=float(token_iterator.get().value),
-                y=float(token_iterator.get().value),
+                x=float(token_iterator.get_unwrapped().value),
+                y=float(token_iterator.get_unwrapped().value),
             )
         )
     if token_iterator.peek() is not None:
         print_stderr(
-            f"WARNING: dropping extra number {token_iterator.get().value} in {name}"
+            f"WARNING: dropping extra number {token_iterator.get_unwrapped().value} in {name}"
         )
     return tuple(points)
 
@@ -256,7 +265,7 @@ def _parse_xml_children(xml_element: ET.Element) -> tuple:
     return tuple(children)
 
 
-def _get_convert_href(xml_element: ET.Element) -> str:
+def _get_convert_href(xml_element: ET.Element) -> str | None:
     xml_href = xml_element.get("href")
     if xml_href is None:
         xml_href = xml_element.get("{" + XLINK_NAMESPACE + "}href")

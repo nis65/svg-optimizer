@@ -8,7 +8,7 @@ a simple parser for lists of numbers a used in an svg. All these are valid numbe
 """
 
 
-def parse_float_list(text: str) -> tuple[float, ...]:
+def parse_float_list(text: str | None) -> tuple[float, ...]:
 
     numbers = []
     if text is not None:

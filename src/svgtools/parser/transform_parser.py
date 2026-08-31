@@ -17,7 +17,7 @@ from svgtools.svg.transform import Affine, Rotate, Scale, SkewX, SkewY, Translat
 from .float_list_parser import parse_float_list
 
 
-def parse_transform_string(tstring: str) -> tuple:
+def parse_transform_string(tstring: str | None) -> tuple:
 
     transformation_list = []
 

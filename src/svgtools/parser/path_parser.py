@@ -7,6 +7,7 @@ from svgtools.geometry.path_elements.closepath import ClosePath
 from svgtools.geometry.path_elements.cubicbezier import CubicBezier
 from svgtools.geometry.path_elements.lineto import LineTo
 from svgtools.geometry.path_elements.moveto import MoveTo
+from svgtools.geometry.path_elements.path_element_abc import PathElement
 from svgtools.geometry.path_elements.quadraticbezier import QuadraticBezier
 from svgtools.geometry.point import Point
 
@@ -23,7 +24,7 @@ class PathParseState:
     previous_cubic_control: Point | None = None
 
 
-def parse_path_string(text: str) -> Geometry:  # noqa: PLR0912
+def parse_path_string(text: str | None) -> Geometry:  # noqa: PLR0912
     tokens = token_lexer(text, commands="mMlLhHvVzZqQtTcCsSaA")
     token_iterator = TokenIterator(tokens)
 
@@ -114,13 +115,15 @@ def parse_path_string(text: str) -> Geometry:  # noqa: PLR0912
                     Arc.parameter_counts[command],
                     _parse_aA,
                 )
+            case _:  # pragma: no cover
+                raise ValueError(f"Unexpected command: {command}")
         path_element_list.extend(parsed_elements)
     return Path(children=tuple(path_element_list))
 
 
 def _parse_mM_list(
     command: str, current_state: PathParseState, iterator: TokenIterator
-) -> (PathParseState, tuple):
+) -> tuple[PathParseState, tuple[PathElement, ...]]:
     expected_numbers = MoveTo.parameter_counts[command]
     if not iterator.has_numbers(expected_numbers):
         raise ValueError(f"Not enough numbers {expected_numbers} for command {command}")
@@ -131,9 +134,13 @@ def _parse_mM_list(
                 replaced_command = "l"
             case "M":
                 replaced_command = "L"
+            case _:  # pragma: no cover
+                raise ValueError(f"Unexpected command: {command}")
         expected_numbers = LineTo.parameter_counts[replaced_command]
         other_elements = ()
-        while iterator.peek() is not None and iterator.peek().kind == TokenKind.NUMBER:
+        while (
+            peeked_token := iterator.peek()
+        ) is not None and peeked_token.kind == TokenKind.NUMBER:
             if iterator.has_numbers(expected_numbers):
                 current_state, other_elements = _parse_any_list(
                     replaced_command,
@@ -144,7 +151,7 @@ def _parse_mM_list(
                 )
             else:
                 print_stderr(
-                    f"WARNING: dropping extra number {iterator.get().value} in {command} command"
+                    f"WARNING: dropping extra number {iterator.get_unwrapped().value} in {command} command"
                 )
     return current_state, (parsed_element, *other_elements)
 
@@ -155,7 +162,7 @@ def _parse_any_list(
     iterator: TokenIterator,
     expected_numbers,
     parse_element_function,
-) -> (PathParseState, tuple):
+) -> tuple[PathParseState, tuple[PathElement, ...]]:
     parsed_path_elements = []
     if not iterator.has_numbers(expected_numbers):
         raise ValueError(f"Not enough numbers {expected_numbers} for command {command}")
@@ -164,7 +171,9 @@ def _parse_any_list(
             command, current_state, iterator
         )
         parsed_path_elements.append(parsed_element)
-        while iterator.peek() is not None and iterator.peek().kind == TokenKind.NUMBER:
+        while (
+            peeked_token := iterator.peek()
+        ) is not None and peeked_token.kind == TokenKind.NUMBER:
             if iterator.has_numbers(expected_numbers) and expected_numbers != 0:
                 current_state, parsed_element = parse_element_function(
                     command, current_state, iterator
@@ -172,21 +181,27 @@ def _parse_any_list(
                 parsed_path_elements.append(parsed_element)
             else:
                 print_stderr(
-                    f"WARNING: dropping extra number {iterator.get().value} in {command} command"
+                    f"WARNING: dropping extra number {iterator.get_unwrapped().value} in {command} command"
                 )
     return current_state, tuple(parsed_path_elements)
 
 
 def _parse_mM(
     command: str, current_state: PathParseState, iterator: TokenIterator
-) -> (PathParseState, MoveTo):
+) -> tuple[PathParseState, MoveTo]:
     match command:
         case "m":
-            new_x = current_state.current_point.x + float(iterator.get().value)
-            new_y = current_state.current_point.y + float(iterator.get().value)
+            new_x = current_state.current_point.x + float(
+                iterator.get_unwrapped().value
+            )
+            new_y = current_state.current_point.y + float(
+                iterator.get_unwrapped().value
+            )
         case "M":
-            new_x = float(iterator.get().value)
-            new_y = float(iterator.get().value)
+            new_x = float(iterator.get_unwrapped().value)
+            new_y = float(iterator.get_unwrapped().value)
+        case _:  # pragma: no cover
+            raise ValueError(f"Unexpected command: {command}")
     current_state.current_point = Point(new_x, new_y)
     current_state.current_subpath_start = current_state.current_point
     current_state.previous_command = command
@@ -201,14 +216,20 @@ def _parse_mM(
 
 def _parse_lL(
     command: str, current_state: PathParseState, iterator: TokenIterator
-) -> (PathParseState, LineTo):
+) -> tuple[PathParseState, LineTo]:
     match command:
         case "l":
-            new_x = current_state.current_point.x + float(iterator.get().value)
-            new_y = current_state.current_point.y + float(iterator.get().value)
+            new_x = current_state.current_point.x + float(
+                iterator.get_unwrapped().value
+            )
+            new_y = current_state.current_point.y + float(
+                iterator.get_unwrapped().value
+            )
         case "L":
-            new_x = float(iterator.get().value)
-            new_y = float(iterator.get().value)
+            new_x = float(iterator.get_unwrapped().value)
+            new_y = float(iterator.get_unwrapped().value)
+        case _:  # pragma: no cover
+            raise ValueError(f"Unexpected command: {command}")
     current_state.current_point = Point(new_x, new_y)
     current_state.previous_command = command
     return (
@@ -222,12 +243,16 @@ def _parse_lL(
 
 def _parse_hH(
     command: str, current_state: PathParseState, iterator: TokenIterator
-) -> (PathParseState, LineTo):
+) -> tuple[PathParseState, LineTo]:
     match command:
         case "h":
-            new_x = current_state.current_point.x + float(iterator.get().value)
+            new_x = current_state.current_point.x + float(
+                iterator.get_unwrapped().value
+            )
         case "H":
-            new_x = float(iterator.get().value)
+            new_x = float(iterator.get_unwrapped().value)
+        case _:  # pragma: no cover
+            raise ValueError(f"Unexpected command: {command}")
     new_y = current_state.current_point.y
     current_state.current_point = Point(new_x, new_y)
     current_state.previous_command = command
@@ -242,13 +267,17 @@ def _parse_hH(
 
 def _parse_vV(
     command: str, current_state: PathParseState, iterator: TokenIterator
-) -> (PathParseState, LineTo):
+) -> tuple[PathParseState, LineTo]:
     new_x = current_state.current_point.x
     match command:
         case "v":
-            new_y = current_state.current_point.y + float(iterator.get().value)
+            new_y = current_state.current_point.y + float(
+                iterator.get_unwrapped().value
+            )
         case "V":
-            new_y = float(iterator.get().value)
+            new_y = float(iterator.get_unwrapped().value)
+        case _:  # pragma: no cover
+            raise ValueError(f"Unexpected command: {command}")
     current_state.current_point = Point(new_x, new_y)
     current_state.previous_command = command
     return (
@@ -262,25 +291,35 @@ def _parse_vV(
 
 def _parse_zZ(
     command: str, current_state: PathParseState, iterator: TokenIterator
-) -> (PathParseState, ClosePath):
+) -> tuple[PathParseState, ClosePath]:
     current_state.current_point = current_state.current_subpath_start
     return (current_state, ClosePath(representation=command))
 
 
 def _parse_qQ(
     command: str, current_state: PathParseState, iterator: TokenIterator
-) -> (PathParseState, QuadraticBezier):
+) -> tuple[PathParseState, QuadraticBezier]:
     match command:
         case "q":
-            new_control1_x = current_state.current_point.x + float(iterator.get().value)
-            new_control1_y = current_state.current_point.y + float(iterator.get().value)
-            new_end_x = current_state.current_point.x + float(iterator.get().value)
-            new_end_y = current_state.current_point.y + float(iterator.get().value)
+            new_control1_x = current_state.current_point.x + float(
+                iterator.get_unwrapped().value
+            )
+            new_control1_y = current_state.current_point.y + float(
+                iterator.get_unwrapped().value
+            )
+            new_end_x = current_state.current_point.x + float(
+                iterator.get_unwrapped().value
+            )
+            new_end_y = current_state.current_point.y + float(
+                iterator.get_unwrapped().value
+            )
         case "Q":
-            new_control1_x = float(iterator.get().value)
-            new_control1_y = float(iterator.get().value)
-            new_end_x = float(iterator.get().value)
-            new_end_y = float(iterator.get().value)
+            new_control1_x = float(iterator.get_unwrapped().value)
+            new_control1_y = float(iterator.get_unwrapped().value)
+            new_end_x = float(iterator.get_unwrapped().value)
+            new_end_y = float(iterator.get_unwrapped().value)
+        case _:  # pragma: no cover
+            raise ValueError(f"Unexpected command: {command}")
     current_state.current_point = Point(new_end_x, new_end_y)
     current_state.previous_command = command
     current_state.previous_quadratic_control = Point(new_control1_x, new_control1_y)
@@ -296,8 +335,10 @@ def _parse_qQ(
 
 def _parse_tT(
     command: str, current_state: PathParseState, iterator: TokenIterator
-) -> (PathParseState, QuadraticBezier):
+) -> tuple[PathParseState, QuadraticBezier]:
     if current_state.previous_command in {"q", "Q", "t", "T"}:
+        assert current_state.current_point is not None
+        assert current_state.previous_quadratic_control is not None
         new_control1 = _mirror_point(
             current_state.current_point, current_state.previous_quadratic_control
         )
@@ -305,11 +346,17 @@ def _parse_tT(
         new_control1 = current_state.current_point
     match command:
         case "t":
-            new_end_x = current_state.current_point.x + float(iterator.get().value)
-            new_end_y = current_state.current_point.y + float(iterator.get().value)
+            new_end_x = current_state.current_point.x + float(
+                iterator.get_unwrapped().value
+            )
+            new_end_y = current_state.current_point.y + float(
+                iterator.get_unwrapped().value
+            )
         case "T":
-            new_end_x = float(iterator.get().value)
-            new_end_y = float(iterator.get().value)
+            new_end_x = float(iterator.get_unwrapped().value)
+            new_end_y = float(iterator.get_unwrapped().value)
+        case _:  # pragma: no cover
+            raise ValueError(f"Unexpected command: {command}")
     current_state.current_point = Point(new_end_x, new_end_y)
     current_state.previous_command = command
     current_state.previous_quadratic_control = new_control1
@@ -325,22 +372,36 @@ def _parse_tT(
 
 def _parse_cC(
     command: str, current_state: PathParseState, iterator: TokenIterator
-) -> (PathParseState, CubicBezier):
+) -> tuple[PathParseState, CubicBezier]:
     match command:
         case "c":
-            new_control1_x = current_state.current_point.x + float(iterator.get().value)
-            new_control1_y = current_state.current_point.y + float(iterator.get().value)
-            new_control2_x = current_state.current_point.x + float(iterator.get().value)
-            new_control2_y = current_state.current_point.y + float(iterator.get().value)
-            new_end_x = current_state.current_point.x + float(iterator.get().value)
-            new_end_y = current_state.current_point.y + float(iterator.get().value)
+            new_control1_x = current_state.current_point.x + float(
+                iterator.get_unwrapped().value
+            )
+            new_control1_y = current_state.current_point.y + float(
+                iterator.get_unwrapped().value
+            )
+            new_control2_x = current_state.current_point.x + float(
+                iterator.get_unwrapped().value
+            )
+            new_control2_y = current_state.current_point.y + float(
+                iterator.get_unwrapped().value
+            )
+            new_end_x = current_state.current_point.x + float(
+                iterator.get_unwrapped().value
+            )
+            new_end_y = current_state.current_point.y + float(
+                iterator.get_unwrapped().value
+            )
         case "C":
-            new_control1_x = float(iterator.get().value)
-            new_control1_y = float(iterator.get().value)
-            new_control2_x = float(iterator.get().value)
-            new_control2_y = float(iterator.get().value)
-            new_end_x = float(iterator.get().value)
-            new_end_y = float(iterator.get().value)
+            new_control1_x = float(iterator.get_unwrapped().value)
+            new_control1_y = float(iterator.get_unwrapped().value)
+            new_control2_x = float(iterator.get_unwrapped().value)
+            new_control2_y = float(iterator.get_unwrapped().value)
+            new_end_x = float(iterator.get_unwrapped().value)
+            new_end_y = float(iterator.get_unwrapped().value)
+        case _:  # pragma: no cover
+            raise ValueError(f"Unexpected command: {command}")
     current_state.current_point = Point(new_end_x, new_end_y)
     current_state.previous_command = command
     current_state.previous_cubic_control = Point(new_control2_x, new_control2_y)
@@ -357,8 +418,10 @@ def _parse_cC(
 
 def _parse_sS(
     command: str, current_state: PathParseState, iterator: TokenIterator
-) -> (PathParseState, CubicBezier):
+) -> tuple[PathParseState, CubicBezier]:
     if current_state.previous_command in {"c", "C", "s", "S"}:
+        assert current_state.current_point is not None
+        assert current_state.previous_cubic_control is not None
         new_control1 = _mirror_point(
             current_state.current_point, current_state.previous_cubic_control
         )
@@ -366,15 +429,25 @@ def _parse_sS(
         new_control1 = current_state.current_point
     match command:
         case "s":
-            new_control2_x = current_state.current_point.x + float(iterator.get().value)
-            new_control2_y = current_state.current_point.y + float(iterator.get().value)
-            new_end_x = current_state.current_point.x + float(iterator.get().value)
-            new_end_y = current_state.current_point.y + float(iterator.get().value)
+            new_control2_x = current_state.current_point.x + float(
+                iterator.get_unwrapped().value
+            )
+            new_control2_y = current_state.current_point.y + float(
+                iterator.get_unwrapped().value
+            )
+            new_end_x = current_state.current_point.x + float(
+                iterator.get_unwrapped().value
+            )
+            new_end_y = current_state.current_point.y + float(
+                iterator.get_unwrapped().value
+            )
         case "S":
-            new_control2_x = float(iterator.get().value)
-            new_control2_y = float(iterator.get().value)
-            new_end_x = float(iterator.get().value)
-            new_end_y = float(iterator.get().value)
+            new_control2_x = float(iterator.get_unwrapped().value)
+            new_control2_y = float(iterator.get_unwrapped().value)
+            new_end_x = float(iterator.get_unwrapped().value)
+            new_end_y = float(iterator.get_unwrapped().value)
+        case _:  # pragma: no cover
+            raise ValueError(f"Unexpected command: {command}")
     current_state.current_point = Point(new_end_x, new_end_y)
     current_state.previous_command = command
     current_state.previous_cubic_control = Point(new_control2_x, new_control2_y)
@@ -391,19 +464,25 @@ def _parse_sS(
 
 def _parse_aA(
     command: str, current_state: PathParseState, iterator: TokenIterator
-) -> (PathParseState, Arc):
-    new_rx = float(iterator.get().value)
-    new_ry = float(iterator.get().value)
-    new_phi = float(iterator.get().value)
-    new_large_arc_flag = int(iterator.get().value)
-    new_sweep_flag = int(iterator.get().value)
+) -> tuple[PathParseState, Arc]:
+    new_rx = float(iterator.get_unwrapped().value)
+    new_ry = float(iterator.get_unwrapped().value)
+    new_phi = float(iterator.get_unwrapped().value)
+    new_large_arc_flag = int(iterator.get_unwrapped().value)
+    new_sweep_flag = int(iterator.get_unwrapped().value)
     match command:
         case "a":
-            new_x = current_state.current_point.x + float(iterator.get().value)
-            new_y = current_state.current_point.y + float(iterator.get().value)
+            new_x = current_state.current_point.x + float(
+                iterator.get_unwrapped().value
+            )
+            new_y = current_state.current_point.y + float(
+                iterator.get_unwrapped().value
+            )
         case "A":
-            new_x = float(iterator.get().value)
-            new_y = float(iterator.get().value)
+            new_x = float(iterator.get_unwrapped().value)
+            new_y = float(iterator.get_unwrapped().value)
+        case _:  # pragma: no cover
+            raise ValueError(f"Unexpected command: {command}")
     current_state.current_point = Point(new_x, new_y)
     current_state.previous_command = command
     return (
