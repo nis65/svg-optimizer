@@ -15,7 +15,7 @@ class Circle(Geometry):
             raise ValueError(f"radius ({self.radius}) must not be negative")
 
     def points_for_bounding_box(self, number_of_points: int) -> set[Point]:
-        points = []
+        points: list[Point] = []
         for i in range(number_of_points):
             theta = (2 * math.pi * i) / number_of_points
             x = self.center.x + self.radius * math.cos(theta)

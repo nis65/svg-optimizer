@@ -21,9 +21,7 @@ class TRHxSDecomposition:
     def theta_skew_x(self) -> float:
         return math.degrees(math.atan(self.h_skew_x))
 
-    def isclose(self, other):
-        if not isinstance(other, TRHxSDecomposition):
-            return False
+    def isclose(self, other: TRHxSDecomposition):
         return (
             math.isclose(
                 self.tx, other.tx, rel_tol=GEOMETRY_REL_TOL, abs_tol=GEOMETRY_ABS_TOL
@@ -208,14 +206,11 @@ class Matrix3:
                 c1[2], c2[2], c3[2]
             )
             # fmt: on
-        if isinstance(other, Point):
+        else:
             x, y, w = self._mul_column(other.x, other.y, 1)
             return Point(x / w, y / w)
-        return NotImplemented
 
-    def isclose(self, other):
-        if not isinstance(other, Matrix3):
-            return False
+    def isclose(self, other: Matrix3) -> bool:
         return (
             math.isclose(
                 self.m11, other.m11, rel_tol=GEOMETRY_REL_TOL, abs_tol=GEOMETRY_ABS_TOL
