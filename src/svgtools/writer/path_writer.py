@@ -125,6 +125,8 @@ class PathWriter:
                     current_state, path_command = self._build_path_command_arc(
                         current_state, element
                     )
+                case _:  # pragma: no cover
+                    raise RuntimeError(f"Internal Error: PathElement {element}")
             path_command_list.append(path_command)
         return path_command_list
 
@@ -184,6 +186,8 @@ class PathWriter:
                 number_string = numberlist_to_string((new_x,))
             case "V" | "v":
                 number_string = numberlist_to_string((new_y,))
+            case _:  # pragma: no cover
+                raise RuntimeError(f"Internal Error: unexpected command {new_command}")
         return current_state, PathCommand(command=new_command, parameters=number_string)
 
     def _build_path_command_closepath(self, current_state, closepath):
@@ -214,6 +218,8 @@ class PathWriter:
                 )
             case "T" | "t":
                 number_string = numberlist_to_string((new_end_x, new_end_y))
+            case _:  # pragma: no cover
+                raise RuntimeError(f"Internal Error: unexpected command {new_command}")
         return current_state, PathCommand(command=new_command, parameters=number_string)
 
     def _build_path_command_cbezier(self, current_state, cbezier):
@@ -249,6 +255,8 @@ class PathWriter:
                 number_string = numberlist_to_string(
                     (new_control2_x, new_control2_y, new_end_x, new_end_y)
                 )
+            case _:  # pragma: no cover
+                raise RuntimeError(f"Internal Error: unexpected command {new_command}")
         return current_state, PathCommand(command=new_command, parameters=number_string)
 
     def _build_path_command_arc(self, current_state, arc):
