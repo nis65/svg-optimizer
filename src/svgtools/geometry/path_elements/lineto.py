@@ -29,7 +29,9 @@ class LineTo(PathElement):
     def endpoint(self) -> Point:
         return self.target
 
-    def points_for_bounding_box(self, start: Point, count: int) -> set[Point]:
+    def points_for_bounding_box(
+        self, start: Point, number_of_points: int
+    ) -> set[Point]:
         return {
             start,
             self.endpoint,
