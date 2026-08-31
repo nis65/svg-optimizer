@@ -9,7 +9,9 @@ def transforms_to_matrix(transforms) -> Matrix3:
     return matrix
 
 
-def get_matrix(transform) -> Matrix3:
+def get_matrix(
+    transform: Affine | Rotate | Scale | SkewX | SkewY | Translate,
+) -> Matrix3:
     match transform:
         case Translate():
             return Matrix3.translation(transform.dx, transform.dy)
