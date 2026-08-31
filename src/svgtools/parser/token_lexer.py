@@ -17,7 +17,7 @@ class Token:
 class TokenIterator:
     def __init__(self, tokens: tuple[Token, ...]):
         self._iterator = iter(tokens)
-        self._buffer = []
+        self._buffer: list[Token] = []
 
     def _lookahead(self, count: int = 1) -> bool:
         while len(self._buffer) < count:
@@ -64,7 +64,7 @@ def token_lexer(text: str | None, commands: str) -> tuple[Token, ...]:
 
     NUMBER_RE = re.compile(r"[+-]?(?:(?:\d+(?:\.\d*)?)|(?:\.\d+))(?:[eE][+-]?\d+)?")
 
-    tokens = []
+    tokens: list[Token] = []
 
     i = 0
     while text is not None and i < len(text):

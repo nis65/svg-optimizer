@@ -229,16 +229,16 @@ def _parse_xml_element(xml_element: ET.Element):  # noqa: PLR0911 PLR0912 PLR091
                     xml_element, {"id", "points", "transform"}
                 ),
             )
-
-    raise NotImplementedError(
-        f"can parse only defs, g, use, rect, circle, path, line and polyline yet, not '{tag}'"
-    )
+        case _:
+            raise NotImplementedError(
+                f"can parse only defs, g, use, rect, circle, path, line and polyline yet, not '{tag}'"
+            )
 
 
 def _parse_poly_points(points_string: str | None, name: str) -> tuple[Point, ...]:
     tokens = token_lexer(points_string, commands="")
     token_iterator = TokenIterator(tokens)
-    points = []
+    points: list[Point] = []
     while token_iterator.has_numbers(2):
         points.append(
             Point(
@@ -253,9 +253,11 @@ def _parse_poly_points(points_string: str | None, name: str) -> tuple[Point, ...
     return tuple(points)
 
 
-def _parse_xml_children(xml_element: ET.Element) -> tuple:
+def _parse_xml_children(
+    xml_element: ET.Element,
+) -> tuple[Defs | Group | Shape | Use, ...]:
 
-    children = []
+    children: list[Defs | Group | Shape | Use] = []
 
     for xml_child in xml_element:
         child = _parse_xml_element(xml_child)
@@ -276,7 +278,7 @@ def _collect_unknown_attributes(
     xml_element: ET.Element, known_list: Collection[str]
 ) -> dict[str, str]:
 
-    unknown_attributes = {}
+    unknown_attributes: dict[str, str] = {}
     for key, value in xml_element.attrib.items():
         attr = parse_attr(key)
         if attr in known_list:

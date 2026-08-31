@@ -1,3 +1,4 @@
+from collections.abc import Callable
 from dataclasses import dataclass, field
 
 from svgtools.geometry.geometry_abc import Geometry
@@ -28,7 +29,7 @@ def parse_path_string(text: str | None) -> Geometry:  # noqa: PLR0912
     tokens = token_lexer(text, commands="mMlLhHvVzZqQtTcCsSaA")
     token_iterator = TokenIterator(tokens)
 
-    path_element_list = []
+    path_element_list: list[PathElement] = []
     current_state = PathParseState()
 
     while True:
@@ -160,10 +161,12 @@ def _parse_any_list(
     command: str,
     current_state: PathParseState,
     iterator: TokenIterator,
-    expected_numbers,
-    parse_element_function,
+    expected_numbers: int,
+    parse_element_function: Callable[
+        [str, PathParseState, TokenIterator], tuple[PathParseState, PathElement]
+    ],
 ) -> tuple[PathParseState, tuple[PathElement, ...]]:
-    parsed_path_elements = []
+    parsed_path_elements: list[PathElement] = []
     if not iterator.has_numbers(expected_numbers):
         raise ValueError(f"Not enough numbers {expected_numbers} for command {command}")
     else:

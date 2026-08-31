@@ -13,7 +13,7 @@ def parse_float_list(text: str | None) -> tuple[float, ...]:
     numbers = []
     if text is not None:
         tokens = text.strip().replace(",", " ").split()
-        numbers = []
+        numbers: list[float] = []
         for token in tokens:
             try:
                 numbers.append(float(token))
