@@ -18,6 +18,10 @@ def test_iterator_empty():
     assert token_iterator.peek() is None
     assert not token_iterator.has_numbers(1)
     assert token_iterator.get() is None
+    with pytest.raises(
+        RuntimeError, match="Internal Error: should not be called when no token is left"
+    ):
+        token_iterator.get_unwrapped()
 
 
 def test_iterator_one():

@@ -15,11 +15,11 @@ class Token:
 
 
 class TokenIterator:
-    def __init__(self, tokens):
+    def __init__(self, tokens: tuple[Token, ...]):
         self._iterator = iter(tokens)
         self._buffer = []
 
-    def _lookahead(self, count=1):
+    def _lookahead(self, count: int = 1) -> bool:
         while len(self._buffer) < count:
             try:
                 self._buffer.append(next(self._iterator))
@@ -27,7 +27,7 @@ class TokenIterator:
                 return False
         return True
 
-    def peek(self):
+    def peek(self) -> Token | None:
         if len(self._buffer) == 0:
             if self._lookahead(count=1):
                 return self._buffer[0]
@@ -36,7 +36,7 @@ class TokenIterator:
         else:
             return self._buffer[0]
 
-    def has_numbers(self, count: int):
+    def has_numbers(self, count: int) -> bool:
         if self._lookahead(count):
             for token in self._buffer[:count]:
                 if token.kind != TokenKind.NUMBER:
@@ -45,21 +45,29 @@ class TokenIterator:
         else:
             return False
 
-    def get(self):
+    def get(self) -> Token | None:
         token = self.peek()
         if token is not None:
             del self._buffer[0]
         return token
 
+    def get_unwrapped(self) -> Token:
+        token = self.get()
+        if token is None:
+            raise RuntimeError(
+                "Internal Error: should not be called when no token is left"
+            )
+        return token
 
-def token_lexer(text: str, commands: str) -> tuple:
+
+def token_lexer(text: str | None, commands: str) -> tuple[Token, ...]:
 
     NUMBER_RE = re.compile(r"[+-]?(?:(?:\d+(?:\.\d*)?)|(?:\.\d+))(?:[eE][+-]?\d+)?")
 
     tokens = []
 
     i = 0
-    while i < len(text):
+    while text is not None and i < len(text):
         char = text[i]
 
         if char in commands:

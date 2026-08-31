@@ -14,7 +14,7 @@ def split_clark_name(name: str) -> tuple[str, str]:
 
 
 # returns the tag and its namespace
-def parse_tag(tag: str) -> (str, str):
+def parse_tag(tag: str) -> tuple[str | None, str | None]:
     namespace, tag = split_clark_name(tag)
     if namespace == "":
         return tag, None
@@ -27,7 +27,7 @@ def parse_tag(tag: str) -> (str, str):
 
 
 # returns an attribute in SVG_ or XML_NAMESPACE. Or None (with a Warning to STDERR)
-def parse_attr(raw_attr: str) -> str:
+def parse_attr(raw_attr: str) -> str | None:
     namespace, attr = split_clark_name(raw_attr)
     if namespace == "":
         return attr
