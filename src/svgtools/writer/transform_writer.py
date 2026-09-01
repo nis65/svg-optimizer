@@ -95,7 +95,11 @@ class TransformWriter:
         return result.strip()
 
     @staticmethod
-    def _is_canonical(transformations) -> bool:
+    def _is_canonical(
+        transformations: tuple[
+            Affine | Rotate | Scale | SkewX | SkewY | Translate, ...
+        ],
+    ) -> bool:
         _CANONICAL_ORDER = (Translate, Rotate, SkewX, Scale)
         reference = iter(_CANONICAL_ORDER)
         for t in transformations:
@@ -116,7 +120,7 @@ class TransformWriter:
     ) -> tuple[Affine | Rotate | Scale | SkewX | SkewY | Translate, ...]:
         if len(transformations) == 0:
             raise ValueError("should not be called with 0 transformations")
-        t_list = []
+        t_list: list[Affine | Rotate | Scale | SkewX | SkewY | Translate] = []
         agg_t = None
         for t in transformations:
             if agg_t is None:
@@ -156,6 +160,7 @@ class TransformWriter:
             else:
                 t_list.append(agg_t)
                 agg_t = t
+        assert agg_t is not None
         t_list.append(agg_t)
         return tuple(t_list)
 
@@ -165,7 +170,7 @@ class TransformWriter:
             Affine | Rotate | Scale | SkewX | SkewY | Translate, ...
         ],
     ) -> tuple[Affine | Rotate | Scale | SkewX | SkewY | Translate, ...]:
-        t_list = []
+        t_list: list[Affine | Rotate | Scale | SkewX | SkewY | Translate] = []
         for t in transformations:
             match t:
                 case Affine():
