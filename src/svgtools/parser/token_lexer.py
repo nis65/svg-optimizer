@@ -15,7 +15,7 @@ class Token:
 
 
 class TokenIterator:
-    def __init__(self, tokens: tuple[Token, ...]):
+    def __init__(self, tokens: tuple[Token, ...]) -> None:
         self._iterator = iter(tokens)
         self._buffer: list[Token] = []
 

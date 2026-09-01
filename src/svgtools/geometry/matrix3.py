@@ -21,7 +21,7 @@ class TRHxSDecomposition:
     def theta_skew_x(self) -> float:
         return math.degrees(math.atan(self.h_skew_x))
 
-    def isclose(self, other: TRHxSDecomposition):
+    def isclose(self, other: TRHxSDecomposition) -> bool:
         return (
             math.isclose(
                 self.tx, other.tx, rel_tol=GEOMETRY_REL_TOL, abs_tol=GEOMETRY_ABS_TOL

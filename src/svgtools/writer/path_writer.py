@@ -49,12 +49,12 @@ class PathWriter:
         path_coordinates: PathCoordinates = PathCoordinates.ABSOLUTE,
         path_compactness: PathCompactness = PathCompactness.CANONICAL,
         path_command_set: PathCommandSet = PathCommandSet.BASE,
-    ):
+    ) -> None:
         self.path_coordinates = path_coordinates
         self.path_compactness = path_compactness
         self.path_command_set = path_command_set
 
-    def path_elements_to_string(self, path_elements: tuple[PathElement, ...]):
+    def path_elements_to_string(self, path_elements: tuple[PathElement, ...]) -> str:
         path_command_list = self._path_elements_to_path_commands(path_elements)
         match self.path_compactness:
             case PathCompactness.CANONICAL:
