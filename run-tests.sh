@@ -2,7 +2,7 @@
 set -e
 
 ruff format --check
-ruff check --preview --extend-select PLR --output-format=full src
+ruff check --preview --extend-select PLR,ANN --output-format=full src
 pytest --cov=. --cov-report=term-missing --cov-fail-under=100
 pyright src
 

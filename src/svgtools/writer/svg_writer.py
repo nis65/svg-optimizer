@@ -35,7 +35,7 @@ class SvgWriter:
         path_coordinates: PathCoordinates = PathCoordinates.ABSOLUTE,
         path_compactness: PathCompactness = PathCompactness.CANONICAL,
         path_command_set: PathCommandSet = PathCommandSet.BASE,
-    ):
+    ) -> None:
         self._parts: list[str] = []
         self.transform_strategy = transform_strategy
         self.path_coordinates = path_coordinates
@@ -55,10 +55,10 @@ class SvgWriter:
         self._write_document(document)
         return self.XML_HEADER + "".join(self._parts)
 
-    def _write_document(self, document: Document):
+    def _write_document(self, document: Document) -> None:
         self._walk_svg(document.svg)
 
-    def _walk_svg(self, svg: Svg):
+    def _walk_svg(self, svg: Svg) -> None:
         self._parts.append("<svg")
         self._append_attributes(svg)
         if svg.children == ():
@@ -69,7 +69,7 @@ class SvgWriter:
                 self._walk_element(child, "")
             self._parts.append("</svg>\n")
 
-    def _walk_element(self, element: Defs | Group | Use | Shape, indent: str):
+    def _walk_element(self, element: Defs | Group | Use | Shape, indent: str) -> None:
         match element:
             case Defs():
                 self._walk_defs(element, indent)
@@ -82,7 +82,7 @@ class SvgWriter:
             case _:  # pragma: no cover
                 raise NotImplementedError(type(element))
 
-    def _walk_group(self, group: Group, indent: str):
+    def _walk_group(self, group: Group, indent: str) -> None:
         if group.href is None:
             tagname = "g"
         else:
@@ -97,7 +97,7 @@ class SvgWriter:
                 self._walk_element(child, self.INDENT + indent)
             self._parts.append(indent + "</" + tagname + ">\n")
 
-    def _walk_defs(self, defs: Defs, indent: str):
+    def _walk_defs(self, defs: Defs, indent: str) -> None:
         self._parts.append(indent + "<defs")
         self._append_attributes(defs)
         if defs.children == ():
@@ -108,12 +108,12 @@ class SvgWriter:
                 self._walk_element(child, self.INDENT + indent)
             self._parts.append(indent + "</defs>\n")
 
-    def _walk_use(self, use: Use, indent: str):
+    def _walk_use(self, use: Use, indent: str) -> None:
         self._parts.append(indent + "<use")
         self._append_attributes(use)
         self._parts.append(" />\n")
 
-    def _walk_shape(self, shape: Shape, indent: str):
+    def _walk_shape(self, shape: Shape, indent: str) -> None:
         match shape.geometry:
             case Rect():
                 self._parts.append(indent + "<rect")
@@ -215,7 +215,7 @@ class SvgWriter:
             self._parts.append(f' {key}="{value}"')
 
     @staticmethod
-    def _polypoints_to_string(polypoints: tuple[Point, ...]):
+    def _polypoints_to_string(polypoints: tuple[Point, ...]) -> str:
         result: str = ""
         for point in polypoints:
             coords = (point.x, point.y)

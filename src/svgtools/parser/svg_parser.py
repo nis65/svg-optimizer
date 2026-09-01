@@ -57,7 +57,7 @@ def parse_svg_string(svg_text: str) -> Document:
     )
 
 
-def _parse_xml_element(xml_element: ET.Element):  # noqa: PLR0911 PLR0912 PLR0914 PLR0915
+def _parse_xml_element(xml_element: ET.Element) -> Defs | Group | Shape | Use | None:  # noqa: PLR0911 PLR0912 PLR0914 PLR0915
 
     tag, namespace = parse_tag(xml_element.tag)
     if namespace == SVG_NAMESPACE or namespace is None:

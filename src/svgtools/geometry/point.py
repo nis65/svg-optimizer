@@ -16,7 +16,7 @@ class Point:
         other: "Point",
         rel_tol: float = GEOMETRY_REL_TOL,
         abs_tol: float = GEOMETRY_ABS_TOL,
-    ):
+    ) -> bool:
         return math.isclose(
             self.x, other.x, rel_tol=rel_tol, abs_tol=abs_tol
         ) and math.isclose(self.y, other.y, rel_tol=rel_tol, abs_tol=abs_tol)

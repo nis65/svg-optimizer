@@ -19,7 +19,7 @@ class TransformStrategy(Enum):
 
 
 class TransformWriter:
-    def __init__(self, strategy: TransformStrategy):
+    def __init__(self, strategy: TransformStrategy) -> None:
         self.strategy = strategy
         self.total_aggregated_chains = 0
         self.total_aggressive_chains = 0

@@ -58,7 +58,7 @@ def _skip_spaces(text: str) -> str:
     return text.lstrip()
 
 
-def _parse_translate(text: str):
+def _parse_translate(text: str) -> tuple[str, Translate]:
     numbers, rest = _parse_parentheses(text)
     if len(numbers) == 2:  # noqa: PLR2004
         t = Translate(dx=numbers[0], dy=numbers[1])
@@ -67,7 +67,7 @@ def _parse_translate(text: str):
     return rest, t
 
 
-def _parse_scale(text: str):
+def _parse_scale(text: str) -> tuple[str, Scale]:
     numbers, rest = _parse_parentheses(text)
     match len(numbers):
         case 1:
@@ -79,7 +79,7 @@ def _parse_scale(text: str):
     return rest, t
 
 
-def _parse_rotate(text: str):
+def _parse_rotate(text: str) -> tuple[str, Rotate]:
     numbers, rest = _parse_parentheses(text)
     match len(numbers):
         case 1:
@@ -91,7 +91,7 @@ def _parse_rotate(text: str):
     return rest, r
 
 
-def _parse_skew_x(text: str):
+def _parse_skew_x(text: str) -> tuple[str, SkewX]:
     numbers, rest = _parse_parentheses(text)
     match len(numbers):
         case 1:
@@ -103,7 +103,7 @@ def _parse_skew_x(text: str):
     return rest, s
 
 
-def _parse_skew_y(text: str):
+def _parse_skew_y(text: str) -> tuple[str, SkewY]:
     numbers, rest = _parse_parentheses(text)
     match len(numbers):
         case 1:
@@ -115,7 +115,7 @@ def _parse_skew_y(text: str):
     return rest, s
 
 
-def _parse_affine(text: str):
+def _parse_affine(text: str) -> tuple[str, Affine]:
     numbers, rest = _parse_parentheses(text)
     match len(numbers):
         case 6:

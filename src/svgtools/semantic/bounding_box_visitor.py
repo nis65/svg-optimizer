@@ -21,7 +21,7 @@ class _Phase(Enum):
 
 
 class BoundingBoxVisitor:
-    def __init__(self):
+    def __init__(self) -> None:
 
         self.bounding_box = None
         self.definition_table: dict[
@@ -29,7 +29,7 @@ class BoundingBoxVisitor:
         ] = {}  # Maps object ids to reusable svg elements.
         self.visited = Counter[str]()
 
-    def visit(self, document: Document):
+    def visit(self, document: Document) -> None:
 
         self._walk_svg(document.svg, _Phase.BUILD_DEFINITION_TABLE)
         self._walk_svg(document.svg, _Phase.VISIT)
@@ -40,7 +40,7 @@ class BoundingBoxVisitor:
         else:
             self.bounding_box += bbox
 
-    def _walk_svg(self, svg: Svg, phase: _Phase):
+    def _walk_svg(self, svg: Svg, phase: _Phase) -> None:
 
         current_matrix = Matrix3.identity()
         if phase == _Phase.VISIT:
@@ -53,7 +53,7 @@ class BoundingBoxVisitor:
         element: Defs | Group | Shape | Use,
         phase: _Phase,
         current_matrix: Matrix3,
-    ):
+    ) -> None:
 
         match element:
             case Defs():
@@ -67,7 +67,7 @@ class BoundingBoxVisitor:
             case _:  # pragma: no cover
                 raise NotImplementedError(type(element))
 
-    def _walk_group(self, group: Group, phase: _Phase, current_matrix: Matrix3):
+    def _walk_group(self, group: Group, phase: _Phase, current_matrix: Matrix3) -> None:
         match phase:
             case _Phase.BUILD_DEFINITION_TABLE:
                 if group.id:
@@ -77,7 +77,7 @@ class BoundingBoxVisitor:
         for child in group.children:
             self._walk_element(child, phase, current_matrix)
 
-    def _walk_defs(self, defs: Defs, phase: _Phase):
+    def _walk_defs(self, defs: Defs, phase: _Phase) -> None:
 
         match phase:
             case _Phase.BUILD_DEFINITION_TABLE:
@@ -89,7 +89,7 @@ class BoundingBoxVisitor:
             case _Phase.VISIT:
                 pass
 
-    def _walk_use(self, use: Use, phase: _Phase, current_matrix: Matrix3):
+    def _walk_use(self, use: Use, phase: _Phase, current_matrix: Matrix3) -> None:
 
         match phase:
             case _Phase.BUILD_DEFINITION_TABLE:
@@ -103,7 +103,7 @@ class BoundingBoxVisitor:
                 current_matrix *= Matrix3.translation(use.x, use.y)
                 self._walk_element(self.definition_table[label], phase, current_matrix)
 
-    def _walk_shape(self, shape: Shape, phase: _Phase, current_matrix: Matrix3):
+    def _walk_shape(self, shape: Shape, phase: _Phase, current_matrix: Matrix3) -> None:
 
         match phase:
             case _Phase.BUILD_DEFINITION_TABLE:
