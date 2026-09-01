@@ -2,6 +2,11 @@
 pythonpath = ["src"]
 testpaths = ["tests"]
 
+[tool.coverage.report]
+exclude_also = [
+    "if TYPE_CHECKING:",
+]
+
 [tool.pyright]
 include = ["src"]
 typeCheckingMode = "strict"

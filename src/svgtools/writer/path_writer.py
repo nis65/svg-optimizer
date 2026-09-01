@@ -1,3 +1,5 @@
+# from __future__ import annotations
+
 from dataclasses import dataclass, field
 from enum import Enum, auto
 
@@ -6,6 +8,7 @@ from svgtools.geometry.path_elements.closepath import ClosePath
 from svgtools.geometry.path_elements.cubicbezier import CubicBezier
 from svgtools.geometry.path_elements.lineto import LineTo
 from svgtools.geometry.path_elements.moveto import MoveTo
+from svgtools.geometry.path_elements.path_element_abc import PathElement
 from svgtools.geometry.path_elements.quadraticbezier import QuadraticBezier
 from svgtools.geometry.point import Point
 
@@ -51,7 +54,7 @@ class PathWriter:
         self.path_compactness = path_compactness
         self.path_command_set = path_command_set
 
-    def path_elements_to_string(self, path_elements):
+    def path_elements_to_string(self, path_elements: tuple[PathElement, ...]):
         path_command_list = self._path_elements_to_path_commands(path_elements)
         match self.path_compactness:
             case PathCompactness.CANONICAL:
@@ -71,7 +74,7 @@ class PathWriter:
         return result.strip()
 
     @staticmethod
-    def _can_aggregate(previous, current) -> bool:
+    def _can_aggregate(previous: PathCommand, current: PathCommand) -> bool:
         if previous.command == current.command:
             return True
         if previous.command == "m" and current.command == "l":
@@ -81,8 +84,10 @@ class PathWriter:
         return False
 
     @classmethod
-    def _compact_command_list(cls, command_list):
-        result = []
+    def _compact_command_list(
+        cls, command_list: list[PathCommand]
+    ) -> list[PathCommand]:
+        result: list[PathCommand] = []
         for c in command_list:
             if not result:
                 result.append(c)
@@ -96,9 +101,11 @@ class PathWriter:
                 result.append(c)
         return result
 
-    def _path_elements_to_path_commands(self, path_elements):
+    def _path_elements_to_path_commands(
+        self, path_elements: tuple[PathElement, ...]
+    ) -> list[PathCommand]:
         current_state = PathWriteState()
-        path_command_list = []
+        path_command_list: list[PathCommand] = []
         for element in path_elements:
             match element:
                 case MoveTo():
@@ -155,7 +162,9 @@ class PathWriter:
             )
         return new_representation
 
-    def _build_path_command_moveto(self, current_state, moveto):
+    def _build_path_command_moveto(
+        self, current_state: PathWriteState, moveto: MoveTo
+    ) -> tuple[PathWriteState, PathCommand]:
 
         new_command = self._get_command(moveto.representation)
         if new_command.isupper():
@@ -169,7 +178,7 @@ class PathWriter:
         number_string = numberlist_to_string((new_x, new_y))
         return current_state, PathCommand(command=new_command, parameters=number_string)
 
-    def _build_path_command_lineto(self, current_state, lineto):
+    def _build_path_command_lineto(self, current_state: PathWriteState, lineto: LineTo):
 
         new_command = self._get_command(lineto.representation)
         if new_command.isupper():
@@ -190,14 +199,18 @@ class PathWriter:
                 raise RuntimeError(f"Internal Error: unexpected command {new_command}")
         return current_state, PathCommand(command=new_command, parameters=number_string)
 
-    def _build_path_command_closepath(self, current_state, closepath):
+    def _build_path_command_closepath(
+        self, current_state: PathWriteState, closepath: ClosePath
+    ):
 
         new_command = self._get_command(closepath.representation)
         current_state.current_point = current_state.current_subpath_start
 
         return current_state, PathCommand(command=new_command, parameters="")
 
-    def _build_path_command_qbezier(self, current_state, qbezier):
+    def _build_path_command_qbezier(
+        self, current_state: PathWriteState, qbezier: QuadraticBezier
+    ):
 
         new_command = self._get_command(qbezier.representation)
         if new_command.isupper():
@@ -222,7 +235,9 @@ class PathWriter:
                 raise RuntimeError(f"Internal Error: unexpected command {new_command}")
         return current_state, PathCommand(command=new_command, parameters=number_string)
 
-    def _build_path_command_cbezier(self, current_state, cbezier):
+    def _build_path_command_cbezier(
+        self, current_state: PathWriteState, cbezier: CubicBezier
+    ):
         new_command = self._get_command(cbezier.representation)
         if new_command.isupper():
             new_control1_x = cbezier.control1.x
@@ -259,7 +274,7 @@ class PathWriter:
                 raise RuntimeError(f"Internal Error: unexpected command {new_command}")
         return current_state, PathCommand(command=new_command, parameters=number_string)
 
-    def _build_path_command_arc(self, current_state, arc):
+    def _build_path_command_arc(self, current_state: PathWriteState, arc: Arc):
         new_command = self._get_command(arc.representation)
         if new_command.isupper():
             new_end_x = arc.end.x

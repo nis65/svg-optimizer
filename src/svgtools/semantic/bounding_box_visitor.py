@@ -24,8 +24,10 @@ class BoundingBoxVisitor:
     def __init__(self):
 
         self.bounding_box = None
-        self.definition_table = {}  # Maps object ids to reusable svg elements.
-        self.visited = Counter()
+        self.definition_table: dict[
+            str, Group | Shape
+        ] = {}  # Maps object ids to reusable svg elements.
+        self.visited = Counter[str]()
 
     def visit(self, document: Document):
 
@@ -46,17 +48,22 @@ class BoundingBoxVisitor:
         for child in svg.children:
             self._walk_element(child, phase, current_matrix)
 
-    def _walk_element(self, element, phase: _Phase, current_matrix: Matrix3):
+    def _walk_element(
+        self,
+        element: Defs | Group | Shape | Use,
+        phase: _Phase,
+        current_matrix: Matrix3,
+    ):
 
         match element:
             case Defs():
                 self._walk_defs(element, phase)
             case Group():
                 self._walk_group(element, phase, current_matrix)
-            case Use():
-                self._walk_use(element, phase, current_matrix)
             case Shape():
                 self._walk_shape(element, phase, current_matrix)
+            case Use():
+                self._walk_use(element, phase, current_matrix)
             case _:  # pragma: no cover
                 raise NotImplementedError(type(element))
 

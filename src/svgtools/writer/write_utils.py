@@ -11,8 +11,8 @@ def number_to_string(number: float | str) -> str:
     # return f"{number:.3f}".rstrip("0").rstrip(".")
 
 
-def numberlist_to_string(numbers) -> str:
-    str_numbers = []
+def numberlist_to_string(numbers: tuple[float, ...]) -> str:
+    str_numbers: list[str] = []
     for number in numbers:
         str_numbers.append(number_to_string(number))
     return " ".join(str_numbers)

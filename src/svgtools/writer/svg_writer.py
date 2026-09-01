@@ -1,7 +1,10 @@
+from typing import assert_never
+
 from svgtools.geometry.circle import Circle
 from svgtools.geometry.ellipse import Ellipse
 from svgtools.geometry.line import Line
 from svgtools.geometry.path import Path
+from svgtools.geometry.point import Point
 from svgtools.geometry.polygon import Polygon
 from svgtools.geometry.polyline import Polyline
 from svgtools.geometry.rect import Rect
@@ -66,7 +69,7 @@ class SvgWriter:
                 self._walk_element(child, "")
             self._parts.append("</svg>\n")
 
-    def _walk_element(self, element, indent: str):
+    def _walk_element(self, element: Defs | Group | Use | Shape, indent: str):
         match element:
             case Defs():
                 self._walk_defs(element, indent)
@@ -126,10 +129,12 @@ class SvgWriter:
                 self._parts.append(indent + "<polyline")
             case Polygon():
                 self._parts.append(indent + "<polygon")
+            case _:  # pragma: no cover
+                assert_never(shape.geometry)  # type: ignore[arg-type]
         self._append_attributes(shape)
         self._parts.append(" />\n")
 
-    def _append_attributes(self, element) -> None:  # noqa: PLR0912
+    def _append_attributes(self, element: Defs | Group | Shape | Svg | Use) -> None:  # noqa: PLR0912
         if xmlnamespace := getattr(element, "xmlnamespace", None):
             self._parts.append(f' xmlns="{xmlnamespace}"')
         if element_id := getattr(element, "id", None):
@@ -210,8 +215,8 @@ class SvgWriter:
             self._parts.append(f' {key}="{value}"')
 
     @staticmethod
-    def _polypoints_to_string(polypoints):
-        result = ""
+    def _polypoints_to_string(polypoints: tuple[Point, ...]):
+        result: str = ""
         for point in polypoints:
             coords = (point.x, point.y)
             result += f"{numberlist_to_string(coords)} "
