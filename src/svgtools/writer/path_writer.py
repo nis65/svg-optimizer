@@ -178,7 +178,9 @@ class PathWriter:
         number_string = numberlist_to_string((new_x, new_y))
         return current_state, PathCommand(command=new_command, parameters=number_string)
 
-    def _build_path_command_lineto(self, current_state: PathWriteState, lineto: LineTo):
+    def _build_path_command_lineto(
+        self, current_state: PathWriteState, lineto: LineTo
+    ) -> tuple[PathWriteState, PathCommand]:
 
         new_command = self._get_command(lineto.representation)
         if new_command.isupper():
@@ -201,7 +203,7 @@ class PathWriter:
 
     def _build_path_command_closepath(
         self, current_state: PathWriteState, closepath: ClosePath
-    ):
+    ) -> tuple[PathWriteState, PathCommand]:
 
         new_command = self._get_command(closepath.representation)
         current_state.current_point = current_state.current_subpath_start
@@ -210,7 +212,7 @@ class PathWriter:
 
     def _build_path_command_qbezier(
         self, current_state: PathWriteState, qbezier: QuadraticBezier
-    ):
+    ) -> tuple[PathWriteState, PathCommand]:
 
         new_command = self._get_command(qbezier.representation)
         if new_command.isupper():
@@ -237,7 +239,7 @@ class PathWriter:
 
     def _build_path_command_cbezier(
         self, current_state: PathWriteState, cbezier: CubicBezier
-    ):
+    ) -> tuple[PathWriteState, PathCommand]:
         new_command = self._get_command(cbezier.representation)
         if new_command.isupper():
             new_control1_x = cbezier.control1.x
@@ -274,7 +276,9 @@ class PathWriter:
                 raise RuntimeError(f"Internal Error: unexpected command {new_command}")
         return current_state, PathCommand(command=new_command, parameters=number_string)
 
-    def _build_path_command_arc(self, current_state: PathWriteState, arc: Arc):
+    def _build_path_command_arc(
+        self, current_state: PathWriteState, arc: Arc
+    ) -> tuple[PathWriteState, PathCommand]:
         new_command = self._get_command(arc.representation)
         if new_command.isupper():
             new_end_x = arc.end.x
