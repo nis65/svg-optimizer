@@ -12,16 +12,24 @@ all parser funcions
   a space (or a comma) is separator
 """
 
-from svgtools.svg.transform import Affine, Rotate, Scale, SkewX, SkewY, Translate
+from svgtools.svg.transform import (
+    Affine,
+    Rotate,
+    Scale,
+    SkewX,
+    SkewY,
+    SvgTransformations,
+    Translate,
+)
 
 from .float_list_parser import parse_float_list
 
 
 def parse_transform_string(
     tstring: str | None,
-) -> tuple[Affine | Rotate | Scale | SkewX | SkewY | Translate, ...]:
+) -> tuple[SvgTransformations, ...]:
 
-    transformation_list: list[Affine | Rotate | Scale | SkewX | SkewY | Translate] = []
+    transformation_list: list[SvgTransformations] = []
 
     if tstring is None:
         rest = ""

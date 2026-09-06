@@ -3,7 +3,7 @@ from dataclasses import dataclass, field
 from .defs import Defs
 from .group import Group
 from .shape import Shape
-from .transform import Affine, Rotate, Scale, SkewX, SkewY, Translate
+from .transform import SvgTransformations
 from .use import Use
 
 
@@ -15,7 +15,5 @@ class Svg:
     width: str | None = None
     height: str | None = None
     viewBox: tuple[float, ...] = ()
-    transformations: tuple[
-        Affine | Rotate | Scale | SkewX | SkewY | Translate, ...
-    ] = ()
+    transformations: tuple[SvgTransformations, ...] = ()
     unknown_attributes: dict[str, str] = field(default_factory=lambda: dict[str, str]())

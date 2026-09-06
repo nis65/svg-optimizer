@@ -4,7 +4,15 @@ from enum import Enum, auto
 from svgtools.geometry.matrix3 import Matrix3
 from svgtools.geometry.tolerance import GEOMETRY_ABS_TOL, GEOMETRY_REL_TOL
 from svgtools.svg.get_matrix import get_matrix, transforms_to_matrix
-from svgtools.svg.transform import Affine, Rotate, Scale, SkewX, SkewY, Translate
+from svgtools.svg.transform import (
+    Affine,
+    Rotate,
+    Scale,
+    SkewX,
+    SkewY,
+    SvgTransformations,
+    Translate,
+)
 
 from .write_utils import numberlist_to_string
 
@@ -26,10 +34,8 @@ class TransformWriter:
 
     def apply(
         self,
-        transformations: tuple[
-            Affine | Rotate | Scale | SkewX | SkewY | Translate, ...
-        ],
-    ) -> tuple[Affine | Rotate | Scale | SkewX | SkewY | Translate, ...]:
+        transformations: tuple[SvgTransformations, ...],
+    ) -> tuple[SvgTransformations, ...]:
         match self.strategy:
             case TransformStrategy.KEEP:
                 return transformations
@@ -49,9 +55,7 @@ class TransformWriter:
 
     @staticmethod
     def transforms_to_string(
-        transformations: tuple[
-            Affine | Rotate | Scale | SkewX | SkewY | Translate, ...
-        ],
+        transformations: tuple[SvgTransformations, ...],
     ) -> str:
         result = ""
         for trans in transformations:
@@ -96,9 +100,7 @@ class TransformWriter:
 
     @staticmethod
     def _is_canonical(
-        transformations: tuple[
-            Affine | Rotate | Scale | SkewX | SkewY | Translate, ...
-        ],
+        transformations: tuple[SvgTransformations, ...],
     ) -> bool:
         _CANONICAL_ORDER = (Translate, Rotate, SkewX, Scale)
         reference = iter(_CANONICAL_ORDER)
@@ -114,13 +116,11 @@ class TransformWriter:
 
     @staticmethod
     def _transform_strategy_aggregate(
-        transformations: tuple[
-            Affine | Rotate | Scale | SkewX | SkewY | Translate, ...
-        ],
-    ) -> tuple[Affine | Rotate | Scale | SkewX | SkewY | Translate, ...]:
+        transformations: tuple[SvgTransformations, ...],
+    ) -> tuple[SvgTransformations, ...]:
         if len(transformations) == 0:
             raise ValueError("should not be called with 0 transformations")
-        t_list: list[Affine | Rotate | Scale | SkewX | SkewY | Translate] = []
+        t_list: list[SvgTransformations] = []
         agg_t = None
         for t in transformations:
             if agg_t is None:
@@ -166,11 +166,9 @@ class TransformWriter:
 
     @staticmethod
     def _transform_strategy_decompose_matrix(
-        transformations: tuple[
-            Affine | Rotate | Scale | SkewX | SkewY | Translate, ...
-        ],
-    ) -> tuple[Affine | Rotate | Scale | SkewX | SkewY | Translate, ...]:
-        t_list: list[Affine | Rotate | Scale | SkewX | SkewY | Translate] = []
+        transformations: tuple[SvgTransformations, ...],
+    ) -> tuple[SvgTransformations, ...]:
+        t_list: list[SvgTransformations] = []
         for t in transformations:
             match t:
                 case Affine():
@@ -201,10 +199,8 @@ class TransformWriter:
 
     def _transform_strategy_conservative(
         self,
-        transformations: tuple[
-            Affine | Rotate | Scale | SkewX | SkewY | Translate, ...
-        ],
-    ) -> tuple[Affine | Rotate | Scale | SkewX | SkewY | Translate, ...]:
+        transformations: tuple[SvgTransformations, ...],
+    ) -> tuple[SvgTransformations, ...]:
         # attempt aggregate
         aggregated = self._transform_strategy_aggregate(transformations)
         if self._is_canonical(aggregated):
@@ -216,10 +212,8 @@ class TransformWriter:
 
     def _transform_strategy_aggressive(
         self,
-        transformations: tuple[
-            Affine | Rotate | Scale | SkewX | SkewY | Translate, ...
-        ],
-    ) -> tuple[Affine | Rotate | Scale | SkewX | SkewY | Translate, ...]:
+        transformations: tuple[SvgTransformations, ...],
+    ) -> tuple[SvgTransformations, ...]:
         m = transforms_to_matrix(transformations)
         return self._transform_strategy_decompose_matrix(
             (Affine(a=m.m11, b=m.m21, c=m.m12, d=m.m22, e=m.m13, f=m.m23),)
