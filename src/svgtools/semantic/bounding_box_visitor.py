@@ -6,13 +6,10 @@ from svgtools.geometry.matrix3 import Matrix3
 from svgtools.geometry.path import Path
 from svgtools.geometry.point import Point
 from svgtools.geometry.tolerance import GEOMETRY_NUMBER_OF_SAMPLES
-from svgtools.svg.defs import Defs
+from svgtools.svg import Defs, Group, Shape, SvgNestables, Use
 from svgtools.svg.document import Document
 from svgtools.svg.get_matrix import transforms_to_matrix
-from svgtools.svg.group import Group
-from svgtools.svg.shape import Shape
 from svgtools.svg.svg import Svg
-from svgtools.svg.use import Use
 
 
 class _Phase(Enum):
@@ -50,7 +47,7 @@ class BoundingBoxVisitor:
 
     def _walk_element(
         self,
-        element: Defs | Group | Shape | Use,
+        element: SvgNestables,
         phase: _Phase,
         current_matrix: Matrix3,
     ) -> None:

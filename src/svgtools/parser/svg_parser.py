@@ -8,12 +8,9 @@ from svgtools.geometry.point import Point
 from svgtools.geometry.polygon import Polygon
 from svgtools.geometry.polyline import Polyline
 from svgtools.geometry.rect import Rect
-from svgtools.svg.defs import Defs
+from svgtools.svg import Defs, Group, Shape, SvgNestables, Use
 from svgtools.svg.document import Document
-from svgtools.svg.group import Group
-from svgtools.svg.shape import Shape
 from svgtools.svg.svg import Svg
-from svgtools.svg.use import Use
 
 from .float_list_parser import parse_float_list
 from .ns_parser import (
@@ -57,7 +54,7 @@ def parse_svg_string(svg_text: str) -> Document:
     )
 
 
-def _parse_xml_element(xml_element: ET.Element) -> Defs | Group | Shape | Use | None:  # noqa: PLR0911 PLR0912 PLR0914 PLR0915
+def _parse_xml_element(xml_element: ET.Element) -> SvgNestables | None:  # noqa: PLR0911 PLR0912 PLR0914 PLR0915
 
     tag, namespace = parse_tag(xml_element.tag)
     if namespace == SVG_NAMESPACE or namespace is None:
@@ -255,9 +252,9 @@ def _parse_poly_points(points_string: str | None, name: str) -> tuple[Point, ...
 
 def _parse_xml_children(
     xml_element: ET.Element,
-) -> tuple[Defs | Group | Shape | Use, ...]:
+) -> tuple[SvgNestables, ...]:
 
-    children: list[Defs | Group | Shape | Use] = []
+    children: list[SvgNestables] = []
 
     for xml_child in xml_element:
         child = _parse_xml_element(xml_child)

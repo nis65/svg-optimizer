@@ -1,15 +1,12 @@
 from dataclasses import dataclass, field
 
-from .defs import Defs
-from .group import Group
-from .shape import Shape
+from . import SvgNestables
 from .transform import SvgTransformations
-from .use import Use
 
 
 @dataclass(frozen=True, slots=True)
 class Svg:
-    children: tuple[Defs | Group | Shape | Use, ...]
+    children: tuple[SvgNestables, ...]
     id: str | None = None
     xmlnamespace: str | None = None
     width: str | None = None
