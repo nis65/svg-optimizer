@@ -43,10 +43,10 @@ Note that packages (i.e. directories) group types by responsibility, not by inhe
 
 Svg objects do **not** introduce new geometry by themselves; instead, they describe how geometry is specified (e.g. a circle is defined by its center and a radius) and organized (e.g. a circle can be defined and then redrawn using the definition label) more or less in the same way a `.svg` file does.
 
-The toplevel element is a `Document` that lies outside of the `.svg` content. The one and only child object is `Svg`.  Currently, `Svg` is only considered legal as the outmost Element of an `.svg` file (i.e. nested `svg` tags are not supported yet). An `Svg` object has 0 to n children and these can be:
+The toplevel element is a `Document` that lies outside of the `.svg` content. The one and only child object is `Svg`.  Currently, `Svg` is only considered legal as the outmost Element of an `.svg` file (i.e. nested `svg` tags are not supported yet). An `Svg` object has 0 to n children of type `SvgNestables`:
 
-* nestable (i.e. can have children too): `Defs`, `Group`
-* terminal (i.e. do not have children): `Shape`, `Use`
+* `Defs`, `Group` (can have their own `SvgNestables` children)
+* `Shape`, `Use` (don't have children)
 
 `Shape` elements have a `geometry`, only this geometry actually identifies the geometric (a.k.a. "drawable") object, see above.
 
@@ -82,7 +82,7 @@ The parser/writer combo preserve document structure as far as possible. The foll
    * coordinate system, e.g. `width`, `height` and `viewBox` (on toplevel `svg` element)
    * transformations like  `scale` and `translate`
    * "unknown attributes" like `fill`, `stroke`
-* the way that elements in a `<path>` are compacted is not stored in the internal model, but you can control the output (see [below](#path-writing)). The internal model does not make a distinction between `L 10 100 20 200` and `L 10 100 L 20 200`, it stores the latter representation only.
+* the way that elements in a `<path>` are compacted is not stored in the internal model, but you can control the output (see [below](#path-writing)). The internal model does not make a distinction between the two inputs `L 10 100 20 200` and `L 10 100 L 20 200`, it stores the latter representation only.
 
 ### Transformation writing
 
@@ -106,7 +106,7 @@ Refer to the implementation of [transform_writer](/src/svgtools/writer/transform
 There are three independent options to choose from for `<path>` writing:
 
 * **PathCoordinates**: Are all coordinates rendered as `ABSOLUTE` (all uppercase "commands") or `RELATIVE` (all lowercase "commands") coordinates? The option `KEEP` keeps the setting from the input file.
-* **PathCommandSet**: Some commands have more than one representation, e.g. a *LineTo* can be represented by an `L`, `H` or `V`. The `BASE` command set does not use `H`/`V`, `T` and `S`, but replaces them by the more basic `L`, `Q` and `S` command respectively.
+* **PathCommandSet**: Some commands have more than one representation, e.g. a *LineTo* can be represented by an `L`, `H` or `V`. The `BASE` command set does not use `H`/`V`, `T` and `S`, but replaces them by the more basic `L`, `Q` and `C` command respectively.
 * **PathCompactness**: The `CANONICAL` rendering has each path command followed by exactly one set of parameters. The `COMPACT` rendering converts e.g. `L 10 20 L 30 40` into `L 10 20 30 40`.
 
 Refer to the implementtion of [path_writer](/src/svgtools/writer/path_writer.py) for further details.
