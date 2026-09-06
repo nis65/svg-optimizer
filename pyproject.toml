@@ -8,5 +8,5 @@ exclude_also = [
 ]
 
 [tool.pyright]
-include = ["src"]
+include = ["src", "examples"]
 typeCheckingMode = "strict"

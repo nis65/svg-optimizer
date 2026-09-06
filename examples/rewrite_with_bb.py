@@ -49,6 +49,7 @@ else:
 svg_doc = parse_svg_string(svg_input_text)
 visitor = BoundingBoxVisitor()
 visitor.visit(svg_doc)
+assert visitor.bounding_box is not None
 bbrect = build_rect_from_bb(visitor.bounding_box)
 new_svg = replace(svg_doc.svg, children=(bbrect, *svg_doc.svg.children))
 new_svg_doc = replace(svg_doc, svg=new_svg)

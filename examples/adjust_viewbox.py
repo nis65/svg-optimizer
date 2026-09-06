@@ -6,18 +6,21 @@ from svgtools.parser.svg_parser import parse_svg_string
 from svgtools.semantic.bounding_box_visitor import BoundingBoxVisitor
 from svgtools.writer.svg_writer import SvgWriter
 
+MAX_MARGIN = 40
+SVG_VIEWBOX_PARAM_COUNT = 4
+
 parser = argparse.ArgumentParser()
 parser.add_argument("--in", dest="input")
 parser.add_argument("--out", dest="output")
 
 
-def margin(value):
-    value = int(value)
-    if not 0 <= value <= 40:
+def margin(value: str) -> int:
+    ivalue: int = int(value)
+    if not 0 <= ivalue <= MAX_MARGIN:
         raise argparse.ArgumentTypeError(
-            f"margin must be between 0 and 40 percent, not {value}"
+            f"margin must be between 0 and 40 percent, not {ivalue}"
         )
-    return value
+    return ivalue
 
 
 parser.add_argument("--margin", type=margin, default=5)
@@ -37,11 +40,12 @@ svg_doc = parse_svg_string(svg_input_text)
 # get boundingbox width and height
 bbvisitor = BoundingBoxVisitor()
 bbvisitor.visit(svg_doc)
+assert bbvisitor.bounding_box is not None
 bbwidth = bbvisitor.bounding_box.max.x - bbvisitor.bounding_box.min.x
 bbheight = bbvisitor.bounding_box.max.y - bbvisitor.bounding_box.min.y
 
 # get current_viewbox_width/height if defined
-if len(svg_doc.svg.viewBox) == 4:
+if len(svg_doc.svg.viewBox) == SVG_VIEWBOX_PARAM_COUNT:
     viewbox_width = svg_doc.svg.viewBox[2]
     viewbox_height = svg_doc.svg.viewBox[3]
 else:
