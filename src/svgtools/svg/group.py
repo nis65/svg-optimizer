@@ -7,7 +7,7 @@ if TYPE_CHECKING:
     from .defs import Defs
     from .shape import Shape
     from .use import Use
-from .transform import Affine, Rotate, Scale, SkewX, SkewY, Translate
+from .transform import SvgTransformations
 
 
 @dataclass(frozen=True, slots=True)
@@ -15,7 +15,5 @@ class Group:
     children: tuple[Defs | Group | Shape | Use, ...]
     id: str | None = None
     href: str | None = None
-    transformations: tuple[
-        Affine | Rotate | Scale | SkewX | SkewY | Translate, ...
-    ] = ()
+    transformations: tuple[SvgTransformations, ...] = ()
     unknown_attributes: dict[str, str] = field(default_factory=lambda: dict[str, str]())

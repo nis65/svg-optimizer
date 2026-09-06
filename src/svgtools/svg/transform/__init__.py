@@ -5,11 +5,4 @@ from .skew_x import SkewX
 from .skew_y import SkewY
 from .translate import Translate
 
-__all__ = [
-    "Affine",
-    "Rotate",
-    "Scale",
-    "SkewX",
-    "SkewY",
-    "Translate",
-]
+type SvgTransformations = Affine | Rotate | Scale | SkewX | SkewY | Translate
