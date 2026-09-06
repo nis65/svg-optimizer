@@ -8,12 +8,9 @@ from svgtools.geometry.point import Point
 from svgtools.geometry.polygon import Polygon
 from svgtools.geometry.polyline import Polyline
 from svgtools.geometry.rect import Rect
-from svgtools.svg.defs import Defs
+from svgtools.svg import Defs, Group, Shape, SvgNestables, Use
 from svgtools.svg.document import Document
-from svgtools.svg.group import Group
-from svgtools.svg.shape import Shape
 from svgtools.svg.svg import Svg
-from svgtools.svg.use import Use
 
 from .path_writer import (
     PathCommandSet,
@@ -69,7 +66,7 @@ class SvgWriter:
                 self._walk_element(child, "")
             self._parts.append("</svg>\n")
 
-    def _walk_element(self, element: Defs | Group | Use | Shape, indent: str) -> None:
+    def _walk_element(self, element: SvgNestables, indent: str) -> None:
         match element:
             case Defs():
                 self._walk_defs(element, indent)
@@ -134,7 +131,7 @@ class SvgWriter:
         self._append_attributes(shape)
         self._parts.append(" />\n")
 
-    def _append_attributes(self, element: Defs | Group | Shape | Svg | Use) -> None:  # noqa: PLR0912
+    def _append_attributes(self, element: Svg | SvgNestables | Use) -> None:  # noqa: PLR0912
         if xmlnamespace := getattr(element, "xmlnamespace", None):
             self._parts.append(f' xmlns="{xmlnamespace}"')
         if element_id := getattr(element, "id", None):
