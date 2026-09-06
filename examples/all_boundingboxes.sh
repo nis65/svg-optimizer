@@ -34,7 +34,7 @@ do
 
   THISTARGETFILE="${basename%%.svg}_viewbox_adjusted.svg"
   target=${TARGETDIR}/$THISTARGETFILE
-  ./run_adjust_viewbox.sh < $file > $target
+  ./run_adjust_viewbox.sh --margin 8 < $file > $target
 done
 
 )
