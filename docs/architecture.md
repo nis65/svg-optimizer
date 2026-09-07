@@ -5,8 +5,7 @@ See also the [Style Guide](./style-guide.md)
 ## Separation of concern
 
 * the core data structure is the *internal representation* with [Document](/src/svgtools/svg/document.py) as its root object (see [below](#svg)). This representation is close to the `.svg` structure, focuses on the geometric aspects but still carries enough information to generate a valid `.svg` file that renders the same picture as the original input file.
-* the **parser** converts an `.svg` file into this *internal representation*. 
-   * For the `<path>` tag, this representation uses **absolute** coordinates and only the basic path element type (i.e. the same `LineTo` object is used to represent a `L`, `H` or `V` path element). The original element representation letter is stored along the geometric data. This allows to use (and convert the coordinates accordingly) when writing back that representation to an `.svg` file.
+* the **parser** converts an `.svg` file into this *internal representation*.
 * a **semantic** function interprets that *internal representation* and builds the global bounding box by combining all bounding boxes of the individual elements.
 * the **writer** creates an `.svg` file from the *internal representation*. There are two degrees of freedom that change the `.svg` representation only, but not the image rendered by this `.svg`. These can be specified via parameters:
    * the representation of geometric affine **transformations** in the `.svg` file.  See [Transformation writing](#transformation-writing) below for details.
@@ -17,7 +16,7 @@ See also the [Style Guide](./style-guide.md)
 The representation is split in two parts:
 
 * The **geometry** part of the model represents the mathematical geometry. Its objects have a geometric extent and can participate in geometric computations.
-* The **svg** part of the model represents the hierarchical composition. Its objects organize, reference or group geometry and are mostly linked to svg tags. Exceptions: 
+* The **svg** part of the model represents the hierarchical composition. Its objects organize, reference or group geometry and are mostly linked to svg tags. Exceptions:
    * Drawable objects are modelled as [Shape](/src/svgtools/svg/shape.py) objects and their `geometry` only defines whether a shape is e.g. a circle or a rect.
    * Both a `g` and an `a` tag are modelled as [Group](/src/svgtools/svg/group.py). Geometrically, there is no difference. But when a `Group` element has a `href` attribute, it is written as `<a>`, when not as `<g>`.
 
@@ -26,7 +25,7 @@ Note that packages (i.e. directories) group types by responsibility, not by inhe
 ### Geometry
 
 * Supported geometry objects
-   * Drawables: Circle, Ellipse, Line, Path, Polygon, Polyline, Rect. Drawable objects inherit from the abstract base class [Geometry](/src/svgtools/geometry/geometry_abc.py) that enforces the implementation of a `points_for_bounding_box` function. 
+   * Drawables: Circle, Ellipse, Line, Path, Polygon, Polyline, Rect. Drawable objects inherit from the abstract base class [Geometry](/src/svgtools/geometry/geometry_abc.py) that enforces the implementation of a `points_for_bounding_box` function.
    * Transformations: Matrix3, TRHxSDecomposition
    * Helpers: BoundingBox, Point
 * Affine Transformations
@@ -54,19 +53,20 @@ The toplevel element is a `Document` that lies outside of the `.svg` content. Th
 
 The objects defined above allow to support only very basic `.svg` files. Especially,
 
-* there is very limited support for namespaces:
+* there is very **limited support for namespaces**:
   * the standard SVG namespace `http://www.w3.org/2000/svg` is supported at the toplevel only, adding namespaces deeper down in the svg are unlikely to work properly
-  * In the XLINK namespace `http://www.w3.org/1999/xlink`, only `href` is supported by conversion to an SVG `href`, output files never contain that namespace. 
+  * In the XLINK namespace `http://www.w3.org/1999/xlink`, only `href` is supported by conversion to an SVG `href`, output files never contain that namespace.
   * There is limited support for the XML namespace `http://www.w3.org/XML/1998/namespace`, such attributes remain uninterpreted, but are stored and rewritten with an `xml:` prefix.
   * All other namespaces are ignored and data belonging to them is dropped
-* only a very limited set of svg tags is supported:
-   * `svg` (at the toplevel only, no nesting) 
+* only a very **limited set of svg tags** is supported:
+   * `svg` (at the toplevel only, no nesting)
    * `defs`, `g`, `a`, `use` (organizational)
    * `circle`, `ellipse`, `line`, `path`, `polygon`, `polyline ` and `rect` (drawable)
-* all geometric transformations (on all tags above except `defs`) are supported: `translate`, `scale`, `rotate`, `skewX`, `skewY`, `matrix`
-* all geometric path elements are supported: 
+* **all geometric transformations** (on all tags above except `defs`) are supported: `translate`, `scale`, `rotate`, `skewX`, `skewY`, `matrix`
+* **all path elements** are supported:
    * their command letters: `mMlLhHvVzZqQtTcCsSaA`
    * and their semantics: MoveTo, LineTo, ClosePath, QuadraticBezier, CubicBezier and Arc
+   * the internal representation stores **absolute** coordinates and the basic path element type only - e.g. the same `LineTo` object is used to represent a `L`/`l`, `H`/`h` or `V`/`v` path element. But the original element command letter is stored along the geometric data. This allows to reproduce the original representation (applying coordination transformation when needed) when writing back to the `.svg` file.
    * see [geometry/path.py](/src/svgtools/geometry/path.py) and the files in the [path_elements](/src/svgtools/geometry/path_elements) directory for implementation details.
 
 ### Preserving structure
@@ -99,7 +99,7 @@ The writer has 6 different strategies for writing the transformations to the `.s
 * `DECOMPOSE_MATRIX_AND_AGGREGATE`: Do first a decompose and then an aggregation.
 * `CANONICAL_CONSERVATIVE` and `CANONICAL_AGGRESSIVE`: The canonical representation of an arbitrary sequence of transformations is considered to be (reading from right to left) a Scaling, followed by a SkewX, followed by Rotation (around the origin) and finally a Translation. The first option first attempts an AGGREGATE and if this already produces an TRHxS order, it is left like this and if not, all transformations are first multiplied and then the resulting matrix is decomposed. Both should deliver the same list of tranformations, but CONSERVATIVE minimizes the risk of numerical edge cases (e.g. 0.999 instead of 1). After a CONSERVATIVE write, you can ask the writer object for stats: how many transform lists could be handled by aggregation and how many needed a matrix decomposition.
 
-Refer to the implementation of [transform_writer](/src/svgtools/writer/transform_writer.py) for further details. 
+Refer to the implementation of [transform_writer](/src/svgtools/writer/transform_writer.py) for further details.
 
 ### Path writing
 
