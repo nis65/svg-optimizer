@@ -1,4 +1,4 @@
-from svgtools.geometry.matrix3 import Matrix3
+from svgtools.geometry import Matrix3
 from svgtools.svg.transform import (
     Affine,
     Rotate,

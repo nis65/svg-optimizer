@@ -1,8 +1,7 @@
 import math
 from enum import Enum, auto
 
-from svgtools.geometry.matrix3 import Matrix3
-from svgtools.geometry.tolerance import GEOMETRY_ABS_TOL, GEOMETRY_REL_TOL
+from svgtools.geometry import GEOMETRY_ABS_TOL, GEOMETRY_REL_TOL, Matrix3
 from svgtools.svg.get_matrix import get_matrix, transforms_to_matrix
 from svgtools.svg.transform import (
     Affine,
