@@ -1,16 +1,16 @@
 from collections.abc import Callable
 from dataclasses import dataclass, field
 
-from svgtools.geometry.geometry_abc import Geometry
-from svgtools.geometry.path import Path
-from svgtools.geometry.path_elements.arc import Arc
-from svgtools.geometry.path_elements.closepath import ClosePath
-from svgtools.geometry.path_elements.cubicbezier import CubicBezier
-from svgtools.geometry.path_elements.lineto import LineTo
-from svgtools.geometry.path_elements.moveto import MoveTo
-from svgtools.geometry.path_elements.path_element_abc import PathElement
-from svgtools.geometry.path_elements.quadraticbezier import QuadraticBezier
-from svgtools.geometry.point import Point
+from svgtools.geometry import Geometry, Path, Point
+from svgtools.geometry.path_elements import (
+    Arc,
+    ClosePath,
+    CubicBezier,
+    LineTo,
+    MoveTo,
+    PathElement,
+    QuadraticBezier,
+)
 
 from .parse_utils import print_stderr
 from .token_lexer import TokenIterator, TokenKind, token_lexer

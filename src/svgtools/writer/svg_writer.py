@@ -1,13 +1,15 @@
 from typing import assert_never
 
-from svgtools.geometry.circle import Circle
-from svgtools.geometry.ellipse import Ellipse
-from svgtools.geometry.line import Line
-from svgtools.geometry.path import Path
-from svgtools.geometry.point import Point
-from svgtools.geometry.polygon import Polygon
-from svgtools.geometry.polyline import Polyline
-from svgtools.geometry.rect import Rect
+from svgtools.geometry import (
+    Circle,
+    Ellipse,
+    Line,
+    Path,
+    Point,
+    Polygon,
+    Polyline,
+    Rect,
+)
 from svgtools.svg import Defs, Group, Shape, SvgNestables, Use
 from svgtools.svg.document import Document
 from svgtools.svg.svg import Svg

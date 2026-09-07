@@ -1,7 +1,6 @@
 from dataclasses import dataclass
 
-from .geometry_abc import Geometry
-from .point import Point
+from . import Geometry, Point
 
 
 @dataclass(frozen=True, slots=True)

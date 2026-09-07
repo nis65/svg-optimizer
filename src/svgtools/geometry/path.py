@@ -2,9 +2,7 @@ from collections import Counter
 from dataclasses import dataclass
 
 from .geometry_abc import Geometry
-from .path_elements.closepath import ClosePath
-from .path_elements.moveto import MoveTo
-from .path_elements.path_element_abc import PathElement
+from .path_elements import ClosePath, MoveTo, PathElement
 from .point import Point
 
 

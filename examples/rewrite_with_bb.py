@@ -2,9 +2,7 @@ import argparse
 import sys
 from dataclasses import replace
 
-from svgtools.geometry.bounding_box import BoundingBox
-from svgtools.geometry.point import Point
-from svgtools.geometry.rect import Rect
+from svgtools.geometry import BoundingBox, Point, Rect
 from svgtools.parser.svg_parser import parse_svg_string
 from svgtools.semantic.bounding_box_visitor import BoundingBoxVisitor
 from svgtools.svg.shape import Shape

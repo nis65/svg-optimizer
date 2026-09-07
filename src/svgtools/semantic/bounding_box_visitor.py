@@ -1,11 +1,13 @@
 from collections import Counter
 from enum import Enum
 
-from svgtools.geometry.bounding_box import BoundingBox
-from svgtools.geometry.matrix3 import Matrix3
-from svgtools.geometry.path import Path
-from svgtools.geometry.point import Point
-from svgtools.geometry.tolerance import GEOMETRY_NUMBER_OF_SAMPLES
+from svgtools.geometry import (
+    GEOMETRY_NUMBER_OF_SAMPLES,
+    BoundingBox,
+    Matrix3,
+    Path,
+    Point,
+)
 from svgtools.svg import Defs, Group, Shape, SvgNestables, Use
 from svgtools.svg.document import Document
 from svgtools.svg.get_matrix import transforms_to_matrix
