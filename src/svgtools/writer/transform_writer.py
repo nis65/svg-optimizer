@@ -139,11 +139,11 @@ class TransformWriter:
                                 theta=agg_t.theta + t.theta, cx=t.cx, cy=t.cy
                             )
                         else:
-                            # rotate can only be aggregated exactly with the same rotation center
+                            # rotate can only be aggregated with the same rotation center
                             t_list.append(agg_t)
                             agg_t = t
                     case SkewX() | SkewY():
-                        # skew cannot be aggregated in an exact way
+                        # skew cannot be aggregated in an exact way as the angle is stored
                         t_list.append(agg_t)
                         agg_t = t
                     case Affine():
@@ -200,7 +200,6 @@ class TransformWriter:
         self,
         transformations: tuple[SvgTransformations, ...],
     ) -> tuple[SvgTransformations, ...]:
-        # attempt aggregate
         aggregated = self._transform_strategy_aggregate(transformations)
         if self._is_canonical(aggregated):
             self.total_aggregated_chains += 1

@@ -82,8 +82,8 @@ class BoundingBoxVisitor:
             case _Phase.BUILD_DEFINITION_TABLE:
                 for child in defs.children:
                     # we NEVER use a Matrix in the BUILD_DEFINITION_TABLE
-                    # this is here to keep procedure calling syntax simple
-                    # everywhere else.
+                    # this is here to keep procedure calling syntax uniform
+                    # everywhere.
                     self._walk_element(child, phase, Matrix3.identity())
             case _Phase.VISIT:
                 pass

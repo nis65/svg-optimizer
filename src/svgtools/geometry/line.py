@@ -10,5 +10,4 @@ class Line(Geometry):
     end: Point
 
     def points_for_bounding_box(self, number_of_points: int) -> set[Point]:
-        # number_of_points is ignored, as the two points fully define the bounding box
         return {self.start, self.end}
