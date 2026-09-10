@@ -71,7 +71,7 @@ def test_parse_empty_svg_with_all_other_attrs():
                 1024,
                 1024,
             ),
-            unknown_attributes={"xml:space": "preserve"},
+            preserved_attributes={"xml:space": "preserve"},
         )
     )
 
@@ -165,7 +165,7 @@ def test_parse_empty_svg_with_unknowns():
     assert parse_svg_string(svg_text) == Document(
         svg=Svg(
             children=(),
-            unknown_attributes={
+            preserved_attributes={
                 "unknown": "unknown_value",
                 "other": "another_one",
             },
@@ -229,7 +229,7 @@ def test_parse_empty_defs_with_unknowns():
             children=(
                 Defs(
                     children=(),
-                    unknown_attributes={
+                    preserved_attributes={
                         "unknown": "unknown_value",
                     },
                 ),
@@ -299,7 +299,7 @@ def test_parse_empty_group_with_unknowns():
             children=(
                 Group(
                     children=(),
-                    unknown_attributes={
+                    preserved_attributes={
                         "unknown": "unknown_value",
                     },
                 ),
@@ -392,7 +392,7 @@ def test_parse_use_with_unkonwns():
                     href="#arrow",
                     x=0,
                     y=0,
-                    unknown_attributes={
+                    preserved_attributes={
                         "unknown": "unknown_value",
                     },
                 ),
@@ -479,7 +479,7 @@ def test_rect_with_defaults_and_unknowns():
                         height=4,
                     ),
                     transformations=(Scale(sx=2, sy=2),),
-                    unknown_attributes={
+                    preserved_attributes={
                         "unknown": "unknown_value",
                     },
                 ),
@@ -537,7 +537,7 @@ def test_circle_with_default_and_unknowns():
                         Rotate(theta=30, cx=0, cy=0),
                         Scale(sx=13, sy=13),
                     ),
-                    unknown_attributes={
+                    preserved_attributes={
                         "unknown": "unknown_value",
                     },
                 ),
@@ -606,7 +606,7 @@ def test_path():
                         Rotate(theta=30, cx=0, cy=0),
                         Scale(sx=13, sy=13),
                     ),
-                    unknown_attributes={
+                    preserved_attributes={
                         "unknown": "unknown_value",
                     },
                 ),
@@ -641,7 +641,7 @@ def test_line():
                         Rotate(theta=30, cx=0, cy=0),
                         Scale(sx=13, sy=13),
                     ),
-                    unknown_attributes={
+                    preserved_attributes={
                         "unknown": "unknown_value",
                     },
                 ),
@@ -682,7 +682,7 @@ def test_polyline():
                         Rotate(theta=30, cx=0, cy=0),
                         Scale(sx=13, sy=13),
                     ),
-                    unknown_attributes={
+                    preserved_attributes={
                         "unknown": "unknown_value",
                     },
                 ),
@@ -723,7 +723,7 @@ def test_polygon():
                         Rotate(theta=30, cx=0, cy=0),
                         Scale(sx=13, sy=13),
                     ),
-                    unknown_attributes={
+                    preserved_attributes={
                         "unknown": "unknown_value",
                     },
                 ),

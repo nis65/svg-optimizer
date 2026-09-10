@@ -209,7 +209,7 @@ class SvgWriter:
             self._parts.append(
                 f' transform="{tw.transforms_to_string(output_transformations)}"'
             )
-        for key, value in sorted(element.unknown_attributes.items()):
+        for key, value in sorted(element.preserved_attributes.items()):
             self._parts.append(f' {key}="{value}"')
 
     @staticmethod

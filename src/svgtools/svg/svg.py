@@ -13,4 +13,6 @@ class Svg:
     height: str | None = None
     viewBox: tuple[float, ...] = ()
     transformations: tuple[SvgTransformations, ...] = ()
-    unknown_attributes: dict[str, str] = field(default_factory=lambda: dict[str, str]())
+    preserved_attributes: dict[str, str] = field(
+        default_factory=lambda: dict[str, str]()
+    )
