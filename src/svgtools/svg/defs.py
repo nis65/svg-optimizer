@@ -11,4 +11,6 @@ if TYPE_CHECKING:
 class Defs:
     children: tuple[SvgNestables, ...]
     id: str | None = None
-    unknown_attributes: dict[str, str] = field(default_factory=lambda: dict[str, str]())
+    preserved_attributes: dict[str, str] = field(
+        default_factory=lambda: dict[str, str]()
+    )

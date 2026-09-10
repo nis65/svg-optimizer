@@ -10,4 +10,6 @@ class Use:
     y: float
     id: str | None = None
     transformations: tuple[SvgTransformations, ...] = ()
-    unknown_attributes: dict[str, str] = field(default_factory=lambda: dict[str, str]())
+    preserved_attributes: dict[str, str] = field(
+        default_factory=lambda: dict[str, str]()
+    )

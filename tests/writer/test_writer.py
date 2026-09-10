@@ -51,7 +51,7 @@ def test_write_empty_svg_with_attributes():
                 1024,
                 1024,
             ),
-            unknown_attributes={"unknown": "unknown_value"},
+            preserved_attributes={"unknown": "unknown_value"},
         )
     )
     writer = SvgWriter()
@@ -72,7 +72,7 @@ def test_write_empty_defs_with_id():
                 Defs(
                     children=(),
                     id="defid",
-                    unknown_attributes={
+                    preserved_attributes={
                         "unknown": "unknown_value",
                     },
                 ),
@@ -135,7 +135,7 @@ def test_write_empty_group_with_attributes():
                     children=(),
                     id="grpid",
                     transformations=(Scale(sx=4, sy=5),),
-                    unknown_attributes={"unknown": "unknown_value"},
+                    preserved_attributes={"unknown": "unknown_value"},
                 ),
             )
         )
@@ -229,7 +229,7 @@ def test_write_rect_with_attributes():
                         width=2,
                         height=1,
                     ),
-                    unknown_attributes={
+                    preserved_attributes={
                         "unknown": "unknown_value",
                     },
                 ),
@@ -266,7 +266,7 @@ def test_write_rect_with_more_transformations():
                         width=2,
                         height=1,
                     ),
-                    unknown_attributes={
+                    preserved_attributes={
                         "unknown": "unknown_value",
                     },
                 ),
@@ -303,7 +303,7 @@ def test_write_circle_with_attributes():
                         ),
                         radius=7,
                     ),
-                    unknown_attributes={
+                    preserved_attributes={
                         "unknown": "unknown_value",
                     },
                 ),
@@ -339,7 +339,7 @@ def test_write_ellipse_with_attributes():
                         radiusx=7,
                         radiusy=8,
                     ),
-                    unknown_attributes={
+                    preserved_attributes={
                         "unknown": "unknown_value",
                     },
                 ),
@@ -515,7 +515,7 @@ def test_write_line():
                             y=11,
                         ),
                     ),
-                    unknown_attributes={
+                    preserved_attributes={
                         "unknown": "unknown_value",
                     },
                 ),
@@ -556,7 +556,7 @@ def test_write_polyline():
                             ),
                         ),
                     ),
-                    unknown_attributes={
+                    preserved_attributes={
                         "unknown": "unknown_value",
                     },
                 ),
@@ -597,7 +597,7 @@ def test_write_polygon():
                             ),
                         ),
                     ),
-                    unknown_attributes={
+                    preserved_attributes={
                         "unknown": "unknown_value",
                     },
                 ),
@@ -646,7 +646,7 @@ def test_write_use():
                     ),
                     x=4,
                     y=5,
-                    unknown_attributes={
+                    preserved_attributes={
                         "unknown": "unknown_value",
                     },
                 ),

@@ -41,7 +41,7 @@ def parse_svg_string(svg_text: str) -> Document:
             viewBox=parse_float_list(xml_root.get("viewBox")),
             children=_parse_xml_children(xml_root),
             transformations=parse_transform_string(xml_root.get("transform")),
-            unknown_attributes=_collect_unknown_attributes(
+            preserved_attributes=_collect_preserved_attributes(
                 xml_root, {"id", "width", "height", "viewBox", "transform"}
             ),
         )
@@ -63,7 +63,7 @@ def _parse_xml_element(xml_element: ET.Element) -> SvgNestables | None:  # noqa:
             return Defs(
                 id=defs_id,
                 children=_parse_xml_children(xml_element),
-                unknown_attributes=_collect_unknown_attributes(xml_element, {"id"}),
+                preserved_attributes=_collect_preserved_attributes(xml_element, {"id"}),
             )
         case "g" | "a":
             g_id = xml_element.get("id")
@@ -73,7 +73,7 @@ def _parse_xml_element(xml_element: ET.Element) -> SvgNestables | None:  # noqa:
                 href=a_href,
                 children=_parse_xml_children(xml_element),
                 transformations=parse_transform_string(xml_element.get("transform")),
-                unknown_attributes=_collect_unknown_attributes(
+                preserved_attributes=_collect_preserved_attributes(
                     xml_element, {"id", "href", "transform"}
                 ),
             )
@@ -90,7 +90,7 @@ def _parse_xml_element(xml_element: ET.Element) -> SvgNestables | None:  # noqa:
                 x=float(xml_x),
                 y=float(xml_y),
                 transformations=parse_transform_string(xml_element.get("transform")),
-                unknown_attributes=_collect_unknown_attributes(
+                preserved_attributes=_collect_preserved_attributes(
                     xml_element, {"id", "href", "x", "y", "transform"}
                 ),
             )
@@ -113,7 +113,7 @@ def _parse_xml_element(xml_element: ET.Element) -> SvgNestables | None:  # noqa:
                     height=float(xml_height),
                 ),
                 transformations=parse_transform_string(xml_element.get("transform")),
-                unknown_attributes=_collect_unknown_attributes(
+                preserved_attributes=_collect_preserved_attributes(
                     xml_element,
                     {"id", "x", "y", "width", "height", "transform"},
                 ),
@@ -134,7 +134,7 @@ def _parse_xml_element(xml_element: ET.Element) -> SvgNestables | None:  # noqa:
                     radius=float(xml_r),
                 ),
                 transformations=parse_transform_string(xml_element.get("transform")),
-                unknown_attributes=_collect_unknown_attributes(
+                preserved_attributes=_collect_preserved_attributes(
                     xml_element, {"id", "cx", "cy", "r", "transform"}
                 ),
             )
@@ -157,7 +157,7 @@ def _parse_xml_element(xml_element: ET.Element) -> SvgNestables | None:  # noqa:
                     radiusy=float(xml_ry),
                 ),
                 transformations=parse_transform_string(xml_element.get("transform")),
-                unknown_attributes=_collect_unknown_attributes(
+                preserved_attributes=_collect_preserved_attributes(
                     xml_element, {"id", "cx", "cy", "rx", "ry", "transform"}
                 ),
             )
@@ -168,7 +168,7 @@ def _parse_xml_element(xml_element: ET.Element) -> SvgNestables | None:  # noqa:
                 id=path_id,
                 geometry=p_geometry,
                 transformations=parse_transform_string(xml_element.get("transform")),
-                unknown_attributes=_collect_unknown_attributes(
+                preserved_attributes=_collect_preserved_attributes(
                     xml_element, {"id", "d", "transform"}
                 ),
             )
@@ -190,7 +190,7 @@ def _parse_xml_element(xml_element: ET.Element) -> SvgNestables | None:  # noqa:
                     end=Point(float(line_x2), float(line_y2)),
                 ),
                 transformations=parse_transform_string(xml_element.get("transform")),
-                unknown_attributes=_collect_unknown_attributes(
+                preserved_attributes=_collect_preserved_attributes(
                     xml_element, {"id", "x1", "y1", "x2", "y2", "transform"}
                 ),
             )
@@ -203,7 +203,7 @@ def _parse_xml_element(xml_element: ET.Element) -> SvgNestables | None:  # noqa:
                 id=polyline_id,
                 geometry=Polyline(children=tuple(points)),
                 transformations=parse_transform_string(xml_element.get("transform")),
-                unknown_attributes=_collect_unknown_attributes(
+                preserved_attributes=_collect_preserved_attributes(
                     xml_element, {"id", "points", "transform"}
                 ),
             )
@@ -216,7 +216,7 @@ def _parse_xml_element(xml_element: ET.Element) -> SvgNestables | None:  # noqa:
                 id=polygon_id,
                 geometry=Polygon(children=tuple(points)),
                 transformations=parse_transform_string(xml_element.get("transform")),
-                unknown_attributes=_collect_unknown_attributes(
+                preserved_attributes=_collect_preserved_attributes(
                     xml_element, {"id", "points", "transform"}
                 ),
             )
@@ -265,15 +265,15 @@ def _get_convert_href(xml_element: ET.Element) -> str | None:
     return xml_href
 
 
-def _collect_unknown_attributes(
+def _collect_preserved_attributes(
     xml_element: ET.Element, known_list: Collection[str]
 ) -> dict[str, str]:
 
-    unknown_attributes: dict[str, str] = {}
+    preserved_attributes: dict[str, str] = {}
     for key, value in xml_element.attrib.items():
         attr = parse_attr(key)
         if attr in known_list:
             continue
         if attr:
-            unknown_attributes[attr] = value
-    return unknown_attributes
+            preserved_attributes[attr] = value
+    return preserved_attributes

@@ -36,7 +36,7 @@ def test_write_mode_keep():
                         width=2,
                         height=1,
                     ),
-                    unknown_attributes={
+                    preserved_attributes={
                         "unknown": "unknown_value",
                     },
                 ),
@@ -79,7 +79,7 @@ def test_write_mode_aggregate():
                         width=2,
                         height=1,
                     ),
-                    unknown_attributes={
+                    preserved_attributes={
                         "unknown": "unknown_value",
                     },
                 ),
@@ -110,7 +110,7 @@ def test_write_mode_decompose_matrix():
                         width=2,
                         height=1,
                     ),
-                    unknown_attributes={
+                    preserved_attributes={
                         "unknown": "unknown_value",
                     },
                 ),
@@ -145,7 +145,7 @@ def test_write_mode_decompose_matrix_and_aggregate():
                         width=2,
                         height=1,
                     ),
-                    unknown_attributes={
+                    preserved_attributes={
                         "unknown": "unknown_value",
                     },
                 ),
@@ -181,7 +181,7 @@ def test_write_mode_canonical_conservative_with_rotate_around_non_zero():
                         width=2,
                         height=1,
                     ),
-                    unknown_attributes={
+                    preserved_attributes={
                         "unknown": "unknown_value",
                     },
                 ),
@@ -196,7 +196,7 @@ def test_write_mode_canonical_conservative_with_rotate_around_non_zero():
                         width=2,
                         height=1,
                     ),
-                    unknown_attributes={
+                    preserved_attributes={
                         "unknown": "unknown_value",
                     },
                 ),
@@ -234,7 +234,7 @@ def test_write_mode_canonical_conservative_wrong_order():
                         width=2,
                         height=1,
                     ),
-                    unknown_attributes={
+                    preserved_attributes={
                         "unknown": "unknown_value",
                     },
                 ),
@@ -271,7 +271,7 @@ def test_write_mode_canonical_aggressive():
                         width=2,
                         height=1,
                     ),
-                    unknown_attributes={
+                    preserved_attributes={
                         "unknown": "unknown_value",
                     },
                 ),

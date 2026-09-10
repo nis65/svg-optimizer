@@ -81,7 +81,7 @@ The parser/writer combo preserve document structure as far as possible. The foll
    * geometry of drawable objects, e.g. `x`, `y`, `width`, `heigth`, `r`
    * coordinate system, e.g. `width`, `height` and `viewBox` (on toplevel `svg` element)
    * transformations like  `scale` and `translate`
-   * "unknown attributes" like `fill`, `stroke`
+   * "preserved attributes" like `fill`, `stroke`
 * the way that elements in a `<path>` are compacted is not stored in the internal model, but you can control the output (see [below](#path-writing)). The internal model does not make a distinction between the two inputs `L 10 100 20 200` and `L 10 100 L 20 200`, it stores the latter representation only.
 
 ### Transformation writing

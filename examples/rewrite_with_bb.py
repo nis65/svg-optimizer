@@ -21,7 +21,7 @@ def build_rect_from_bb(bb: BoundingBox) -> Shape:
             width=bb.max.x - bb.min.x,
             height=bb.max.y - bb.min.y,
         ),
-        unknown_attributes={
+        preserved_attributes={
             "stroke": "red",
             "fill": "none",
         },
