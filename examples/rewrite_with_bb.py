@@ -35,9 +35,6 @@ parser.add_argument("--out", dest="output")
 
 args = parser.parse_args()
 
-# infile = open(args.input, encoding="utf-8") if args.input else sys.stdin
-# outfile = open(args.output, "w", encoding="utf-8") if args.output else sys.stdout
-
 if args.input:
     with open(args.input, encoding="utf-8") as infile:
         svg_input_text = infile.read()

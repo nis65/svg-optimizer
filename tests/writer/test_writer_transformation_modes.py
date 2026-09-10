@@ -285,11 +285,3 @@ def test_write_mode_canonical_aggressive():
     <rect id="rectid" x="4" y="5" width="2" height="1" transform="translate(2 10) rotate(90 0 0) skewX(45) scale(2 3)" unknown="unknown_value" />
     </svg>
     """)
-
-
-# Translate(dx=2, dy=10), Rotate(theta=90, cx=0, cy=0), SkewX(theta=45), Scale(sx=2, sy=3),
-# <rect id="rectid" x="4" y="5" width="2" height="1" transform="matrix(0 2 -3 3 2 10)" unknown="unknown_value" />
-#                        transformations=(
-#                             SkewX(theta=60),
-#                             SkewY(theta=30),
-#                             Affine(a=1, b=2, c=3, d=4, e=5, f=6),

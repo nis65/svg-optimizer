@@ -202,7 +202,6 @@ class SvgWriter:
         if viewBox := getattr(element, "viewBox", None):
             self._parts.append(f' viewBox="{numberlist_to_string(viewBox)}"')
         if transformations := getattr(element, "transformations", None):
-            # output_transformations = self._transformations_to_write(transformations)
             tw = TransformWriter(self.transform_strategy)
             output_transformations = tw.apply(transformations)
             self.total_aggregated_chains += tw.total_aggregated_chains
