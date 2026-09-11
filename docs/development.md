@@ -14,4 +14,4 @@ Run `run-tests.sh` from the root directory of this repo
 * If there are `ruff check` errors, inspect them. If they can be fixed automatically, use `ruff check --preview --extend-select PLR,ANN --output-format=full src examples --fix`. If not, fix the code manually. If you can't or don't want to fix the code, Use `ruff rule` to find out the required `noqa:` error number.
 * If there are coverage errors, you will need to add another test case or, in rare cases, a `# pragma: no cover` tag to the code.
 * If there are `pyright` errors, you will need to add proper typing to each variable and function parameter.
-* After all example code was run by `run-tests`, use `ristretto` to inspect graphically the rendered files below `/tmp/svgtests`. You can safely remove that directory when done.
+* After all example code was run by `run-tests`, use `ristretto` to inspect graphically the rendered files below `/tmp/svgtests`. You can safely remove that directory when done. Note: `ristretto` (like most other svg viewers) does not support `animate`. To check what happens to [anim1.svg](/tests/testdata/anim1.svg), you'll have to open it in a browser.
