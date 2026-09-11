@@ -10,7 +10,15 @@ from svgtools.geometry import (
     Polyline,
     Rect,
 )
-from svgtools.svg import Defs, Group, Shape, SvgChildren, SvgNestables, Use
+from svgtools.svg import (
+    Defs,
+    Group,
+    PreservedSubtree,
+    Shape,
+    SvgChildren,
+    SvgNestables,
+    Use,
+)
 from svgtools.svg.document import Document
 from svgtools.svg.svg import Svg
 
@@ -78,6 +86,8 @@ class SvgWriter:
                 self._walk_use(element, indent)
             case Shape():
                 self._walk_shape(element, indent)
+            case PreservedSubtree():
+                self._walk_preserved_subtree(element, indent)
             case _:  # pragma: no cover
                 raise NotImplementedError(type(element))
 
@@ -110,28 +120,52 @@ class SvgWriter:
     def _walk_use(self, use: Use, indent: str) -> None:
         self._parts.append(indent + "<use")
         self._append_attributes(use)
-        self._parts.append(" />\n")
+        if use.children == ():
+            self._parts.append(" />\n")
+        else:
+            self._parts.append(">\n")
+            for child in use.children:
+                self._walk_element(child, self.INDENT + indent)
+            self._parts.append(indent + "</use>\n")
+
+    def _walk_preserved_subtree(
+        self, preserved_subtree: PreservedSubtree, indent: str
+    ) -> None:
+        self._parts.append(indent + preserved_subtree + "\n")
 
     def _walk_shape(self, shape: Shape, indent: str) -> None:
         match shape.geometry:
             case Rect():
                 self._parts.append(indent + "<rect")
+                close_tag = "rect"
             case Circle():
                 self._parts.append(indent + "<circle")
+                close_tag = "circle"
             case Ellipse():
                 self._parts.append(indent + "<ellipse")
+                close_tag = "ellipse"
             case Path():
                 self._parts.append(indent + "<path")
+                close_tag = "path"
             case Line():
                 self._parts.append(indent + "<line")
+                close_tag = "line"
             case Polyline():
                 self._parts.append(indent + "<polyline")
+                close_tag = "polyline"
             case Polygon():
                 self._parts.append(indent + "<polygon")
+                close_tag = "polygon"
             case _:  # pragma: no cover
                 assert_never(shape.geometry)  # type: ignore[arg-type]
         self._append_attributes(shape)
-        self._parts.append(" />\n")
+        if shape.children == ():
+            self._parts.append(" />\n")
+        else:
+            self._parts.append(">\n")
+            for child in shape.children:
+                self._walk_element(child, self.INDENT + indent)
+            self._parts.append(indent + "</" + close_tag + ">\n")
 
     def _append_attributes(self, element: Svg | SvgNestables | Use) -> None:  # noqa: PLR0912
         if xmlnamespace := getattr(element, "xmlnamespace", None):

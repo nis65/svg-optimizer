@@ -8,7 +8,7 @@ from svgtools.geometry import (
     Path,
     Point,
 )
-from svgtools.svg import Defs, Group, Shape, SvgChildren, Use
+from svgtools.svg import Defs, Group, PreservedSubtree, Shape, SvgChildren, Use
 from svgtools.svg.document import Document
 from svgtools.svg.get_matrix import transforms_to_matrix
 from svgtools.svg.svg import Svg
@@ -63,6 +63,8 @@ class BoundingBoxVisitor:
                 self._walk_shape(element, phase, current_matrix)
             case Use():
                 self._walk_use(element, phase, current_matrix)
+            case PreservedSubtree():  # pragma: no cover
+                pass
             case _:  # pragma: no cover
                 raise NotImplementedError(type(element))
 
