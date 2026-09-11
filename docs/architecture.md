@@ -42,12 +42,10 @@ Note that packages (i.e. directories) group types by responsibility, not by inhe
 
 Svg objects do **not** introduce new geometry by themselves; instead, they describe how geometry is specified (e.g. a circle is defined by its center and a radius) and organized (e.g. a circle can be defined and then redrawn using the definition label) more or less in the same way a `.svg` file does.
 
-The toplevel element is a `Document` that lies outside of the `.svg` content. The one and only child object is `Svg`.  Currently, `Svg` is only considered legal as the outmost Element of an `.svg` file (i.e. nested `svg` tags are not supported yet). An `Svg` object has 0 to n children of type `SvgNestables`:
+The toplevel element is a `Document` that lies outside of the `.svg` content. The one and only child object is `Svg`.  Currently, `Svg` is only considered legal as the outmost Element of an `.svg` file (i.e. nested `svg` tags are not supported yet). An `Svg` object has 0 to n children of type `SvgChildren`:
 
-* `Defs`, `Group` (can have their own `SvgNestables` children)
-* `Shape`, `Use` (don't have children)
-
-`Shape` elements have a `geometry`, only this geometry actually identifies the geometric (a.k.a. "drawable") object, see above.
+* `Defs`, `Group`, `Use`
+* `Shape`: These have a `geometry`, only this geometry actually identifies the geometric (a.k.a. "drawable") object, see above.
 
 ## SVG parsing and writing
 
@@ -58,10 +56,11 @@ The objects defined above allow to support only very basic `.svg` files. Especia
   * In the XLINK namespace `http://www.w3.org/1999/xlink`, only `href` is supported by conversion to an SVG `href`, output files never contain that namespace.
   * There is limited support for the XML namespace `http://www.w3.org/XML/1998/namespace`, such attributes remain uninterpreted, but are stored and rewritten with an `xml:` prefix.
   * All other namespaces are ignored and data belonging to them is dropped
-* only a very **limited set of svg tags** is supported:
+* only a very **limited set of svg tags** is interpreted:
    * `svg` (at the toplevel only, no nesting)
    * `defs`, `g`, `a`, `use` (organizational)
-   * `circle`, `ellipse`, `line`, `path`, `polygon`, `polyline ` and `rect` (drawable)
+   * `circle`, `ellipse`, `line`, `path`, `polygon`, `polyline` and `rect` (drawable)
+   * **all other svg tags** are stored as uninterpreted children objects of type `PreservedSubtree`. These are not interpred in any way, especially they are not taken into account for computing the bounding box. But they are rewritten unchanged (i.e. as rendered by `ElementTree.tostring`) on output.
 * **all geometric transformations** (on all tags above except `defs`) are supported: `translate`, `scale`, `rotate`, `skewX`, `skewY`, `matrix`
 * **all path elements** are supported:
    * their command letters: `mMlLhHvVzZqQtTcCsSaA`
@@ -72,14 +71,13 @@ The objects defined above allow to support only very basic `.svg` files. Especia
 ### Preserving structure
 
 The parser/writer combo preserve document structure as far as possible. The following changes are applied when writing unconditionally:
-* the indendetation reflects the structural depth
+* the indendation reflects the structural depth
 * number lists are written space separated (and not comma separated)
 * the attributes (not the children) of an xml tag are (re-) ordered as follows:
    * `xmlns` (only on `svg` element)
    * `id`
    * `href`
-   * geometry of drawable objects, e.g. `x`, `y`, `width`, `heigth`, `r`
-   * coordinate system, e.g. `width`, `height` and `viewBox` (on toplevel `svg` element)
+   * geometry and coordinate system attributes like `x`, `y`, `width`, `heigth`, `r`, `viewBox` 
    * transformations like  `scale` and `translate`
    * "preserved attributes" like `fill`, `stroke`
 * the way that elements in a `<path>` are compacted is not stored in the internal model, but you can control the output (see [below](#path-writing)). The internal model does not make a distinction between the two inputs `L 10 100 20 200` and `L 10 100 L 20 200`, it stores the latter representation only.
