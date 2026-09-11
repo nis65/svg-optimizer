@@ -14,13 +14,10 @@ from svgtools.geometry.point import Point
 from svgtools.geometry.polygon import Polygon
 from svgtools.geometry.polyline import Polyline
 from svgtools.geometry.rect import Rect
-from svgtools.svg.defs import Defs
+from svgtools.svg import Defs, Group, PreservedSubtree, Shape, Use
 from svgtools.svg.document import Document
-from svgtools.svg.group import Group
-from svgtools.svg.shape import Shape
 from svgtools.svg.svg import Svg
 from svgtools.svg.transform import Affine, Rotate, Scale, SkewX, SkewY, Translate
-from svgtools.svg.use import Use
 from svgtools.writer.svg_writer import SvgWriter
 
 
@@ -508,7 +505,7 @@ def test_write_line():
             children=(
                 Shape(
                     id="lineid",
-                    children=(),
+                    children=(PreservedSubtree("<unknown />"),),
                     transformations=(
                         Scale(sx=4, sy=5),
                         Translate(dx=1, dy=2),
@@ -535,7 +532,9 @@ def test_write_line():
     assert writer.write_svg_string(d) == dedent("""\
     <?xml version='1.0' encoding='UTF-8'?>
     <svg>
-    <line id="lineid" x1="4" y1="5" x2="10" y2="11" transform="scale(4 5) translate(1 2) rotate(45 1 3)" unknown="unknown_value" />
+    <line id="lineid" x1="4" y1="5" x2="10" y2="11" transform="scale(4 5) translate(1 2) rotate(45 1 3)" unknown="unknown_value">
+      <unknown />
+    </line>
     </svg>
     """)
 
@@ -661,7 +660,7 @@ def test_write_use():
                     preserved_attributes={
                         "unknown": "unknown_value",
                     },
-                    children=(),
+                    children=(PreservedSubtree("<unknown />"),),
                 ),
             )
         )
@@ -673,7 +672,9 @@ def test_write_use():
     <defs>
       <rect id="rectid" x="0" y="0" width="2" height="1" />
     </defs>
-    <use href="#rectid" x="4" y="5" transform="translate(1 1)" unknown="unknown_value" />
+    <use href="#rectid" x="4" y="5" transform="translate(1 1)" unknown="unknown_value">
+      <unknown />
+    </use>
     </svg>
     """)
 

@@ -10,12 +10,9 @@ from svgtools.geometry.path_elements.moveto import MoveTo
 from svgtools.geometry.point import Point
 from svgtools.geometry.rect import Rect
 from svgtools.semantic.bounding_box_visitor import BoundingBoxVisitor
-from svgtools.svg.defs import Defs
+from svgtools.svg import Defs, Group, PreservedSubtree, Shape, Use
 from svgtools.svg.document import Document
-from svgtools.svg.group import Group
-from svgtools.svg.shape import Shape
 from svgtools.svg.svg import Svg
-from svgtools.svg.use import Use
 
 
 def test_use_is_followed_twice():
@@ -302,7 +299,7 @@ def test_bounding_box_with_use():
                     href="#square",
                     x=0,
                     y=0,
-                    children=(),
+                    children=(PreservedSubtree("<unknown />"),),
                 ),
                 Use(
                     href="#groupid",

@@ -11,13 +11,10 @@ from svgtools.geometry.polygon import Polygon
 from svgtools.geometry.polyline import Polyline
 from svgtools.geometry.rect import Rect
 from svgtools.parser.svg_parser import parse_svg_string
-from svgtools.svg.defs import Defs
+from svgtools.svg import Defs, Group, PreservedSubtree, Shape, Use
 from svgtools.svg.document import Document
-from svgtools.svg.group import Group
-from svgtools.svg.shape import Shape
 from svgtools.svg.svg import Svg
 from svgtools.svg.transform import Rotate, Scale, Translate
-from svgtools.svg.use import Use
 
 
 def test_parse_empty_svg():
@@ -181,8 +178,9 @@ def test_parse_svg_with_unknown_tag():
     <unknown />
     </svg>
     """
-    with pytest.raises(NotImplementedError, match="can parse only defs, g, use, rect,"):
-        parse_svg_string(svg_text)
+    assert parse_svg_string(svg_text) == Document(
+        svg=Svg(children=(PreservedSubtree("<unknown />"),))
+    )
 
 
 def test_parse_empty_defs():

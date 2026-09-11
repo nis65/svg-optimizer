@@ -2,7 +2,14 @@ from collections.abc import Collection
 from xml.etree import ElementTree as ET
 
 from svgtools.geometry import Circle, Ellipse, Line, Point, Polygon, Polyline, Rect
-from svgtools.svg import Defs, Group, Shape, SvgNestables, Use
+from svgtools.svg import (
+    Defs,
+    Group,
+    PreservedSubtree,
+    Shape,
+    SvgChildren,
+    Use,
+)
 from svgtools.svg.document import Document
 from svgtools.svg.svg import Svg
 
@@ -48,7 +55,7 @@ def parse_svg_string(svg_text: str) -> Document:
     )
 
 
-def _parse_xml_element(xml_element: ET.Element) -> SvgNestables | None:  # noqa: PLR0911 PLR0912 PLR0914 PLR0915
+def _parse_xml_element(xml_element: ET.Element) -> SvgChildren | None:  # noqa: PLR0911 PLR0912 PLR0914 PLR0915
 
     tag, namespace = parse_tag(xml_element.tag)
     if namespace == SVG_NAMESPACE or namespace is None:
@@ -89,7 +96,7 @@ def _parse_xml_element(xml_element: ET.Element) -> SvgNestables | None:  # noqa:
                 href=xml_href,
                 x=float(xml_x),
                 y=float(xml_y),
-                children=(),
+                children=_parse_xml_children(xml_element),
                 transformations=parse_transform_string(xml_element.get("transform")),
                 preserved_attributes=_collect_preserved_attributes(
                     xml_element, {"id", "href", "x", "y", "transform"}
@@ -105,7 +112,7 @@ def _parse_xml_element(xml_element: ET.Element) -> SvgNestables | None:  # noqa:
             assert xml_height is not None
             return Shape(
                 id=rect_id,
-                children=(),
+                children=_parse_xml_children(xml_element),
                 geometry=Rect(
                     top_left=Point(
                         x=float(xml_x),
@@ -229,8 +236,8 @@ def _parse_xml_element(xml_element: ET.Element) -> SvgNestables | None:  # noqa:
                 ),
             )
         case _:
-            raise NotImplementedError(
-                f"can parse only defs, g, use, rect, circle, path, line and polyline yet, not '{tag}'"
+            return PreservedSubtree(
+                ET.tostring(xml_element, encoding="unicode").strip()
             )
 
 
@@ -254,9 +261,9 @@ def _parse_poly_points(points_string: str | None, name: str) -> tuple[Point, ...
 
 def _parse_xml_children(
     xml_element: ET.Element,
-) -> tuple[SvgNestables, ...]:
+) -> tuple[SvgChildren, ...]:
 
-    children: list[SvgNestables] = []
+    children: list[SvgChildren] = []
 
     for xml_child in xml_element:
         child = _parse_xml_element(xml_child)
