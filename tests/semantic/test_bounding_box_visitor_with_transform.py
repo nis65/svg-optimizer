@@ -21,6 +21,7 @@ def test_rect_svg_translate():
             children=(
                 Shape(
                     id="square",
+                    children=(),
                     geometry=Rect(
                         top_left=Point(0, 0),
                         width=10,
@@ -44,6 +45,7 @@ def test_rect_rect_translate():
             children=(
                 Shape(
                     id="square",
+                    children=(),
                     geometry=Rect(
                         top_left=Point(0, 0),
                         width=10,
@@ -68,6 +70,7 @@ def test_rect_group_translate():
                     children=(
                         Shape(
                             id="square",
+                            children=(),
                             geometry=Rect(
                                 top_left=Point(0, 0),
                                 width=10,
@@ -94,6 +97,7 @@ def test_rect_use_translate():
                     children=(
                         Shape(
                             id="square",
+                            children=(),
                             geometry=Rect(
                                 top_left=Point(0, 0),
                                 width=10,
@@ -107,6 +111,7 @@ def test_rect_use_translate():
                     transformations=(Translate(dx=1, dy=1),),
                     x=0,
                     y=0,
+                    children=(),
                 ),
             ),
         ),
@@ -130,6 +135,7 @@ def test_rect_all_translate():
                             children=(
                                 Shape(
                                     id="square",
+                                    children=(),
                                     transformations=(Translate(dx=3, dy=-2),),
                                     geometry=Rect(
                                         top_left=Point(0, 0),
@@ -146,6 +152,7 @@ def test_rect_all_translate():
                     href="#group",
                     x=0,
                     y=0,
+                    children=(),
                 ),
             ),
         ),
@@ -162,6 +169,7 @@ def test_circle_svg_scale():
             children=(
                 Shape(
                     id="circle",
+                    children=(),
                     geometry=Circle(
                         center=Point(1, 1),
                         radius=1,
@@ -186,6 +194,7 @@ def test_circle_circle_scale():
             children=(
                 Shape(
                     id="circle",
+                    children=(),
                     geometry=Circle(
                         center=Point(1, 1),
                         radius=1,
@@ -207,6 +216,7 @@ def test_circle_circle_rotate():
             children=(
                 Shape(
                     id="circle",
+                    children=(),
                     geometry=Circle(
                         center=Point(1, 1),
                         radius=1,
@@ -230,6 +240,7 @@ def test_rect_rect_rotate_1():
             children=(
                 Shape(
                     id="rect",
+                    children=(),
                     geometry=Rect(
                         top_left=Point(0, 0),
                         width=2,
@@ -258,6 +269,7 @@ def test_rect_rect_rotate_2():
             children=(
                 Shape(
                     id="rect",
+                    children=(),
                     geometry=Rect(
                         top_left=Point(0, 0),
                         width=2,
@@ -286,6 +298,7 @@ def test_rect_skew_y():
             children=(
                 Shape(
                     id="rect",
+                    children=(),
                     geometry=Rect(
                         top_left=Point(0, 0),
                         width=2,

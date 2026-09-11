@@ -8,7 +8,7 @@ from svgtools.geometry import (
     Path,
     Point,
 )
-from svgtools.svg import Defs, Group, Shape, SvgNestables, Use
+from svgtools.svg import Defs, Group, Shape, SvgChildren, Use
 from svgtools.svg.document import Document
 from svgtools.svg.get_matrix import transforms_to_matrix
 from svgtools.svg.svg import Svg
@@ -49,7 +49,7 @@ class BoundingBoxVisitor:
 
     def _walk_element(
         self,
-        element: SvgNestables,
+        element: SvgChildren,
         phase: _Phase,
         current_matrix: Matrix3,
     ) -> None:

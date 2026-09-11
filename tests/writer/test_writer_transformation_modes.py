@@ -23,6 +23,7 @@ def test_write_mode_keep():
             children=(
                 Shape(
                     id="rectid",
+                    children=(),
                     transformations=(
                         Scale(sx=4, sy=5),
                         Translate(dx=1, dy=2),
@@ -58,6 +59,7 @@ def test_write_mode_aggregate():
             children=(
                 Shape(
                     id="rectid",
+                    children=(),
                     transformations=(
                         Translate(dx=2, dy=10),
                         Translate(dx=-1, dy=2),
@@ -101,6 +103,7 @@ def test_write_mode_decompose_matrix():
             children=(
                 Shape(
                     id="rectid",
+                    children=(),
                     transformations=(Affine(a=0, b=2, c=-3, d=3, e=2, f=10),),
                     geometry=Rect(
                         top_left=Point(
@@ -132,6 +135,7 @@ def test_write_mode_decompose_matrix_and_aggregate():
             children=(
                 Shape(
                     id="rectid",
+                    children=(),
                     transformations=(
                         Translate(dx=3, dy=1),
                         Affine(a=0, b=2, c=-3, d=3, e=2, f=10),
@@ -167,6 +171,7 @@ def test_write_mode_canonical_conservative_with_rotate_around_non_zero():
             children=(
                 Shape(
                     id="rectid",
+                    children=(),
                     transformations=(
                         Translate(dx=2, dy=10),
                         Rotate(theta=90, cx=0, cy=0),
@@ -187,6 +192,7 @@ def test_write_mode_canonical_conservative_with_rotate_around_non_zero():
                 ),
                 Shape(
                     id="rectid",
+                    children=(),
                     transformations=(Rotate(theta=90, cx=1, cy=1),),
                     geometry=Rect(
                         top_left=Point(
@@ -220,6 +226,7 @@ def test_write_mode_canonical_conservative_wrong_order():
             children=(
                 Shape(
                     id="rectid",
+                    children=(),
                     transformations=(
                         Rotate(theta=90, cx=0, cy=0),
                         SkewX(theta=45),
@@ -257,6 +264,7 @@ def test_write_mode_canonical_aggressive():
             children=(
                 Shape(
                     id="rectid",
+                    children=(),
                     transformations=(
                         Translate(dx=2, dy=10),
                         Rotate(theta=90, cx=0, cy=0),

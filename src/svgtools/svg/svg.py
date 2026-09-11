@@ -1,12 +1,12 @@
 from dataclasses import dataclass, field
 
-from . import SvgNestables
+from . import SvgChildren
 from .transform import SvgTransformations
 
 
 @dataclass(frozen=True, slots=True)
 class Svg:
-    children: tuple[SvgNestables, ...]
+    children: tuple[SvgChildren, ...]
     id: str | None = None
     xmlnamespace: str | None = None
     width: str | None = None

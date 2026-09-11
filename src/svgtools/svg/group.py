@@ -4,14 +4,14 @@ from dataclasses import dataclass, field
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from . import SvgNestables
+    from . import SvgChildren
 
 from .transform import SvgTransformations
 
 
 @dataclass(frozen=True, slots=True)
 class Group:
-    children: tuple[SvgNestables, ...]
+    children: tuple[SvgChildren, ...]
     id: str | None = None
     href: str | None = None
     transformations: tuple[SvgTransformations, ...] = ()

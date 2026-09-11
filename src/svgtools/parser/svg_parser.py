@@ -89,6 +89,7 @@ def _parse_xml_element(xml_element: ET.Element) -> SvgNestables | None:  # noqa:
                 href=xml_href,
                 x=float(xml_x),
                 y=float(xml_y),
+                children=(),
                 transformations=parse_transform_string(xml_element.get("transform")),
                 preserved_attributes=_collect_preserved_attributes(
                     xml_element, {"id", "href", "x", "y", "transform"}
@@ -104,6 +105,7 @@ def _parse_xml_element(xml_element: ET.Element) -> SvgNestables | None:  # noqa:
             assert xml_height is not None
             return Shape(
                 id=rect_id,
+                children=(),
                 geometry=Rect(
                     top_left=Point(
                         x=float(xml_x),
@@ -126,6 +128,7 @@ def _parse_xml_element(xml_element: ET.Element) -> SvgNestables | None:  # noqa:
             assert xml_r is not None
             return Shape(
                 id=circle_id,
+                children=(),
                 geometry=Circle(
                     center=Point(
                         x=float(xml_cx),
@@ -148,6 +151,7 @@ def _parse_xml_element(xml_element: ET.Element) -> SvgNestables | None:  # noqa:
             assert xml_ry is not None
             return Shape(
                 id=ellipse_id,
+                children=(),
                 geometry=Ellipse(
                     center=Point(
                         x=float(xml_cx),
@@ -166,6 +170,7 @@ def _parse_xml_element(xml_element: ET.Element) -> SvgNestables | None:  # noqa:
             p_geometry = parse_path_string(xml_element.get("d"))
             return Shape(
                 id=path_id,
+                children=(),
                 geometry=p_geometry,
                 transformations=parse_transform_string(xml_element.get("transform")),
                 preserved_attributes=_collect_preserved_attributes(
@@ -185,6 +190,7 @@ def _parse_xml_element(xml_element: ET.Element) -> SvgNestables | None:  # noqa:
             assert line_y2 is not None
             return Shape(
                 id=line_id,
+                children=(),
                 geometry=Line(
                     start=Point(float(line_x1), float(line_y1)),
                     end=Point(float(line_x2), float(line_y2)),
@@ -201,6 +207,7 @@ def _parse_xml_element(xml_element: ET.Element) -> SvgNestables | None:  # noqa:
             points = _parse_poly_points(points_string, "polyline")
             return Shape(
                 id=polyline_id,
+                children=(),
                 geometry=Polyline(children=tuple(points)),
                 transformations=parse_transform_string(xml_element.get("transform")),
                 preserved_attributes=_collect_preserved_attributes(
@@ -214,6 +221,7 @@ def _parse_xml_element(xml_element: ET.Element) -> SvgNestables | None:  # noqa:
             points = _parse_poly_points(points_string, "polygon")
             return Shape(
                 id=polygon_id,
+                children=(),
                 geometry=Polygon(children=tuple(points)),
                 transformations=parse_transform_string(xml_element.get("transform")),
                 preserved_attributes=_collect_preserved_attributes(
