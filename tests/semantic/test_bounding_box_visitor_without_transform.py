@@ -27,6 +27,7 @@ def test_use_is_followed_twice():
                     children=(
                         Shape(
                             id="square",
+                            children=(),
                             geometry=Rect(
                                 top_left=Point(0, 0),
                                 width=10,
@@ -35,8 +36,18 @@ def test_use_is_followed_twice():
                         ),
                     ),
                 ),
-                Use(href="#square", x=0, y=0),
-                Use(href="#square", x=0, y=0),
+                Use(
+                    href="#square",
+                    x=0,
+                    y=0,
+                    children=(),
+                ),
+                Use(
+                    href="#square",
+                    x=0,
+                    y=0,
+                    children=(),
+                ),
             ),
         ),
     )
@@ -56,6 +67,7 @@ def test_use_references_unknown_tag():
                     children=(
                         Shape(
                             id="square",
+                            children=(),
                             geometry=Rect(
                                 top_left=Point(0, 0),
                                 width=10,
@@ -64,7 +76,12 @@ def test_use_references_unknown_tag():
                         ),
                     ),
                 ),
-                Use(href="#circle", x=0, y=0),
+                Use(
+                    href="#circle",
+                    x=0,
+                    y=0,
+                    children=(),
+                ),
             ),
         ),
     )
@@ -92,6 +109,7 @@ def test_use_with_all_known_types():
                     children=(
                         Shape(
                             id="square",
+                            children=(),
                             geometry=Rect(
                                 top_left=Point(0, 0),
                                 width=10,
@@ -103,6 +121,7 @@ def test_use_with_all_known_types():
                             children=(
                                 Shape(
                                     id="circle",
+                                    children=(),
                                     geometry=Circle(
                                         center=Point(0, 0),
                                         radius=10,
@@ -112,9 +131,24 @@ def test_use_with_all_known_types():
                         ),
                     ),
                 ),
-                Use(href="#square", x=0, y=0),
-                Use(href="#square", x=0, y=0),
-                Use(href="#groupid", x=0, y=0),
+                Use(
+                    href="#square",
+                    x=0,
+                    y=0,
+                    children=(),
+                ),
+                Use(
+                    href="#square",
+                    x=0,
+                    y=0,
+                    children=(),
+                ),
+                Use(
+                    href="#groupid",
+                    x=0,
+                    y=0,
+                    children=(),
+                ),
             ),
         ),
     )
@@ -132,6 +166,7 @@ def test_bounding_box_rect():
             children=(
                 Shape(
                     id="square",
+                    children=(),
                     geometry=Rect(
                         top_left=Point(0, 0),
                         width=10,
@@ -153,6 +188,7 @@ def test_bounding_box_circle():
             children=(
                 Shape(
                     id="circle",
+                    children=(),
                     geometry=Circle(center=Point(4, 5), radius=2),
                 ),
             ),
@@ -170,6 +206,7 @@ def test_bounding_box_path_ml():
             children=(
                 Shape(
                     id="path",
+                    children=(),
                     geometry=Path(
                         children=(
                             MoveTo(
@@ -204,6 +241,7 @@ def test_bounding_box_path_mz():
             children=(
                 Shape(
                     id="path",
+                    children=(),
                     geometry=Path(
                         children=(
                             MoveTo(
@@ -238,6 +276,7 @@ def test_bounding_box_with_use():
                     children=(
                         Shape(
                             id="square",
+                            children=(),
                             geometry=Rect(
                                 top_left=Point(5, 5),
                                 width=4,
@@ -249,6 +288,7 @@ def test_bounding_box_with_use():
                             children=(
                                 Shape(
                                     id="circle",
+                                    children=(),
                                     geometry=Circle(
                                         center=Point(5, 5),
                                         radius=2,
@@ -258,8 +298,18 @@ def test_bounding_box_with_use():
                         ),
                     ),
                 ),
-                Use(href="#square", x=0, y=0),
-                Use(href="#groupid", x=0, y=0),
+                Use(
+                    href="#square",
+                    x=0,
+                    y=0,
+                    children=(),
+                ),
+                Use(
+                    href="#groupid",
+                    x=0,
+                    y=0,
+                    children=(),
+                ),
             ),
         ),
     )

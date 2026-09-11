@@ -4,12 +4,12 @@ from dataclasses import dataclass, field
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from . import SvgNestables
+    from . import SvgChildren
 
 
 @dataclass(frozen=True, slots=True)
 class Defs:
-    children: tuple[SvgNestables, ...]
+    children: tuple[SvgChildren, ...]
     id: str | None = None
     preserved_attributes: dict[str, str] = field(
         default_factory=lambda: dict[str, str]()

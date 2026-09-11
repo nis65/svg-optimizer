@@ -108,6 +108,7 @@ def test_parse_svg_with_unknown_name_space_attribute(capsys):
         svg=Svg(
             children=(
                 Shape(
+                    children=(),
                     geometry=Rect(
                         top_left=Point(
                             x=10,
@@ -136,6 +137,7 @@ def test_parse_svg_with_namespace_and_rect():
         svg=Svg(
             children=(
                 Shape(
+                    children=(),
                     geometry=Rect(
                         top_left=Point(
                             x=0,
@@ -325,6 +327,7 @@ def test_parse_group_with_elements_and_transform():
                 Group(
                     children=(
                         Shape(
+                            children=(),
                             geometry=Circle(
                                 center=Point(
                                     x=1,
@@ -337,8 +340,10 @@ def test_parse_group_with_elements_and_transform():
                             href="#arrow",
                             x=0,
                             y=0,
+                            children=(),
                         ),
                         Shape(
+                            children=(),
                             geometry=Rect(
                                 top_left=Point(
                                     x=1,
@@ -370,6 +375,7 @@ def test_parse_use():
                     href="#arrow",
                     x=3,
                     y=4,
+                    children=(),
                     transformations=(Scale(sx=3, sy=3),),
                 ),
             ),
@@ -392,6 +398,7 @@ def test_parse_use_with_unkonwns():
                     href="#arrow",
                     x=0,
                     y=0,
+                    children=(),
                     preserved_attributes={
                         "unknown": "unknown_value",
                     },
@@ -416,6 +423,7 @@ def test_parse_use_with_xlink_href():
                     href="#myref",
                     x=0,
                     y=0,
+                    children=(),
                 ),
             ),
         ),
@@ -444,6 +452,7 @@ def test_rect():
             children=(
                 Shape(
                     id="rectid",
+                    children=(),
                     geometry=Rect(
                         top_left=Point(
                             x=1,
@@ -470,6 +479,7 @@ def test_rect_with_defaults_and_unknowns():
             children=(
                 Shape(
                     id="rectid",
+                    children=(),
                     geometry=Rect(
                         top_left=Point(
                             x=0,
@@ -500,6 +510,7 @@ def test_circle():
             children=(
                 Shape(
                     id="circleid",
+                    children=(),
                     geometry=Circle(
                         center=Point(
                             x=1,
@@ -526,6 +537,7 @@ def test_circle_with_default_and_unknowns():
             children=(
                 Shape(
                     id="circleid",
+                    children=(),
                     geometry=Circle(
                         center=Point(
                             x=0,
@@ -558,6 +570,7 @@ def test_ellipse():
             children=(
                 Shape(
                     id="eid",
+                    children=(),
                     geometry=Ellipse(
                         center=Point(
                             x=1,
@@ -584,6 +597,7 @@ def test_path():
             children=(
                 Shape(
                     id="mypath",
+                    children=(),
                     geometry=Path(
                         children=(
                             MoveTo(
@@ -627,6 +641,7 @@ def test_line():
             children=(
                 Shape(
                     id="myline",
+                    children=(),
                     geometry=Line(
                         start=Point(
                             x=4,
@@ -662,6 +677,7 @@ def test_polyline():
             children=(
                 Shape(
                     id="mypoly",
+                    children=(),
                     geometry=Polyline(
                         children=(
                             Point(
@@ -703,6 +719,7 @@ def test_polygon():
             children=(
                 Shape(
                     id="mypoly",
+                    children=(),
                     geometry=Polygon(
                         children=(
                             Point(

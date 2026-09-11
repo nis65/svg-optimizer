@@ -98,6 +98,7 @@ def test_write_defs_with_children():
                     children=(
                         Shape(
                             id="rectid",
+                            children=(),
                             geometry=Rect(
                                 top_left=Point(
                                     x=0,
@@ -182,6 +183,7 @@ def test_write_group_with_children():
                     children=(
                         Shape(
                             id="circleid",
+                            children=(),
                             geometry=Circle(
                                 center=Point(
                                     x=0,
@@ -216,6 +218,7 @@ def test_write_rect_with_attributes():
             children=(
                 Shape(
                     id="rectid",
+                    children=(),
                     transformations=(
                         Scale(sx=4, sy=5),
                         Translate(dx=1, dy=2),
@@ -253,6 +256,7 @@ def test_write_rect_with_more_transformations():
             children=(
                 Shape(
                     id="rectid",
+                    children=(),
                     transformations=(
                         SkewX(theta=60),
                         SkewY(theta=30),
@@ -292,6 +296,7 @@ def test_write_circle_with_attributes():
             children=(
                 Shape(
                     id="circleid",
+                    children=(),
                     transformations=(
                         Translate(dx=-1, dy=-3),
                         Scale(sx=2, sy=1),
@@ -327,6 +332,7 @@ def test_write_ellipse_with_attributes():
             children=(
                 Shape(
                     id="ellipseid",
+                    children=(),
                     transformations=(
                         Translate(dx=-1, dy=-3),
                         Scale(sx=2, sy=1),
@@ -365,6 +371,7 @@ def test_write_path_shorter():
             children=(
                 Shape(
                     id="mypath",
+                    children=(),
                     geometry=Path(
                         children=(
                             MoveTo(
@@ -418,6 +425,7 @@ def test_write_path_complete():
             children=(
                 Shape(
                     id="mypath",
+                    children=(),
                     geometry=Path(
                         children=(
                             MoveTo(
@@ -500,6 +508,7 @@ def test_write_line():
             children=(
                 Shape(
                     id="lineid",
+                    children=(),
                     transformations=(
                         Scale(sx=4, sy=5),
                         Translate(dx=1, dy=2),
@@ -539,6 +548,7 @@ def test_write_polyline():
             children=(
                 Shape(
                     id="polylineid",
+                    children=(),
                     transformations=(
                         Scale(sx=4, sy=5),
                         Translate(dx=1, dy=2),
@@ -580,6 +590,7 @@ def test_write_polygon():
             children=(
                 Shape(
                     id="polygonid",
+                    children=(),
                     transformations=(
                         Scale(sx=4, sy=5),
                         Translate(dx=1, dy=2),
@@ -625,6 +636,7 @@ def test_write_use():
                     children=(
                         Shape(
                             id="rectid",
+                            children=(),
                             geometry=Rect(
                                 top_left=Point(
                                     x=0,
@@ -649,6 +661,7 @@ def test_write_use():
                     preserved_attributes={
                         "unknown": "unknown_value",
                     },
+                    children=(),
                 ),
             )
         )

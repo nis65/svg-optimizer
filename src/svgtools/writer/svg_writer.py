@@ -10,7 +10,7 @@ from svgtools.geometry import (
     Polyline,
     Rect,
 )
-from svgtools.svg import Defs, Group, Shape, SvgNestables, Use
+from svgtools.svg import Defs, Group, Shape, SvgChildren, SvgNestables, Use
 from svgtools.svg.document import Document
 from svgtools.svg.svg import Svg
 
@@ -68,7 +68,7 @@ class SvgWriter:
                 self._walk_element(child, "")
             self._parts.append("</svg>\n")
 
-    def _walk_element(self, element: SvgNestables, indent: str) -> None:
+    def _walk_element(self, element: SvgChildren, indent: str) -> None:
         match element:
             case Defs():
                 self._walk_defs(element, indent)

@@ -13,6 +13,7 @@ from svgtools.writer.svg_writer import SvgWriter
 def build_rect_from_bb(bb: BoundingBox) -> Shape:
     return Shape(
         id="bbrect",
+        children=(),
         geometry=Rect(
             top_left=Point(
                 bb.min.x,

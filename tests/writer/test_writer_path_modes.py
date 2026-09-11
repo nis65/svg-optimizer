@@ -24,6 +24,7 @@ d = Document(
         children=(
             Shape(
                 id="mypath",
+                children=(),
                 geometry=Path(
                     children=(
                         MoveTo(
@@ -222,6 +223,7 @@ e = Document(
         children=(
             Shape(
                 id="mypath",
+                children=(),
                 geometry=Path(
                     children=(
                         MoveTo(
