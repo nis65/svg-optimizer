@@ -167,7 +167,7 @@ class SvgWriter:
                 self._walk_element(child, self.INDENT + indent)
             self._parts.append(indent + "</" + close_tag + ">\n")
 
-    def _append_attributes(self, element: Svg | SvgNestables | Use) -> None:  # noqa: PLR0912
+    def _append_attributes(self, element: Svg | SvgNestables) -> None:  # noqa: PLR0912
         if xmlnamespace := getattr(element, "xmlnamespace", None):
             self._parts.append(f' xmlns="{xmlnamespace}"')
         if element_id := getattr(element, "id", None):
