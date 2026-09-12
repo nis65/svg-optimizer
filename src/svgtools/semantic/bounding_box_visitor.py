@@ -1,3 +1,4 @@
+import re
 from collections import Counter
 from enum import Enum
 
@@ -8,6 +9,7 @@ from svgtools.geometry import (
     Path,
     Point,
 )
+from svgtools.parser.parse_utils import print_stderr
 from svgtools.svg import Defs, Group, PreservedSubtree, Shape, SvgChildren, Use
 from svgtools.svg.document import Document
 from svgtools.svg.get_matrix import transforms_to_matrix
@@ -64,9 +66,30 @@ class BoundingBoxVisitor:
             case Use():
                 self._walk_use(element, phase, current_matrix)
             case PreservedSubtree():  # pragma: no cover
-                pass
+                self._walk_preserved_subtree(None, element)
             case _:  # pragma: no cover
                 raise NotImplementedError(type(element))
+
+    @staticmethod
+    def _first_tag(xml: str) -> str:
+        _TAG_RE = re.compile(r"<([^\s/>]+)")
+        match = _TAG_RE.match(xml)
+        assert match is not None
+        return match.group(1)
+
+    def _walk_preserved_subtree(
+        self, parent: SvgChildren | None, element: SvgChildren
+    ) -> None:
+
+        match element:
+            case PreservedSubtree():
+                print_stderr(
+                    f"WARNING: Ignoring Subtree <{self._first_tag(element)}> for bounding box computation"
+                )
+            case _:  # pragma: no cover
+                raise NotImplementedError(
+                    "unexpected element type {type(element)} in {type(parent)}"
+                )
 
     def _walk_group(self, group: Group, phase: _Phase, current_matrix: Matrix3) -> None:
         match phase:
@@ -103,6 +126,8 @@ class BoundingBoxVisitor:
                 # apply translation from use
                 current_matrix *= Matrix3.translation(use.x, use.y)
                 self._walk_element(self.definition_table[label], phase, current_matrix)
+                for child in use.children:
+                    self._walk_preserved_subtree(use, child)
 
     def _walk_shape(self, shape: Shape, phase: _Phase, current_matrix: Matrix3) -> None:
 
@@ -129,6 +154,8 @@ class BoundingBoxVisitor:
                 self._accumulate_bbox(
                     self._transformed_points_bounding_box(points, current_matrix)
                 )
+                for child in shape.children:
+                    self._walk_preserved_subtree(shape, child)
 
     @staticmethod
     def _transformed_points_bounding_box(
