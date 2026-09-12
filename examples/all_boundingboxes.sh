@@ -30,11 +30,11 @@ do
 
   THISTARGETFILE="${basename%%.svg}_bounding_box_drawed.svg"
   target=${TARGETDIR}/$THISTARGETFILE
-  ./run_rewrite_with_bb.sh < $file > $target
+  ./run_rewrite_with_bb.sh < $file > $target 2> /dev/null
 
   THISTARGETFILE="${basename%%.svg}_viewbox_adjusted.svg"
   target=${TARGETDIR}/$THISTARGETFILE
-  ./run_adjust_viewbox.sh --margin 8 < $file > $target
+  ./run_adjust_viewbox.sh --margin 8 < $file > $target 2> /dev/null
 done
 
 )

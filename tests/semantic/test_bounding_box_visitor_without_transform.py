@@ -15,7 +15,7 @@ from svgtools.svg.document import Document
 from svgtools.svg.svg import Svg
 
 
-def test_use_is_followed_twice():
+def test_use_is_followed_twice(capsys):
 
     document = Document(
         svg=Svg(
@@ -24,7 +24,7 @@ def test_use_is_followed_twice():
                     children=(
                         Shape(
                             id="square",
-                            children=(),
+                            children=(PreservedSubtree("<unknownrectchild />"),),
                             geometry=Rect(
                                 top_left=Point(0, 0),
                                 width=10,
@@ -53,6 +53,11 @@ def test_use_is_followed_twice():
     visitor.visit(document)
 
     assert visitor.visited["Rect"] == 2
+    captured = capsys.readouterr()
+    assert (
+        "WARNING: Ignoring Subtree <unknownrectchild> for bounding box computation\nWARNING: Ignoring Subtree <unknownrectchild> for bounding box computation"
+        in captured.err
+    )
 
 
 def test_use_references_unknown_tag():
@@ -265,7 +270,7 @@ def test_bounding_box_path_mz():
     assert visitor.visited["path_ClosePath"] == 1
 
 
-def test_bounding_box_with_use():
+def test_bounding_box_with_use(capsys):
     document = Document(
         svg=Svg(
             children=(
@@ -315,3 +320,8 @@ def test_bounding_box_with_use():
     visitor.visit(document)
 
     assert visitor.bounding_box == BoundingBox(min=Point(3, 3), max=Point(9, 8))
+    captured = capsys.readouterr()
+    assert (
+        "WARNING: Ignoring Subtree <unknown> for bounding box computation"
+        in captured.err
+    )
