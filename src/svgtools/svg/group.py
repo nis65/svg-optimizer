@@ -15,6 +15,4 @@ class Group:
     id: str | None = None
     href: str | None = None
     transformations: tuple[SvgTransformations, ...] = ()
-    preserved_attributes: dict[str, str] = field(
-        default_factory=lambda: dict[str, str]()
-    )
+    preserved_attributes: dict[str, str] = field(default_factory=dict[str, str])

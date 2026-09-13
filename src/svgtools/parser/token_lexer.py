@@ -38,7 +38,7 @@ class TokenIterator:
 
     def has_numbers(self, count: int) -> bool:
         if self._lookahead(count):
-            for token in self._buffer[:count]:
+            for token in self._buffer[:count]:  # noqa: SIM110
                 if token.kind != TokenKind.NUMBER:
                     return False
             return True
