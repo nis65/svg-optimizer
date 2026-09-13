@@ -30,8 +30,7 @@ class Path(Geometry):
                 current_point = child.target
                 current_subpath_start = current_point
             elif type(child) == ClosePath:
-                points.append(current_point)
-                points.append(current_subpath_start)
+                points.extend({current_point, current_subpath_start})
                 current_point = current_subpath_start
             else:
                 points.extend(

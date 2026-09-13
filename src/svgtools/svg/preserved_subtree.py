@@ -1,2 +1,2 @@
-class PreservedSubtree(str):
+class PreservedSubtree(str):  # noqa: FURB189
     pass
