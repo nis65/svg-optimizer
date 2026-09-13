@@ -65,7 +65,7 @@ class BoundingBoxVisitor:
                 self._walk_shape(element, phase, current_matrix)
             case Use():
                 self._walk_use(element, phase, current_matrix)
-            case PreservedSubtree():  # pragma: no cover
+            case PreservedSubtree():
                 self._walk_preserved_subtree(element, phase)
             case _:  # pragma: no cover
                 raise NotImplementedError(type(element))
