@@ -325,3 +325,19 @@ def test_bounding_box_with_use(capsys):
         "WARNING: Ignoring Subtree <unknown> for bounding box computation"
         in captured.err
     )
+
+
+def test_bounding_box_with_preserved_subtree_for_coverage(capsys):
+    document = Document(
+        svg=Svg(
+            children=(PreservedSubtree("<unknown />"),),
+        )
+    )
+    visitor = BoundingBoxVisitor()
+    visitor.visit(document)
+    assert visitor.bounding_box is None
+    captured = capsys.readouterr()
+    assert (
+        "WARNING: Ignoring Subtree <unknown> for bounding box computation"
+        in captured.err
+    )
