@@ -1,8 +1,11 @@
+from __future__ import annotations
+
 import math
 from dataclasses import dataclass
 from typing import ClassVar
 
 from ..point import Point
+from ..tolerance import GEOMETRY_ABS_TOL, GEOMETRY_REL_TOL
 from .path_element_abc import PathElement
 
 
@@ -87,17 +90,20 @@ class Arc(PathElement):
         else:
             lrx = self.rx
             lry = self.ry
-        squareroot = math.sqrt(
-            (
-                lrx * lrx * lry * lry
-                - lrx * lrx * transformed_point.y * transformed_point.y
-                - lry * lry * transformed_point.x * transformed_point.x
-            )
-            / (
-                lrx * lrx * transformed_point.y * transformed_point.y
-                + lry * lry * transformed_point.x * transformed_point.x
-            )
+        radicand = (
+            lrx * lrx * lry * lry
+            - lrx * lrx * transformed_point.y * transformed_point.y
+            - lry * lry * transformed_point.x * transformed_point.x
+        ) / (
+            lrx * lrx * transformed_point.y * transformed_point.y
+            + lry * lry * transformed_point.x * transformed_point.x
         )
+        if math.isclose(
+            radicand, 0.0, rel_tol=GEOMETRY_REL_TOL, abs_tol=GEOMETRY_ABS_TOL
+        ):
+            squareroot = 0.0
+        else:
+            squareroot = math.sqrt(radicand)
         transformed_center = Point(
             x=sign * squareroot * lrx * transformed_point.y / lry,
             y=-sign * squareroot * lry * transformed_point.x / lrx,
