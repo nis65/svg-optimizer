@@ -439,6 +439,16 @@ def test_parse_use_without_href():
         parse_svg_string(svg_text)
 
 
+def test_rect_with_missing_height():
+    svg_text = """
+    <svg>
+        <rect width="3.5"/>
+    </svg>
+    """
+    with pytest.raises(ValueError, match="<rect> requires a height attribute"):
+        parse_svg_string(svg_text)
+
+
 def test_rect():
     svg_text = """
     <svg>
