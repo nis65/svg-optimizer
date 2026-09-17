@@ -189,14 +189,12 @@ class SvgWriter:
                     self._parts.append(
                         f' cx="{number_to_string(geometry.center.x)}"'
                         f' cy="{number_to_string(geometry.center.y)}"'
+                        f' r="{number_to_string(geometry.radius)}"'
                     )
-                    self._parts.append(f' r="{number_to_string(geometry.radius)}"')
                 case Ellipse():
                     self._parts.append(
                         f' cx="{number_to_string(geometry.center.x)}"'
                         f' cy="{number_to_string(geometry.center.y)}"'
-                    )
-                    self._parts.append(
                         f' rx="{number_to_string(geometry.radiusx)}"'
                         f' ry="{number_to_string(geometry.radiusy)}"'
                     )
